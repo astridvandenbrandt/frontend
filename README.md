@@ -1,4 +1,4 @@
-# frontend
+# VAPP v2
 
 ## Project setup
 ```
