@@ -2,9 +2,8 @@
   <!-- <h4>Sequence Variants</h4> -->
   <!-- <h5>{{ msg }}</h5> -->
   <!-- Initialize a select button -->
-  <select id="selectButton"></select>
+  <select id="selectButtonMSA"> <option  disabled selected>sort by: </option></select>
   <div id="my_dataviz"></div>
-  <!-- <div id="dataset-picker"></div> -->
 </template>
 
 <script>
@@ -22,48 +21,10 @@ export default {
         return self.indexOf(value) === index;
       };
 
-      // Precompute the orders.
-      var orders = {
-        default: [
-          "8_Tsu-0",
-          "8_Altai-5",
-          "8_Sha",
-          "7_Ler",
-          "6_Kyo",
-          "5_Sku-30",
-          "5_Ler",
-          "5_Gro-3",
-          "5_Eri-1",
-          "4_Cvi-0",
-          "3_C24",
-          "2_An-1",
-          "1_Kas-1",
-          "1_Col-0",
-        ],
-        alphabetical: d3
-          .map(data, function(d) {
-            return d.accession;
-          })
-          .filter(unique)
-          .sort(d3.descending),
-      };
-
-      console.log("orders", Object.keys(orders));
-
-      // add the options to the button
-      d3.select("#selectButton")
-        .selectAll("myOptions")
-        .data(Object.keys(orders))
-        .enter()
-        .append("option")
-        .text(function(d) {
-          console.log("d button", d);
-          return d;
-        }) // text showed in the menu
-        .attr("value", function(d) {
-          console.log("button value", d);
-          return orders[d];
-        }); // corresponding value returned by the button
+      var vis = this.svg;
+      var visX = this.xScale;
+      var visY = this.yScale;
+      
 
       // Labels of row and columns -> unique identifier of the column called 'group' and 'variable'
       var myGroups = d3
@@ -73,52 +34,28 @@ export default {
         .filter(unique);
       console.log(myGroups);
 
-      // Build X scales and axis:
-      var xScale = d3
-        .scaleBand()
-        .range([0, this.width])
-        .domain(myGroups)
-        .padding(0.05);
+      // add domains and build axis
+      visX
+        .domain(myGroups);
 
       var xAxis = d3
-        .axisTop(xScale)
+        .axisTop(visX)
         .tickSize(10)
         .tickValues(
-          xScale.domain().filter(function(d, i) {
+          visX.domain().filter(function(d, i) {
             return !(i % 5);
           })
         ); //show every fifth position
 
-      var chart = this.svg
-
-      chart
-        .append("g")
-        .style("font-size", 15)
-        // .attr("transform", "translate(0," + this.height + ")")
-        .call(xAxis)
-        .select(".domain")
-        .remove();
-
-      // Build Y scales and axis:
-      var yScale = d3
-        .scaleBand()
-        .range([this.height, 0])
-        .padding(0.05);
-
-      yScale.domain(orders.default); //default
-
-      chart
-        .append("g")
-        .style("font-size", 15)
-        .call(d3.axisLeft(yScale).tickSize(0))
-        .select(".domain")
-        .remove();
-
-      // // Build color scale
-      // var myColor = d3
-      //   .scaleSequential()
-      //   .interpolator(d3.interpolateInferno)
-      //   .domain([1, 100]);
+      // default sorting rows
+      visY.domain(
+        d3
+          .map(data, function(d) {
+            return d.accession;
+          })
+          .filter(unique)
+          .sort(d3.descending),
+      ); 
 
       // build color scale categories
       var colors = {
@@ -145,7 +82,58 @@ export default {
         .style("border-radius", "5px")
         .style("padding", "5px");
 
-      // Three function that change the tooltip when user hover / move / leave a cell
+      
+      // call vis axes 
+      vis
+        .append("g")
+        .style("font-size", 15)
+        // .attr("transform", "translate(0," + this.height + ")")
+        .call(xAxis)
+        .select(".domain")
+        .remove();
+
+        vis
+        .append("g")
+        .style("font-size", 15)
+        .call(d3.axisLeft(visY).tickSize(0))
+        .select(".domain")
+        .remove();
+
+  
+      // add the squares
+      vis
+        .selectAll()
+        .data(data, function(d) {
+          // console.log('d.group + ":" + d.variable', d.group + ":" + d.variable)
+          return d.pos + ":" + d.accesion;
+        })
+        .enter()
+        .append("rect")
+        .attr("x", function(d) {
+          // console.log("xScale(d.pos)", xScale(d.pos), d.pos);
+          return visX(d.pos);
+        })
+        .attr("y", function(d) {
+          // console.log("yScale(d.base)", yScale(d.accession), d.accession);
+          return visY(d.accession);
+        })
+        .attr("rx", 4)
+        .attr("ry", 4)
+        .attr("width", visX.bandwidth())
+        .attr("height", visY.bandwidth())
+        .style("fill", function(d) {
+          return colors[d.base];
+        })
+        .style("stroke-width", 4)
+        .style("stroke", "none")
+        .style("opacity", 0.8)
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove)
+        .on("mouseleave", mouseleave);
+
+
+
+      // Three functions that change the tooltip when user hover / move / leave a cell
       var mouseover = function() {
         tooltip.style("opacity", 1);
         d3.select(this)
@@ -165,54 +153,6 @@ export default {
           .style("stroke", "none")
           .style("opacity", 0.8);
       };
-
-      // add the squares
-      chart
-        .selectAll()
-        .data(data, function(d) {
-          // console.log('d.group + ":" + d.variable', d.group + ":" + d.variable)
-          return d.pos + ":" + d.accesion;
-        })
-        .enter()
-        .append("rect")
-        .attr("x", function(d) {
-          console.log("xScale(d.pos)", xScale(d.pos), d.pos);
-          return xScale(d.pos);
-        })
-        .attr("y", function(d) {
-          console.log("yScale(d.base)", yScale(d.accession), d.accession);
-          return yScale(d.accession);
-        })
-        .attr("rx", 4)
-        .attr("ry", 4)
-        .attr("width", xScale.bandwidth())
-        .attr("height", yScale.bandwidth())
-        .style("fill", function(d) {
-          return colors[d.base];
-        })
-        .style("stroke-width", 4)
-        .style("stroke", "none")
-        .style("opacity", 0.8)
-        .on("mouseover", mouseover)
-        .on("mousemove", mousemove)
-        .on("mouseleave", mouseleave);
-
-      // A function that update the chart
-      function update(selectedGroup) {
-        console.log("update!", selectedGroup);
-        // Give these new data to update scale
-        yScale.domain(selectedGroup);
-        chart.call(d3.axisLeft(yScale).tickSize(0));
-        
-      }
-
-      // When the button is changed, run the updateChart function
-      d3.select("#selectButton").on("change", function() {
-        var selectedOption = d3.select(this).property("value");
-        console.log("selectedOption", selectedOption);
-        // run the updateChart function with this selected option
-        update(selectedOption);
-      });
     },
   },
   mounted() {
@@ -226,6 +166,90 @@ export default {
 
     this.width = width;
     this.height = height;
+
+
+    // Precompute the orders.
+    var orders = {
+      alpha_asc: "alphabetical",
+      alpha_desc: "reversed alphabetical",
+      phylo: "phylogeny",
+
+    };
+
+    this.orders = orders;
+
+    // add the options to the button
+    d3.select("#selectButtonMSA")
+      .selectAll("myOptions")
+      .data(Object.keys(orders))
+      .enter()
+      .append("option")
+      .text(function(d) {
+        return orders[d];
+      }) // text showed in the menu
+      .attr("value", function(d) {
+        return d;
+      }); // corresponding value returned by the button
+
+    // var orders = {
+    //     default: [
+    //       "8_Tsu-0",
+    //       "8_Altai-5",
+    //       "8_Sha",
+    //       "7_Ler",
+    //       "6_Kyo",
+    //       "5_Sku-30",
+    //       "5_Ler",
+    //       "5_Gro-3",
+    //       "5_Eri-1",
+    //       "4_Cvi-0",
+    //       "3_C24",
+    //       "2_An-1",
+    //       "1_Kas-1",
+    //       "1_Col-0",
+    //     ],
+    //     alphabetical: d3
+    //       .map(data, function(d) {
+    //         return d.accession;
+    //       })
+    //       .filter(unique)
+    //       .sort(d3.descending),
+    //     phylogeny: [
+    //       "6_Kyo",
+    //       "5_Sku-30",
+    //       "5_Ler",
+    //       "5_Gro-3",
+    //       "5_Eri-1",
+    //       "7_Ler",
+    //       "8_Sha",
+    //       "8_Tsu-0",
+    //       "8_Altai-5",
+    //       "3_C24",
+    //       "4_Cvi-0",
+    //       "1_Col-0",
+    //       "1_Kas-1",
+    //       "2_An-1",
+    //     ],
+    //   };
+
+      console.log("orders", Object.keys(orders));
+
+
+
+    // Build scales:
+    var xScale = d3
+        .scaleBand()
+        .range([0, width])
+        .padding(0.05);
+
+    this.xScale = xScale;
+
+    var yScale = d3
+        .scaleBand()
+        .range([height, 0])
+        .padding(0.05);
+
+    this.yScale = yScale;
 
     // append the svg object to the body of the page
     var svg = d3
@@ -243,7 +267,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-#selectButton {
+#selectButtonMSA {
   position: absolute;
   left: 0;
   margin-left: 30px;

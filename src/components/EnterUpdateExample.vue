@@ -169,7 +169,7 @@ export default {
         var selected = d3.select("#selectButtonBars").node().value;
         console.log("selected: ", selected);
 
-        if (selected === "key") {
+        if (selected === "key_asc") {
           data.sort(function(a, b) {
             return d3.ascending(a.key, b.key);
           });
@@ -207,9 +207,91 @@ export default {
                 ")"
               );
             });
-        } else {
+        }
+
+        if (selected === "key_desc") {
+          data.sort(function(a, b) {
+            return d3.descending(a.key, b.key);
+          });
+          visX.domain(
+            data.map(function(d) {
+              return d.key;
+            })
+          );
+          vis
+            .selectAll(".bar")
+            .transition()
+            .duration(500)
+            .attr("x", function(d) {
+              return visX(d.key);
+            });
+
+          vis
+            .selectAll(".val-label")
+            .transition()
+            .duration(500)
+            .attr("x", function(d) {
+              return visX(d.key) + visX.bandwidth() / 2;
+            });
+
+          vis
+            .selectAll(".bar-label")
+            .transition()
+            .duration(500)
+            .attr("transform", function(d) {
+              return (
+                "translate(" +
+                (visX(d.key) + visX.bandwidth() / 2 - 5) +
+                "," +
+                (visHeight + 15) +
+                ")"
+              );
+            });
+        }
+
+        if (selected === "value_desc") {
           data.sort(function(a, b) {
             return d3.descending(a.value, b.value);
+          });
+          visX.domain(
+            data.map(function(d) {
+              return d.key;
+            })
+          );
+          vis
+            .selectAll(".bar")
+            .transition()
+            .duration(500)
+            .attr("x", function(d) {
+              return visX(d.key);
+            });
+
+          vis
+            .selectAll(".val-label")
+            .transition()
+            .duration(500)
+            .attr("x", function(d) {
+              return visX(d.key) + visX.bandwidth() / 2;
+            });
+
+          vis
+            .selectAll(".bar-label")
+            .transition()
+            .duration(500)
+            .attr("transform", function(d) {
+              return (
+                "translate(" +
+                (visX(d.key) + visX.bandwidth() / 2 - 5) +
+                "," +
+                (visHeight + 15) +
+                ")"
+              );
+            });
+        }
+
+        if (selected === "value_asc") {
+          data.sort(function(a, b) {
+            return d3.ascending(a.value, b.value);
           });
           visX.domain(
             data.map(function(d) {
@@ -262,10 +344,14 @@ export default {
     var height = h - margin.top - margin.bottom;
 
     this.margin = margin;
-    this.width = width;
     this.height = height;
 
-    var orders = { key: "alphabetical key", value: "descending value" };
+    var orders = {
+      key_asc: "alphabetical x",
+      key_desc: "reversed alphabetical x",
+      value_desc: "descending y",
+      value_asc: "ascending y",
+    };
 
     // add the options to the button
     d3.select("#selectButtonBars")

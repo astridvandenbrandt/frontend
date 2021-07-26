@@ -78,7 +78,7 @@ export default {
         .append("line")
         .attr("class", "percentline")
         .attr("x1", function(d) {
-          console.log("x1", d.position, xScale(d.position));
+          // console.log("x1", d.position, xScale(d.position));
           return xScale(d.position);
         })
         .attr("x2", function(d) {
