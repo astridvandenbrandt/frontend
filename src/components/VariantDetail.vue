@@ -359,8 +359,7 @@ export default {
       .padding(0.05);
 
     this.yScale = yScale;
-
-    // append the svg object to the body of the page
+    
     var svg = d3
       .select("#msa_chart")
       .append("svg")
