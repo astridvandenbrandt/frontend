@@ -10,11 +10,8 @@
 import * as d3 from "d3";
 export default {
   name: "VariantDetail",
-  data() {
-    return {
-      msg: "Hi from sequene variants component",
-    };
-  },
+  // data() {
+  // },
   methods: {
     updateVis(data) {
       const unique = (value, index, self) => {
@@ -25,7 +22,7 @@ export default {
       var visX = this.xScale;
       var visY = this.yScale;
 
-      // create labels of columns: positions
+      // Create labels for gene positions
       var genePositions = d3
         .map(data, function(d) {
           return d.pos;
@@ -33,7 +30,7 @@ export default {
         .filter(unique);
       console.log(genePositions);
 
-      // add domains and build axis
+      // Add domains and build axis
       visX.domain(genePositions);
 
       var xAxis = d3
@@ -45,7 +42,7 @@ export default {
           })
         ); //show every fifth position
 
-      // default sorting rows
+      // Default sorting rows
       visY.domain(
         d3
           .map(data, function(d) {
@@ -80,7 +77,7 @@ export default {
         .style("border-radius", "5px")
         .style("padding", "5px");
 
-      // call vis axes
+      // Call vis axes
       vis
         .append("g")
         .attr("class", "x-axis")
@@ -98,7 +95,7 @@ export default {
         .select(".domain")
         .remove();
 
-      // add the squares
+      // Add the squares
       vis
         .selectAll()
         .data(data, function(d) {
@@ -179,11 +176,9 @@ export default {
             .transition()
             .duration(800)
             .attr("x", function(d) {
-              // console.log("xScale(d.pos)", xScale(d.pos), d.pos);
               return visX(d.pos);
             })
             .attr("y", function(d) {
-              // console.log("yScale(d.base)", yScale(d.accession), d.accession);
               return visY(d.accession);
             });
           vis
@@ -215,11 +210,9 @@ export default {
             .transition()
             .duration(1000)
             .attr("x", function(d) {
-              // console.log("xScale(d.pos)", xScale(d.pos), d.pos);
               return visX(d.pos);
             })
             .attr("y", function(d) {
-              // console.log("yScale(d.base)", yScale(d.accession), d.accession);
               return visY(d.accession);
             });
           vis
@@ -259,11 +252,9 @@ export default {
             .transition()
             .duration(1000)
             .attr("x", function(d) {
-              // console.log("xScale(d.pos)", xScale(d.pos), d.pos);
               return visX(d.pos);
             })
             .attr("y", function(d) {
-              // console.log("yScale(d.base)", yScale(d.accession), d.accession);
               return visY(d.accession);
             });
           vis
@@ -303,11 +294,9 @@ export default {
             .transition()
             .duration(1000)
             .attr("x", function(d) {
-              // console.log("xScale(d.pos)", xScale(d.pos), d.pos);
               return visX(d.pos);
             })
             .attr("y", function(d) {
-              // console.log("yScale(d.base)", yScale(d.accession), d.accession);
               return visY(d.accession);
             });
           vis
@@ -331,7 +320,7 @@ export default {
     this.width = width;
     this.height = height;
 
-    // Precompute the orders.
+    // define the accession orders.
     var orders = {
       alpha_asc: "alphabetical",
       alpha_desc: "reversed alphabetical",
