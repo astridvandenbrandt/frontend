@@ -1,9 +1,9 @@
 <template>
-  <!-- <h4>Sequence Variants</h4> -->
-  <!-- <h5>{{ msg }}</h5> -->
-  <!-- Initialize a select button -->
-  <select id="selectButtonMSA"> <option  disabled selected>sort by: </option></select>
-  <div id="my_dataviz"></div>
+  <div id="selectMSA">
+    <label for="selectButtonMSA"> Sort accessions: </label>
+    <select id="selectButtonMSA"></select>
+  </div>
+  <div id="msa_chart"></div>
 </template>
 
 <script>
@@ -24,19 +24,17 @@ export default {
       var vis = this.svg;
       var visX = this.xScale;
       var visY = this.yScale;
-      
 
-      // Labels of row and columns -> unique identifier of the column called 'group' and 'variable'
-      var myGroups = d3
+      // create labels of columns: positions
+      var genePositions = d3
         .map(data, function(d) {
           return d.pos;
         })
         .filter(unique);
-      console.log(myGroups);
+      console.log(genePositions);
 
       // add domains and build axis
-      visX
-        .domain(myGroups);
+      visX.domain(genePositions);
 
       var xAxis = d3
         .axisTop(visX)
@@ -54,8 +52,8 @@ export default {
             return d.accession;
           })
           .filter(unique)
-          .sort(d3.descending),
-      ); 
+          .sort(d3.descending)
+      );
 
       // build color scale categories
       var colors = {
@@ -72,7 +70,7 @@ export default {
 
       // create a tooltip
       var tooltip = d3
-        .select("#my_dataviz")
+        .select("#msa_chart")
         .append("div")
         .style("opacity", 0)
         .attr("class", "tooltip")
@@ -82,39 +80,37 @@ export default {
         .style("border-radius", "5px")
         .style("padding", "5px");
 
-      
-      // call vis axes 
+      // call vis axes
       vis
         .append("g")
+        .attr("class", "x-axis")
         .style("font-size", 15)
         // .attr("transform", "translate(0," + this.height + ")")
         .call(xAxis)
         .select(".domain")
         .remove();
 
-        vis
+      vis
         .append("g")
+        .attr("class", "y-axis")
         .style("font-size", 15)
         .call(d3.axisLeft(visY).tickSize(0))
         .select(".domain")
         .remove();
 
-  
       // add the squares
       vis
         .selectAll()
         .data(data, function(d) {
-          // console.log('d.group + ":" + d.variable', d.group + ":" + d.variable)
           return d.pos + ":" + d.accesion;
         })
         .enter()
         .append("rect")
+        .attr("class", "cell")
         .attr("x", function(d) {
-          // console.log("xScale(d.pos)", xScale(d.pos), d.pos);
           return visX(d.pos);
         })
         .attr("y", function(d) {
-          // console.log("yScale(d.base)", yScale(d.accession), d.accession);
           return visY(d.accession);
         })
         .attr("rx", 4)
@@ -126,12 +122,13 @@ export default {
         })
         .style("stroke-width", 4)
         .style("stroke", "none")
-        .style("opacity", 0.8)
+        .style("opacity", 0.8);
+
+      vis
+        .selectAll(".cell")
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
-
-
 
       // Three functions that change the tooltip when user hover / move / leave a cell
       var mouseover = function() {
@@ -143,9 +140,9 @@ export default {
 
       var mousemove = function(event, d) {
         tooltip
-          .html("base: "+d.base)
-          .style("left", d3.pointer(event)[0] + 70 + "px")
-          .style("top", d3.pointer(event)[1] + 100 + "px");
+          .html("base: " + d.base)
+          .style("left", d3.pointer(event)[0] + 65 + "px")
+          .style("top", d3.pointer(event)[1] + 150 + "px");
       };
       var mouseleave = function() {
         tooltip.style("opacity", 0);
@@ -153,13 +150,180 @@ export default {
           .style("stroke", "none")
           .style("opacity", 0.8);
       };
+
+      // Change row ordering based on select
+      d3.select("#selectButtonMSA").on("change", function() {
+        var selected = d3.select("#selectButtonMSA").node().value;
+        console.log("selected order MSA: ", selected);
+
+        if (selected === "alpha_asc") {
+          // sorting rows
+          visY.domain(
+            d3
+              .map(data, function(d) {
+                return d.accession;
+              })
+              .filter(unique)
+              .sort(d3.descending)
+          );
+          vis
+            .selectAll(".y-axis")
+            .transition()
+            .duration(1000)
+            .call(d3.axisLeft(visY).tickSize(0))
+            .on("start", function() {
+              vis.select(".y-axis .domain").remove();
+            });
+          vis
+            .selectAll(".cell")
+            .transition()
+            .duration(1000)
+            .attr("x", function(d) {
+              // console.log("xScale(d.pos)", xScale(d.pos), d.pos);
+              return visX(d.pos);
+            })
+            .attr("y", function(d) {
+              // console.log("yScale(d.base)", yScale(d.accession), d.accession);
+              return visY(d.accession);
+            });
+          vis
+            .selectAll(".cell")
+            .on("mouseover", mouseover)
+            .on("mousemove", mousemove)
+            .on("mouseleave", mouseleave);
+        }
+        if (selected === "alpha_desc") {
+          // sorting rows
+          visY.domain(
+            d3
+              .map(data, function(d) {
+                return d.accession;
+              })
+              .filter(unique)
+              .sort(d3.ascending)
+          );
+          vis
+            .selectAll(".y-axis")
+            .transition()
+            .duration(1000)
+            .call(d3.axisLeft(visY).tickSize(0))
+            .on("start", function() {
+              vis.select(".y-axis .domain").remove();
+            });
+          vis
+            .selectAll(".cell")
+            .transition()
+            .duration(1000)
+            .attr("x", function(d) {
+              // console.log("xScale(d.pos)", xScale(d.pos), d.pos);
+              return visX(d.pos);
+            })
+            .attr("y", function(d) {
+              // console.log("yScale(d.base)", yScale(d.accession), d.accession);
+              return visY(d.accession);
+            });
+          vis
+            .selectAll(".cell")
+            .on("mouseover", mouseover)
+            .on("mousemove", mousemove)
+            .on("mouseleave", mouseleave);
+        }
+        if (selected === "phylo") {
+          // sorting rows
+          visY.domain([
+            "2_An-1",
+            "1_Kas-1",
+            "1_Col-0",
+            "4_Cvi-0",
+            "3_C24",
+            "8_Tsu-0",
+            "8_Altai-5",
+            "8_Sha",
+            "7_Ler",
+            "5_Sku-30",
+            "5_Ler",
+            "5_Gro-3",
+            "5_Eri-1",
+            "6_Kyo",
+          ]);
+          vis
+            .selectAll(".y-axis")
+            .transition()
+            .duration(1000)
+            .call(d3.axisLeft(visY).tickSize(0))
+            .on("start", function() {
+              vis.select(".y-axis .domain").remove();
+            });
+          vis
+            .selectAll(".cell")
+            .transition()
+            .duration(1000)
+            .attr("x", function(d) {
+              // console.log("xScale(d.pos)", xScale(d.pos), d.pos);
+              return visX(d.pos);
+            })
+            .attr("y", function(d) {
+              // console.log("yScale(d.base)", yScale(d.accession), d.accession);
+              return visY(d.accession);
+            });
+          vis
+            .selectAll(".cell")
+            .on("mouseover", mouseover)
+            .on("mousemove", mousemove)
+            .on("mouseleave", mouseleave);
+        }
+        if (selected === "phylo_rev") {
+          // sorting rows
+          visY.domain([
+            "6_Kyo",
+            "5_Sku-30",
+            "5_Ler",
+            "5_Gro-3",
+            "5_Eri-1",
+            "7_Ler",
+            "8_Sha",
+            "8_Tsu-0",
+            "8_Altai-5",
+            "3_C24",
+            "4_Cvi-0",
+            "1_Col-0",
+            "1_Kas-1",
+            "2_An-1",
+          ]);
+          vis
+            .selectAll(".y-axis")
+            .transition()
+            .duration(1000)
+            .call(d3.axisLeft(visY).tickSize(0))
+            .on("start", function() {
+              vis.select(".y-axis .domain").remove();
+            });
+          vis
+            .selectAll(".cell")
+            .transition()
+            .duration(1000)
+            .attr("x", function(d) {
+              // console.log("xScale(d.pos)", xScale(d.pos), d.pos);
+              return visX(d.pos);
+            })
+            .attr("y", function(d) {
+              // console.log("yScale(d.base)", yScale(d.accession), d.accession);
+              return visY(d.accession);
+            });
+          vis
+            .selectAll(".cell")
+            .on("mouseover", mouseover)
+            .on("mousemove", mousemove)
+            .on("mouseleave", mouseleave);
+        }
+      });
     },
   },
   mounted() {
     // set the dimensions and margins of the graph
     var margin = { top: 80, right: 20, bottom: 30, left: 80 },
       width =
-        d3.select("#my_dataviz").node().clientWidth -
+        d3.select("#msa_chart").node().clientWidth -
         margin.left -
         margin.right,
       height = 450 - margin.top - margin.bottom;
@@ -167,13 +331,12 @@ export default {
     this.width = width;
     this.height = height;
 
-
     // Precompute the orders.
     var orders = {
       alpha_asc: "alphabetical",
       alpha_desc: "reversed alphabetical",
       phylo: "phylogeny",
-
+      phylo_rev: "reversed phylogeny",
     };
 
     this.orders = orders;
@@ -191,69 +354,26 @@ export default {
         return d;
       }); // corresponding value returned by the button
 
-    // var orders = {
-    //     default: [
-    //       "8_Tsu-0",
-    //       "8_Altai-5",
-    //       "8_Sha",
-    //       "7_Ler",
-    //       "6_Kyo",
-    //       "5_Sku-30",
-    //       "5_Ler",
-    //       "5_Gro-3",
-    //       "5_Eri-1",
-    //       "4_Cvi-0",
-    //       "3_C24",
-    //       "2_An-1",
-    //       "1_Kas-1",
-    //       "1_Col-0",
-    //     ],
-    //     alphabetical: d3
-    //       .map(data, function(d) {
-    //         return d.accession;
-    //       })
-    //       .filter(unique)
-    //       .sort(d3.descending),
-    //     phylogeny: [
-    //       "6_Kyo",
-    //       "5_Sku-30",
-    //       "5_Ler",
-    //       "5_Gro-3",
-    //       "5_Eri-1",
-    //       "7_Ler",
-    //       "8_Sha",
-    //       "8_Tsu-0",
-    //       "8_Altai-5",
-    //       "3_C24",
-    //       "4_Cvi-0",
-    //       "1_Col-0",
-    //       "1_Kas-1",
-    //       "2_An-1",
-    //     ],
-    //   };
-
-      console.log("orders", Object.keys(orders));
-
-
+    console.log("orders", Object.keys(orders));
 
     // Build scales:
     var xScale = d3
-        .scaleBand()
-        .range([0, width])
-        .padding(0.05);
+      .scaleBand()
+      .range([0, width])
+      .padding(0.05);
 
     this.xScale = xScale;
 
     var yScale = d3
-        .scaleBand()
-        .range([height, 0])
-        .padding(0.05);
+      .scaleBand()
+      .range([height, 0])
+      .padding(0.05);
 
     this.yScale = yScale;
 
     // append the svg object to the body of the page
     var svg = d3
-      .select("#my_dataviz")
+      .select("#msa_chart")
       .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
@@ -266,11 +386,16 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
+<style scoped>
 #selectButtonMSA {
-  position: absolute;
-  left: 0;
-  margin-left: 30px;
-  margin-top: 10px;
+  margin-left: 10px;
+}
+
+#selectMSA {
+  display: inline;
+  float: left;
+  margin-left: 20px;
+  margin-top: 20px;
+  font-weight: 700;
 }
 </style>

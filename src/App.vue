@@ -17,7 +17,7 @@
       <div class="row">
         <div class="col-md-5">
           <!-- <BrushExample ref="brush_data" />    -->
-          <EnterUpdateExample ref="alpha_data"/>   
+          <!-- <EnterUpdateExample ref="alpha_data"/>    -->
           <!-- <EnterUpdateExample/>   -->
            <!-- <BrushZoomExample ref="brush_data" />   -->
              
@@ -32,7 +32,7 @@ import TreeVis from "./components/TreeVis.vue";
 import VariantDetail from "./components/VariantDetail.vue";
 import VariantOverview from "./components/VariantOverview.vue";
 // import BrushExample from "./components/BrushExample.vue";
-import EnterUpdateExample from "./components/EnterUpdateExample.vue";
+// import EnterUpdateExample from "./components/EnterUpdateExample.vue";
 // import BrushZoomExample from "./components/BrushZoomExample.vue";
 
 export default {
@@ -42,7 +42,7 @@ export default {
     VariantDetail,
     VariantOverview,
     // BrushExample,
-    EnterUpdateExample
+    // EnterUpdateExample
     // BrushZoomExample
   },
   data() {
@@ -73,17 +73,17 @@ export default {
       this.loadData = data_heatmap_copy;
       // let data_brush = await d3.csv("./aapl.csv")
       // this.loadData = data_brush;
-      let alphabet = await d3.csv("./alphabet.csv");
-      this.loadData = alphabet;
+      // let alphabet = await d3.csv("./alphabet.csv");
+      // this.loadData = alphabet;
     
       let componentVariantDetails = this.$refs["variant_data"];
       let componentVariantOverview = this.$refs["variant_data_overview"];
       // let componentBrushExample = this.$refs["brush_data"];
-      let componentEnterUpdate = this.$refs["alpha_data"];
+      // let componentEnterUpdate = this.$refs["alpha_data"];
       componentVariantDetails.updateVis(data_heatmap);
       componentVariantOverview.updateVis(data_heatmap_copy);
       // componentBrushExample.updateVis(data_heatmap_copy);
-      componentEnterUpdate.updateVis(alphabet);
+      // componentEnterUpdate.updateVis(alphabet);
       // componentBrushExample.updateVis(data_brush);
       
 
