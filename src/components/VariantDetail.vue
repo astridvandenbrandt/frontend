@@ -169,7 +169,7 @@ export default {
           vis
             .selectAll(".y-axis")
             .transition()
-            .duration(1000)
+            .duration(800)
             .call(d3.axisLeft(visY).tickSize(0))
             .on("start", function() {
               vis.select(".y-axis .domain").remove();
@@ -177,7 +177,7 @@ export default {
           vis
             .selectAll(".cell")
             .transition()
-            .duration(1000)
+            .duration(800)
             .attr("x", function(d) {
               // console.log("xScale(d.pos)", xScale(d.pos), d.pos);
               return visX(d.pos);
