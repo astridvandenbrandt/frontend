@@ -16,7 +16,7 @@
       </div>
       <div class="row">
         <div class="col-md-5">
-          <!-- <BrushExample ref="brush_data" />    -->
+          <!-- <BrushTesting ref="brush_data" />    -->
           <!-- <EnterUpdateExample ref="alpha_data"/>    -->
           <!-- <EnterUpdateExample/>   -->
            <!-- <BrushZoomExample ref="brush_data" />   -->
@@ -31,7 +31,7 @@ import * as d3 from "d3";
 import TreeVis from "./components/TreeVis.vue";
 import VariantDetail from "./components/VariantDetail.vue";
 import VariantOverview from "./components/VariantOverview.vue";
-// import BrushExample from "./components/BrushExample.vue";
+// import BrushTesting from "./components/BrushTesting.vue";
 // import EnterUpdateExample from "./components/EnterUpdateExample.vue";
 // import BrushZoomExample from "./components/BrushZoomExample.vue";
 
@@ -41,7 +41,7 @@ export default {
     TreeVis,
     VariantDetail,
     VariantOverview,
-    // BrushExample,
+    // BrushTesting,
     // EnterUpdateExample
     // BrushZoomExample
   },
@@ -67,7 +67,7 @@ export default {
       // let componentVariantDetailsSort = this.$refs["variant_data_sort"];
       // componentVariantDetailsSort.updateVis(data_heatmap_sort);
 
-      let data_heatmap = await d3.csv("./slice_gene_2.csv");
+      let data_heatmap = await d3.csv("./msa_AT1G01060_slice100.csv");
       this.loadData = data_heatmap;
       let data_heatmap_copy = await d3.csv("./heatmap_data_copy.csv");
       this.loadData = data_heatmap_copy;
@@ -78,13 +78,13 @@ export default {
     
       let componentVariantDetails = this.$refs["variant_data"];
       let componentVariantOverview = this.$refs["variant_data_overview"];
-      // let componentBrushExample = this.$refs["brush_data"];
+      // let componentBrushTesting = this.$refs["brush_data"];
       // let componentEnterUpdate = this.$refs["alpha_data"];
       componentVariantDetails.updateVis(data_heatmap);
       componentVariantOverview.updateVis(data_heatmap_copy);
       // componentBrushExample.updateVis(data_heatmap_copy);
       // componentEnterUpdate.updateVis(alphabet);
-      // componentBrushExample.updateVis(data_brush);
+      // componentBrushTesting.updateVis(data_brush);
       
 
     },

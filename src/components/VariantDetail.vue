@@ -1,6 +1,6 @@
 <template>
   <div id="selectMSA">
-    <label for="selectButtonMSA"> Sort accessions: </label>
+    <label for="selectButtonMSA"> Sort By: </label>
     <select id="selectButtonMSA"></select>
   </div>
   <div id="msa_chart"></div>
@@ -63,6 +63,7 @@ export default {
         T: "#66c2a5",
         t: "#66c2a5",
         "-": "lightgray",
+        "*": "grey"
       };
 
       // create a tooltip
@@ -305,6 +306,49 @@ export default {
             .on("mousemove", mousemove)
             .on("mouseleave", mouseleave);
         }
+
+        if (selected === "ref_first") {
+          // sorting rows
+          visY.domain([
+            "8_Tsu-0",
+            "8_Altai-5",
+            "5_Gro-3",
+            "5_Ler",
+            "5_Sku-30",
+            "1_Kas-1",
+            "2_An-1",
+            "8_Sha",
+            "5_Eri-1",
+            "6_Kyo",
+            "3_C24",
+            "7_Ler",
+            "4_Cvi-0",
+            "1_Col-0",
+          ]);
+          vis
+            .selectAll(".y-axis")
+            .transition()
+            .duration(1000)
+            .call(d3.axisLeft(visY).tickSize(0))
+            .on("start", function() {
+              vis.select(".y-axis .domain").remove();
+            });
+          vis
+            .selectAll(".cell")
+            .transition()
+            .duration(1000)
+            .attr("x", function(d) {
+              return visX(d.pos);
+            })
+            .attr("y", function(d) {
+              return visY(d.accession);
+            });
+          vis
+            .selectAll(".cell")
+            .on("mouseover", mouseover)
+            .on("mousemove", mousemove)
+            .on("mouseleave", mouseleave);
+        }
       });
     },
   },
@@ -323,9 +367,10 @@ export default {
     // define the accession orders.
     var orders = {
       alpha_asc: "alphabetical",
-      alpha_desc: "reversed alphabetical",
+      alpha_desc: "alphabetical reversed",
       phylo: "phylogeny",
-      phylo_rev: "reversed phylogeny",
+      phylo_rev: "phylogeny reversed",
+      ref_first: "reference accessions first"
     };
 
     this.orders = orders;
@@ -359,7 +404,7 @@ export default {
       .padding(0.05);
 
     this.yScale = yScale;
-    
+
     var svg = d3
       .select("#msa_chart")
       .append("svg")

@@ -89,23 +89,28 @@ export default {
 
       this.svg
         .append("g")
+        .attr("class", "brush")
         .call(this.brush)
-        .call(this.brush.move, [3730, 3800].map(xScale));
+        .call(this.brush.move, [3700, 3800].map(xScale));
 
-      this.brush
-      .on("start brush end", brushed);
+      this.brush.on("start brush end", brushed);
 
       function brushed({ selection }) {
-        console.log('selection', { selection })
+        console.log("selection", { selection });
         if (selection === null) {
-          lines.attr("stroke", 'yellow');
+          lines.attr("stroke", "yellow");
         } else {
           const [x0, x1] = selection.map(xScale.invert);
-          console.log( "[x0, x1]", [x0, x1])
+          console.log("[x0, x1]", [x0, x1]);
           // console.log("d selected", d)
           lines.attr("stroke", (d) => (x0 <= d && d <= x1 ? "blue" : null));
         }
       }
+
+      // removes handle to resize the brush
+      d3.selectAll(".brush>.handle").remove();
+      // removes crosshair cursor
+      d3.selectAll(".brush>.overlay").remove();
     },
   },
   mounted() {
@@ -168,5 +173,11 @@ export default {
   stroke: black;
   stroke-width: 1;
   opacity: 0.4;
+}
+
+.selection {
+    stroke: white;
+    fill: blue;
+    fill-opacity: .165;
 }
 </style>
