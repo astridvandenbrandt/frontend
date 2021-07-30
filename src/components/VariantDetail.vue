@@ -111,8 +111,8 @@ export default {
         .attr("y", function(d) {
           return visY(d.accession);
         })
-        .attr("rx", 4)
-        .attr("ry", 4)
+        .attr("rx", 2)
+        .attr("ry", 2)
         .attr("width", visX.bandwidth())
         .attr("height", visY.bandwidth())
         .style("fill", function(d) {
@@ -133,7 +133,8 @@ export default {
         tooltip.style("opacity", 1);
         d3.select(this)
           .style("stroke", "black")
-          .style("opacity", 1);
+          .style("stroke-width", "2px")
+          .style("opacity", 0.8);
       };
 
       var mousemove = function(event, d) {
