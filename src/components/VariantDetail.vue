@@ -13,10 +13,12 @@ export default {
   // data() {
   // },
   methods: {
-    updateVis(data) {
+    updateVis(data, data_overview) {
       const unique = (value, index, self) => {
         return self.indexOf(value) === index;
       };
+
+      console.log('data overview in msa detail component', data_overview)
 
       var vis = this.svg;
       var visX = this.xScale;
@@ -38,7 +40,7 @@ export default {
         .tickSize(10)
         .tickValues(
           visX.domain().filter(function(d, i) {
-            return !(i % 5);
+            return !(i % 25);
           })
         ); //show every fifth position
 

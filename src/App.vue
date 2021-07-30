@@ -67,10 +67,10 @@ export default {
       // let componentVariantDetailsSort = this.$refs["variant_data_sort"];
       // componentVariantDetailsSort.updateVis(data_heatmap_sort);
 
-      let data_heatmap = await d3.csv("./msa_AT1G01060_slice100.csv");
-      this.loadData = data_heatmap;
-      let data_heatmap_copy = await d3.csv("./heatmap_data_copy.csv");
-      this.loadData = data_heatmap_copy;
+      let data_msa = await d3.csv("./msa_AT1G01060_slice200_new.csv");
+      this.loadData = data_msa;
+      let data_msa_mutations = await d3.csv("./msa_AT1G01060_mutations.csv");
+      this.loadData = data_msa_mutations;
       // let data_brush = await d3.csv("./aapl.csv")
       // this.loadData = data_brush;
       // let alphabet = await d3.csv("./alphabet.csv");
@@ -80,8 +80,8 @@ export default {
       let componentVariantOverview = this.$refs["variant_data_overview"];
       // let componentBrushTesting = this.$refs["brush_data"];
       // let componentEnterUpdate = this.$refs["alpha_data"];
-      componentVariantDetails.updateVis(data_heatmap);
-      componentVariantOverview.updateVis(data_heatmap_copy);
+      componentVariantDetails.updateVis(data_msa, data_msa_mutations);
+      componentVariantOverview.updateVis(data_msa_mutations);
       // componentBrushExample.updateVis(data_heatmap_copy);
       // componentEnterUpdate.updateVis(alphabet);
       // componentBrushTesting.updateVis(data_brush);

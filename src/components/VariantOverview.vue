@@ -11,6 +11,7 @@ export default {
   data() {
     return {
       msg: "Hi from sequene variants overview",
+      // range: [x0, x1]
     };
   },
   methods: {
@@ -71,7 +72,7 @@ export default {
         .call(xAxis);
 
       //Binds data to strips
-      var lines = this.svg
+      this.svg
         .selectAll("line.percent")
         .data(data)
         .enter()
@@ -91,20 +92,15 @@ export default {
         .append("g")
         .attr("class", "brush")
         .call(this.brush)
-        .call(this.brush.move, [3700, 3800].map(xScale));
+        .call(this.brush.move, [3700, 3900].map(xScale));
 
       this.brush.on("start brush end", brushed);
 
       function brushed({ selection }) {
         console.log("selection", { selection });
-        if (selection === null) {
-          lines.attr("stroke", "yellow");
-        } else {
-          const [x0, x1] = selection.map(xScale.invert);
-          console.log("[x0, x1]", [x0, x1]);
-          // console.log("d selected", d)
-          lines.attr("stroke", (d) => (x0 <= d && d <= x1 ? "blue" : null));
-        }
+          const rangeSelected = selection.map(xScale.invert);
+          console.log("[x0, x1]", rangeSelected, Math.round(rangeSelected[0]), Math.round(rangeSelected[1])) ;
+    
       }
 
       // removes handle to resize the brush

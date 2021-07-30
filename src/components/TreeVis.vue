@@ -217,6 +217,7 @@ export default {
             (array.data.length || 0);
           // console.log("array rootdist", array.data.name, array.rootDist, xScale(array.rootDist))
           return xScale(array.rootDist); //change width to scale
+          // return array.y; //dendrogram style
         })
         .y(function(array) {
           return array.x; // inverted x/y as you have a horizontal tree
