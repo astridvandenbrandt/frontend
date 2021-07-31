@@ -7,7 +7,7 @@
         </div>
         <div class="col-md-7">
             
-          <VariantOverview ref="variant_data_overview" />
+          <!-- <VariantOverview ref="variant_data_overview" /> -->
           <VariantDetail ref="variant_data" />
         </div>
           
@@ -30,7 +30,7 @@
 import * as d3 from "d3";
 import TreeVis from "./components/TreeVis.vue";
 import VariantDetail from "./components/VariantDetail.vue";
-import VariantOverview from "./components/VariantOverview.vue";
+// import VariantOverview from "./components/VariantOverview.vue";
 // import BrushTesting from "./components/BrushTesting.vue";
 // import EnterUpdateExample from "./components/EnterUpdateExample.vue";
 // import BrushZoomExample from "./components/BrushZoomExample.vue";
@@ -40,7 +40,7 @@ export default {
   components: {
     TreeVis,
     VariantDetail,
-    VariantOverview,
+    // VariantOverview,
     // BrushTesting,
     // EnterUpdateExample
     // BrushZoomExample
@@ -77,11 +77,11 @@ export default {
       // this.loadData = alphabet;
     
       let componentVariantDetails = this.$refs["variant_data"];
-      let componentVariantOverview = this.$refs["variant_data_overview"];
+      // let componentVariantOverview = this.$refs["variant_data_overview"];
       // let componentBrushTesting = this.$refs["brush_data"];
       // let componentEnterUpdate = this.$refs["alpha_data"];
       componentVariantDetails.updateVis(data_msa, data_msa_mutations);
-      componentVariantOverview.updateVis(data_msa_mutations);
+      // componentVariantOverview.updateVis(data_msa_mutations);
       // componentBrushExample.updateVis(data_heatmap_copy);
       // componentEnterUpdate.updateVis(alphabet);
       // componentBrushTesting.updateVis(data_brush);
