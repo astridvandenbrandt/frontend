@@ -67,7 +67,7 @@ export default {
       // let componentVariantDetailsSort = this.$refs["variant_data_sort"];
       // componentVariantDetailsSort.updateVis(data_heatmap_sort);
 
-      let data_msa = await d3.csv("./msa_AT1G01060_slice200_new.csv");
+      let data_msa = await d3.csv("./msa_AT1G01060.csv");
       this.loadData = data_msa;
       let data_msa_mutations = await d3.csv("./msa_AT1G01060_mutations.csv");
       this.loadData = data_msa_mutations;

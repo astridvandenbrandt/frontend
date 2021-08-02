@@ -25,7 +25,46 @@ export default {
         return self.indexOf(value) === index;
       };
 
-      console.log("data mutations", data_mutations);
+      function filter(values, test) {
+        const I = [],
+          n = values.length;
+        for (let i = 0; i < n; ++i) {
+          if (test(values[i], i, values)) {
+            I.push(i);
+          }
+        }
+        return I;
+      }
+
+      function taker(index) {
+        return (values) => values.constructor.from(index, (i) => values[i]);
+      }
+
+      console.log("data context", data_mutations);
+      console.log("data focus", data);
+
+      var flat_data = {
+        pos: data.map((d) => d.pos),
+        base: data.map((d) => d.base),
+        accession: data.map((d) => d.accession),
+      };
+
+      console.log("flat data focus", flat_data);
+
+      var flat_data_slice = [
+        flat_data.pos,
+        flat_data.base,
+        flat_data.accession,
+      ].map(taker(filter(flat_data.pos, (d) => d >= 3800 && d <= 3900)));
+
+      var flat_data_slice_final = {
+        pos: flat_data_slice[0],
+        base: flat_data_slice[1],
+        accession: flat_data_slice[2],
+      };
+
+      console.log(flat_data_slice, flat_data_slice_final);
+      console.log(flat_data_slice[0][0], flat_data_slice_final.pos[0]);
 
       var visContext = this.svgContext;
       var visXcontext = this.xScaleContext;
@@ -35,8 +74,7 @@ export default {
       var visXfocus = this.xScaleFocus;
       var visYfocus = this.yScaleFocus;
 
-      
-      /// UPDATE CONTEXT VIS 
+      /// UPDATE CONTEXT VIS
       visXcontext.domain([0, 4383]);
       visYcontext.domain([0, 50]);
 
@@ -83,15 +121,29 @@ export default {
       // removes crosshair cursor
       d3.selectAll(".brush>.overlay").remove();
 
-      
-      
-      /// UPDATE FOCUS VIS 
+      this.brush.on("brush", brushed);
+
+      function brushed({ selection }) {
+        console.log("selection", { selection });
+        const rangeSelected = selection.map(visXcontext.invert);
+        console.log(
+          "[x0, x1]",
+          rangeSelected,
+          Math.round(rangeSelected[0]),
+          Math.round(rangeSelected[1])
+        );
+      }
+
+      /// UPDATE FOCUS VIS
       // Create labels for gene positions
-      var genePositions = d3
-        .map(data, function(d) {
-          return d.pos;
-        })
-        .filter(unique);
+      // var genePositions = d3
+      //   .map(data, function(d) {
+      //     return d.pos;
+      //   })
+      //   .filter(unique);
+
+      var genePositions = flat_data_slice_final.pos.filter(unique);
+      console.log("genePositions", genePositions);
 
       // Add domains and build axis
       visXfocus.domain(genePositions);
@@ -106,14 +158,28 @@ export default {
         ); //show every fifth position
 
       // Default sorting rows
+      // visYfocus.domain(
+      //   d3
+      //     .map(data, function(d) {
+      //       return d.accession;
+      //     })
+      //     .filter(unique)
+      //     .sort(d3.descending)
+      // );
+
       visYfocus.domain(
-        d3
-          .map(data, function(d) {
-            return d.accession;
-          })
-          .filter(unique)
-          .sort(d3.descending)
+        flat_data_slice_final.accession.filter(unique).sort(d3.descending)
       );
+
+      var length = 1414;
+
+      var objects = Array.from({ length }, (_, i) => ({
+        pos: flat_data_slice_final.pos[i],
+        base: flat_data_slice_final.base[i],
+        accession: flat_data_slice_final.accession[i],
+      }));
+
+      console.log("objects", objects);
 
       // build color scale categories
       var colors = {
@@ -162,9 +228,11 @@ export default {
       // Add the squares
       visFocus
         .selectAll()
-        .data(data, function(d) {
-          return d.pos + ":" + d.accesion;
-        })
+        // .data(flat_data_slice_final, function(d) {
+        //   console.log(d)
+        //   return d.pos + ":" + d.accesion;
+        // })
+        .data(objects)
         .enter()
         .append("rect")
         .attr("class", "cell")
@@ -476,7 +544,7 @@ export default {
     //Appends background color
     svgContext
       .append("rect")
-      .attr("class", "background-gene-context")
+      .attr("class", "background-gene--context")
       .attr("width", width)
       .attr("height", focusHeight)
       .attr("transform", "translate(0," + margin.top + ")");
@@ -541,8 +609,8 @@ export default {
   font-weight: 700;
 }
 
-.background-gene-context {
-  fill: lightsteelblue;
+.background-gene--context {
+  fill: grey;
   opacity: 0.2;
 }
 
@@ -551,10 +619,10 @@ export default {
   stroke-width: 1;
   opacity: 0.8;
 }
-/* 
+
 .selection {
   stroke: white;
-  fill: green;
-  fill-opacity: 0.165;
-} */
+  fill: #b3b3b3;
+  fill-opacity: 0.6;
+}
 </style>
