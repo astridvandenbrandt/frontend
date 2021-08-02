@@ -49,22 +49,36 @@ export default {
         accession: data.map((d) => d.accession),
       };
 
-      console.log("flat data focus", flat_data);
+      console.log('flat data', flat_data)
+
+      var length_gene = flat_data.pos.length / 14;
+      console.log("length gene", length_gene);
 
       var flat_data_slice = [
         flat_data.pos,
         flat_data.base,
         flat_data.accession,
-      ].map(taker(filter(flat_data.pos, (d) => d >= 3800 && d <= 3900)));
+      ].map(taker(filter(flat_data.pos, (d) => d >= 3700 && d <= 3800)));
 
-      var flat_data_slice_final = {
+      var flat_data_slice_default = {
         pos: flat_data_slice[0],
         base: flat_data_slice[1],
         accession: flat_data_slice[2],
       };
 
-      console.log(flat_data_slice, flat_data_slice_final);
-      console.log(flat_data_slice[0][0], flat_data_slice_final.pos[0]);
+
+      // console.log(flat_data_slice, flat_data_slice_final);
+      // console.log(flat_data_slice[0][0], flat_data_slice_final.pos[0]);
+
+      var length = 1414; //length of slice
+
+      var rows_data_slice_default = Array.from({ length }, (_, i) => ({
+        pos: flat_data_slice_default.pos[i],
+        base: flat_data_slice_default.base[i],
+        accession: flat_data_slice_default.accession[i],
+      }));
+
+      console.log("data_rows", rows_data_slice_default);
 
       var visContext = this.svgContext;
       var visXcontext = this.xScaleContext;
@@ -75,7 +89,7 @@ export default {
       var visYfocus = this.yScaleFocus;
 
       /// UPDATE CONTEXT VIS
-      visXcontext.domain([0, 4383]);
+      visXcontext.domain([0, length_gene]);
       visYcontext.domain([0, 50]);
 
       //Defines the y axis styles`
@@ -83,7 +97,18 @@ export default {
         .axisTop()
         .scale(visXcontext)
         .tickPadding(8)
-        .tickValues([0, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4383]);
+        .tickValues([
+          0,
+          500,
+          1000,
+          1500,
+          2000,
+          2500,
+          3000,
+          3500,
+          4000,
+          length_gene,
+        ]);
 
       //Appends the x axis
       visContext
@@ -114,25 +139,100 @@ export default {
         .attr("class", "brush")
         .attr("transform", "translate(0," + this.margin.top + ")")
         .call(this.brush)
-        .call(this.brush.move, [3700, 3900].map(visXcontext));
+        .call(this.brush.move, [3700, 3800].map(visXcontext));
 
       // removes handle to resize the brush
       d3.selectAll(".brush>.handle").remove();
       // removes crosshair cursor
       d3.selectAll(".brush>.overlay").remove();
 
+
+
+      // UPDATE FOCUS BY BRUSH
       this.brush.on("brush", brushed);
+
+
 
       function brushed({ selection }) {
         console.log("selection", { selection });
-        const rangeSelected = selection.map(visXcontext.invert);
+        const rangeSelected = selection.map(visXcontext.invert, visXcontext);
         console.log(
-          "[x0, x1]",
-          rangeSelected,
+          "range selected: ",
+          // rangeSelected,
           Math.round(rangeSelected[0]),
           Math.round(rangeSelected[1])
         );
-      }
+
+        var start = Math.round(rangeSelected[0]);
+        var end = Math.round(rangeSelected[1])+1;
+
+
+        visXfocus.domain(d3.range(start, end));
+        // console.log('visXfocus domain', visXfocus.domain())
+
+        //rows data updated
+        var flat_data_slice_updated = [
+        flat_data.pos,
+        flat_data.base,
+        flat_data.accession,
+      ].map(taker(filter(flat_data.pos, (d) => d >= start && d <= end)));
+
+      var rows_data_slice_updated = Array.from({ length }, (_, i) => ({
+        pos: flat_data_slice_updated.[0][i],
+        base: flat_data_slice_updated.[1][i],
+        accession: flat_data_slice_updated.[2][i],
+      }));
+      console.log('rows updated', rows_data_slice_updated)
+
+
+        xAxisFocus = d3
+        .axisTop(visXfocus)
+        .tickSize(10)
+        .tickValues(
+          visXfocus.domain().filter(function(d, i) {
+            return !(i % 10);
+          }));
+
+        visFocus
+            .selectAll(".x-axis--focus")
+            .transition()
+            .duration(300)
+            .call(xAxisFocus)
+            .on("start", function() {
+              visFocus.select(".x-axis--focus .domain").remove();
+            });
+
+        var visCells = visFocus.selectAll(".cell")
+        .data(rows_data_slice_updated);
+
+        visCells.exit().remove();
+
+        visCells.enter().append("rect")
+        .transition()
+            .duration(800)
+            .attr("x", function(d) {
+              console.log("test",d, d.pos, visXfocus(d.pos))
+              return visXfocus(d.pos);
+            })
+            .attr("y", function(d) {
+              // console.log('vis y', visYfocus(d.accession))
+              return visYfocus(d.accession);
+            })
+            .attr("width", visXfocus.bandwidth())
+            .attr("height", visYfocus.bandwidth())
+            .style("fill", function(d) {
+              return colors[d.base];
+            });
+
+          console.log('visXfocus', visXfocus.domain(), rows_data_slice_updated[0].pos, visXfocus(rows_data_slice_updated[0].pos))
+
+            visFocus
+            .selectAll(".cell")
+            .on("mouseover", mouseover)
+            .on("mousemove", mousemove)
+            .on("mouseleave", mouseleave);
+        }
+
 
       /// UPDATE FOCUS VIS
       // Create labels for gene positions
@@ -142,7 +242,7 @@ export default {
       //   })
       //   .filter(unique);
 
-      var genePositions = flat_data_slice_final.pos.filter(unique);
+      var genePositions = flat_data_slice_default.pos.filter(unique);
       console.log("genePositions", genePositions);
 
       // Add domains and build axis
@@ -153,11 +253,11 @@ export default {
         .tickSize(10)
         .tickValues(
           visXfocus.domain().filter(function(d, i) {
-            return !(i % 25);
+            return !(i % 10);
           })
         ); //show every fifth position
 
-      // Default sorting rows
+      //Default sorting rows
       // visYfocus.domain(
       //   d3
       //     .map(data, function(d) {
@@ -166,20 +266,9 @@ export default {
       //     .filter(unique)
       //     .sort(d3.descending)
       // );
-
       visYfocus.domain(
-        flat_data_slice_final.accession.filter(unique).sort(d3.descending)
+        flat_data.accession.filter(unique).sort(d3.descending)
       );
-
-      var length = 1414;
-
-      var objects = Array.from({ length }, (_, i) => ({
-        pos: flat_data_slice_final.pos[i],
-        base: flat_data_slice_final.base[i],
-        accession: flat_data_slice_final.accession[i],
-      }));
-
-      console.log("objects", objects);
 
       // build color scale categories
       var colors = {
@@ -232,7 +321,7 @@ export default {
         //   console.log(d)
         //   return d.pos + ":" + d.accesion;
         // })
-        .data(objects)
+        .data(rows_data_slice_default)
         .enter()
         .append("rect")
         .attr("class", "cell")
@@ -287,22 +376,25 @@ export default {
         console.log("selected order MSA: ", selected);
 
         if (selected === "alpha_asc") {
-          // sorting rows
+          //sorting rows
+          // visYfocus.domain(
+          //   d3
+          //     .map(data, function(d) {
+          //       return d.accession;
+          //     })
+          //     .filter(unique)
+          //     .sort(d3.descending)
+          // );
           visYfocus.domain(
-            d3
-              .map(data, function(d) {
-                return d.accession;
-              })
-              .filter(unique)
-              .sort(d3.descending)
+            flat_data.accession.filter(unique).sort(d3.descending)
           );
           visFocus
-            .selectAll(".y-axis")
+            .selectAll(".y-axis--focus")
             .transition()
             .duration(800)
             .call(d3.axisLeft(visYfocus).tickSize(0))
             .on("start", function() {
-              visFocus.select(".y-axis .domain").remove();
+              visFocus.select(".y-axis--focus .domain").remove();
             });
           visFocus
             .selectAll(".cell")
@@ -322,21 +414,24 @@ export default {
         }
         if (selected === "alpha_desc") {
           // sorting rows
+          // visYfocus.domain(
+          //   d3
+          //     .map(data, function(d) {
+          //       return d.accession;
+          //     })
+          //     .filter(unique)
+          //     .sort(d3.ascending)
+          // );
           visYfocus.domain(
-            d3
-              .map(data, function(d) {
-                return d.accession;
-              })
-              .filter(unique)
-              .sort(d3.ascending)
+            flat_data.accession.filter(unique).sort(d3.ascending)
           );
           visFocus
-            .selectAll(".y-axis")
+            .selectAll(".y-axis--focus")
             .transition()
             .duration(1000)
             .call(d3.axisLeft(visYfocus).tickSize(0))
             .on("start", function() {
-              visFocus.select(".y-axis .domain").remove();
+              visFocus.select(".y-axis--focus .domain").remove();
             });
           visFocus
             .selectAll(".cell")
@@ -373,12 +468,12 @@ export default {
             "6_Kyo",
           ]);
           visFocus
-            .selectAll(".y-axis")
+            .selectAll(".y-axis--focus")
             .transition()
             .duration(1000)
             .call(d3.axisLeft(visYfocus).tickSize(0))
             .on("start", function() {
-              visFocus.select(".y-axis .domain").remove();
+              visFocus.select(".y-axis--focus .domain").remove();
             });
           visFocus
             .selectAll(".cell")
@@ -415,12 +510,12 @@ export default {
             "2_An-1",
           ]);
           visFocus
-            .selectAll(".y-axis")
+            .selectAll(".y-axis--focus")
             .transition()
             .duration(1000)
             .call(d3.axisLeft(visYfocus).tickSize(0))
             .on("start", function() {
-              visFocus.select(".y-axis .domain").remove();
+              visFocus.select(".y-axis--focus .domain").remove();
             });
           visFocus
             .selectAll(".cell")
@@ -458,12 +553,12 @@ export default {
             "1_Col-0",
           ]);
           visFocus
-            .selectAll(".y-axis")
+            .selectAll(".y-axis--focus")
             .transition()
             .duration(1000)
             .call(d3.axisLeft(visYfocus).tickSize(0))
             .on("start", function() {
-              visFocus.select(".y-axis .domain").remove();
+              visFocus.select(".y-axis--focus .domain").remove();
             });
           visFocus
             .selectAll(".cell")
