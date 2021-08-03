@@ -1,12 +1,16 @@
 <template>
   <h4>Gene Variants</h4>
-  <div id="selectGene">
+  <div class="selectLabelVariants">
     <label for="selectButtonGene"> Select Gene: </label>
-    <select id="selectButtonGene"
+    <select class="selectButtonVariants" id="selectButtonGene"
       ><option value="" selected disabled hidden>gene ID</option></select
     >
     <label for="selectButtonMSA"> Sort By: </label>
-    <select id="selectButtonMSA"></select>
+    <select class="selectButtonVariants" id="selectButtonMSA"></select>
+    <label for="selectButtonBrush"> Size Brush: </label>
+    <select class="selectButtonVariants" id="selectButtonBrush">
+      <option value="" selected disabled hidden>400 positions</option>
+    </select>
   </div>
   <div id="gene_chart"></div>
 
@@ -59,7 +63,7 @@ export default {
         flat_data.pos,
         flat_data.base,
         flat_data.accession,
-      ].map(taker(filter(flat_data.pos, (d) => d >= 3700 && d <= 3800)));
+      ].map(taker(filter(flat_data.pos, (d) => d >= 3700 && d <= 4100)));
 
       var flat_data_slice_default = {
         pos: flat_data_slice[0],
@@ -67,7 +71,11 @@ export default {
         accession: flat_data_slice[2],
       };
 
-      const length = 1414; //length of slice
+      // const length = 1414; //length of slice (100)
+      // const length = 2814; //length of slice (200)
+      // const length = 4214; //length of slice (300)
+      const length = 5614; //length of slice (400)
+
 
       var rows_data_slice_default = Array.from({ length }, (_, i) => ({
         pos: flat_data_slice_default.pos[i],
@@ -136,7 +144,7 @@ export default {
         .attr("class", "brush")
         .attr("transform", "translate(0," + this.margin.top + ")")
         .call(this.brush)
-        .call(this.brush.move, [3700, 3800].map(visXcontext));
+        .call(this.brush.move, [3700, 4100].map(visXcontext));
 
       // removes handle to resize the brush
       d3.selectAll(".brush>.handle").remove();
@@ -190,7 +198,7 @@ export default {
         .tickSize(10)
         .tickValues(
           visXfocus.domain().filter(function(d, i) {
-            return !(i % 10);
+            return !(i % 20);
           }));
 
         visFocus
@@ -255,7 +263,7 @@ export default {
         .tickSize(10)
         .tickValues(
           visXfocus.domain().filter(function(d, i) {
-            return !(i % 10);
+            return !(i % 20);
           })
         ); //show every fifth position
 
@@ -332,7 +340,7 @@ export default {
         .attr("class", "cell")
         .attr("x", function(d) {
           // debugger
-          console.log('d.pos', d.pos, 'd.pos xScale', visXfocus(d.pos), visXfocus.domain())
+          // console.log('d.pos', d.pos, 'd.pos xScale', visXfocus(d.pos), visXfocus.domain())
           return visXfocus(d.pos);
         })
         .attr("y", function(d) {
@@ -691,24 +699,12 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-#selectButtonGene {
+.selectButtonVariants {
   margin-left: 5px;
   margin-right: 25px;
 }
 
-#selectGene {
-  display: inline;
-  float: left;
-  margin-left: 80px;
-  margin-top: 20px;
-  font-weight: 700;
-}
-#selectButtonMSA {
-  margin-left: 5px;
-  margin-right: 15px;
-}
-
-#selectMSA {
+.selectLabelVariants {
   display: inline;
   float: left;
   margin-left: 80px;
