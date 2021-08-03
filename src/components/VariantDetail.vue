@@ -52,7 +52,7 @@ export default {
 
       console.log('flat data', flat_data)
 
-      var length_gene = flat_data.pos.length / 14;
+      var length_gene = (flat_data.pos.length / 14) -1;
       console.log("length gene", length_gene);
 
       var flat_data_slice = [
@@ -67,11 +67,7 @@ export default {
         accession: flat_data_slice[2],
       };
 
-
-      // console.log(flat_data_slice, flat_data_slice_final);
-      // console.log(flat_data_slice[0][0], flat_data_slice_final.pos[0]);
-
-      var length = 1414; //length of slice
+      const length = 1414; //length of slice
 
       var rows_data_slice_default = Array.from({ length }, (_, i) => ({
         pos: flat_data_slice_default.pos[i],
@@ -182,7 +178,7 @@ export default {
           accession: flat_data_slice_updated[2] }
 
         var rows_data_slice_updated = Array.from({ length }, (_, i) => ({
-          pos: flat_data_slice_updated_final.pos[i],
+          pos: parseFloat(flat_data_slice_updated_final.pos[i]), // position type should be changed from string to float 
           base: flat_data_slice_updated_final.base[i],
           accession: flat_data_slice_updated_final.accession[i],
         }));
@@ -199,12 +195,13 @@ export default {
 
         visFocus
             .selectAll(".x-axis--focus")
-            .transition()
-            .duration(300)
+            // .transition()
+            // .duration(300)
             .call(xAxisFocus)
-            .on("start", function() {
-              visFocus.select(".x-axis--focus .domain").remove();
-            });
+            visFocus.select(".x-axis--focus .domain").remove(); // to disable rendering the axis line
+            // .on("start", function() {
+            //   visFocus.select(".x-axis--focus .domain").remove();
+            // });
 
         var visCells = visFocus.selectAll(".cell")
         .data(rows_data_slice_updated);
@@ -213,12 +210,11 @@ export default {
 
         visCells
         // .enter().append("rect")
-        .transition()
-            .duration(800)
+        // .transition()
+        //     .duration(800)
             .attr("x", function(d) {
               // debugger
-              console.log("test visXfocus updated", d.pos, visXfocus(d.pos))
-              return visXfocus(parseFloat(d.pos));
+              return visXfocus(d.pos);
             })
             .attr("y", function(d) {
               // console.log('vis y', visYfocus(d.accession))
@@ -276,30 +272,32 @@ export default {
         flat_data.accession.filter(unique).sort(d3.descending)
       );
 
-      // build color scale categories
+      // build color scale categories: 
+      // https://colorbrewer2.org/#type=qualitative&scheme=Set1&n=9 
+      // http://www.jalview.org/help/html/colourSchemes/ (following jalview convention)
       var colors = {
-        A: "#e78ac3",
-        a: "#e78ac3",
-        G: "#fc8d62",
-        g: "#fc8d62",
-        C: "#8da0cb",
-        c: "#8da0cb",
-        T: "#66c2a5",
-        t: "#66c2a5",
+        A: "#4daf4a",
+        a: "#4daf4a",
+        G: "#e41a1c",
+        g: "#e41a1c",
+        C: "#ff7f00",
+        c: "#ff7f00",
+        T: "#377eb8",
+        t: "#377eb8",
         "-": "lightgray",
-        "*": "grey",
+        "*": "#999999",
       };
 
       // create a tooltip
       var tooltip = d3
         .select("#msa_chart")
         .append("div")
-        .style("opacity", 0)
         .attr("class", "tooltip")
-        .style("background-color", "white")
+        .style("background-color", "black")
+        .style("opacity", 0)
         .style("border", "solid")
-        .style("border-width", "2px")
-        .style("border-radius", "5px")
+        .style("border-width", "0px")
+        .style("border-radius", "3px")
         .style("padding", "5px");
 
       // Call vis axes
@@ -359,16 +357,19 @@ export default {
 
       // Three functions that change the tooltip when user hover / move / leave a cell
       var mouseover = function() {
-        tooltip.style("opacity", 1);
+        tooltip
+        .style("opacity", 0.6)
+        .style('color', 'white');
         d3.select(this)
           .style("stroke", "black")
-          .style("stroke-width", "2px")
-          .style("opacity", 0.8);
+          .style("stroke-width", "1px")
+          .style("opacity", 1);
       };
 
       var mousemove = function(event, d) {
         tooltip
-          .html("base: " + d.base)
+          .html("<strong>base:</strong> " + d.base + "<br/>" + "<strong>position:</strong> " + d.pos)
+          // .html("base: " + d.base)
           .style("left", d3.pointer(event)[0] + 65 + "px")
           .style("top", d3.pointer(event)[1] + 150 + "px");
       };
@@ -410,7 +411,7 @@ export default {
             .transition()
             .duration(800)
             .attr("x", function(d) {
-              return visXfocus(parseFloat(d.pos));
+              return visXfocus(d.pos);
             })
             .attr("y", function(d) {
               return visYfocus(d.accession);
@@ -447,7 +448,7 @@ export default {
             .transition()
             .duration(1000)
             .attr("x", function(d) {
-              return visXfocus(parseFloat(d.pos));
+              return visXfocus(d.pos);
             })
             .attr("y", function(d) {
               return visYfocus(d.accession);
@@ -489,7 +490,7 @@ export default {
             .transition()
             .duration(1000)
             .attr("x", function(d) {
-              return visXfocus(parseFloat(d.pos));
+              return visXfocus(d.pos);
             })
             .attr("y", function(d) {
               return visYfocus(d.accession);
@@ -574,7 +575,7 @@ export default {
             .transition()
             .duration(1000)
             .attr("x", function(d) {
-              return visXfocus(parseFloat(d.pos));
+              return visXfocus(d.pos);
             })
             .attr("y", function(d) {
               return visYfocus(d.accession);
@@ -654,9 +655,11 @@ export default {
       .attr("transform", "translate(0," + margin.top + ")");
 
     var brush = d3.brushX().extent([
-      [100, 0],
+      [0, 0],
       [width, focusHeight],
     ]);
+
+    console.log("brush extent", brush.extent())
     this.brush = brush;
 
     var xScaleFocus = d3
@@ -719,14 +722,14 @@ export default {
 }
 
 .percentline {
-  stroke: red;
+  stroke: black;
   stroke-width: 1;
   opacity: 0.8;
 }
 
 .selection {
   stroke: white;
-  fill: #b3b3b3;
-  fill-opacity: 0.6;
+  fill: #ffff33;
+  fill-opacity: 0.3;
 }
 </style>
