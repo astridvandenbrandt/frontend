@@ -91,6 +91,7 @@ export default {
       var visFocus = this.svgFocus;
       var visXfocus = this.xScaleFocus;
       var visYfocus = this.yScaleFocus;
+      var visColors = this.colors;
 
       /// UPDATE CONTEXT VIS
       visXcontext.domain([0, length_gene]);
@@ -229,7 +230,7 @@ export default {
           .attr("width", visXfocus.bandwidth())
           .attr("height", visYfocus.bandwidth())
           .style("fill", function(d) {
-            return this.colors[d.base];
+            return visColors[d.base];
           });
 
         // console.log('visXfocus', visXfocus.domain(), rows_data_slice_updated[0].pos, visXfocus(rows_data_slice_updated[0].pos))
@@ -273,23 +274,7 @@ export default {
       //     .filter(unique)
       //     .sort(d3.descending)
       // );
-      visYfocus.domain(flat_data.accession.filter(unique).sort(d3.descending));
-
-      // build color scale categories:
-      // https://colorbrewer2.org/#type=qualitative&scheme=Set1&n=9
-      // http://www.jalview.org/help/html/colourSchemes/ (following jalview convention)
-      var colors = {
-        A: "#4daf4a",
-        a: "#4daf4a",
-        G: "#e41a1c",
-        g: "#e41a1c",
-        C: "#ff7f00",
-        c: "#ff7f00",
-        T: "#377eb8",
-        t: "#377eb8",
-        "-": "lightgray",
-        "*": "#999999",
-      };
+      visYfocus.domain(flat_data.accession.filter(unique).sort(d3.descending)); //default sorting
 
       // create a tooltip
       var tooltip = d3
@@ -345,7 +330,7 @@ export default {
         .attr("width", visXfocus.bandwidth())
         .attr("height", visYfocus.bandwidth())
         .style("fill", function(d) {
-          return colors[d.base];
+          return visColors[d.base];
         })
         .style("stroke-width", 4)
         .style("stroke", "none")
@@ -627,10 +612,17 @@ export default {
 
     // legendVariants labels
     var dataLabels = [1, 2, 3, 4, 5, 6];
-    var cols = ["#4daf4a", "#ff7f00", "#e41a1c", "#377eb8", "lightgray", "#999999"];
-    var bases = ["A", "C", "G","T", "-", "*"];
+    var cols = [
+      "#4daf4a",
+      "#ff7f00",
+      "#e41a1c",
+      "#377eb8",
+      "lightgray",
+      "#999999",
+    ];
+    var bases = ["A", "C", "G", "T", "-", "*"];
 
-    // define the accession orders.
+    // define the accession orders
     var orders = {
       alpha_asc: "alphabetical",
       alpha_desc: "alphabetical reversed",
@@ -640,6 +632,14 @@ export default {
     };
 
     this.orders = orders;
+
+    // define brush sizes
+    var brushSizes = {
+      1414: "100 positions",
+      2814: "200 positions",
+      4214: "300 positions",
+      5614: "400 positions",
+    };
 
     // add the options to the button
     d3.select("#selectButtonMSA")
@@ -655,6 +655,21 @@ export default {
       }); // corresponding value returned by the button
 
     console.log("orders", Object.keys(orders));
+
+    // add the options to the button
+    d3.select("#selectButtonBrush")
+      .selectAll("myOptionsBrush")
+      .data(Object.keys(brushSizes))
+      .enter()
+      .append("option")
+      .text(function(d) {
+        return brushSizes[d];
+      }) // text showed in the menu
+      .attr("value", function(d) {
+        return d;
+      }); // corresponding value returned by the button
+
+    console.log("brush sizes", Object.keys(brushSizes));
 
     //Creates the context xScale
     var xScaleContext = d3.scaleLinear().range([0, width]);
@@ -687,7 +702,6 @@ export default {
       [width, focusHeight],
     ]);
 
-    console.log("brush extent", brush.extent());
     this.brush = brush;
 
     var xScaleFocus = d3
@@ -721,7 +735,7 @@ export default {
       .append("g")
       .attr("class", "legendVariants")
       .attr("transform", function(d, i) {
-        return "translate(" + (50*i) + "," + (400) + ")";
+        return "translate(" + 50 * i + "," + 400 + ")";
       });
 
     legendVariants
