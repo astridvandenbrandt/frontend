@@ -767,7 +767,7 @@ export default {
 <style>
 .selectButtonVariants {
   margin-left: 5px;
-  margin-right: 25px;
+  margin-right: 20px;
 }
 
 .selectLabelVariants {
