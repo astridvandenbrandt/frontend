@@ -14,6 +14,7 @@
 </template>
 
 <script>
+  /* eslint-disable no-debugger */
 import * as d3 from "d3";
 export default {
   name: "VariantDetail",
@@ -151,8 +152,6 @@ export default {
       // UPDATE FOCUS BY BRUSH
       this.brush.on("brush", brushed);
 
-
-
       function brushed({ selection }) {
         console.log("selection", { selection });
         const rangeSelected = selection.map(visXcontext.invert, visXcontext);
@@ -175,14 +174,19 @@ export default {
         flat_data.pos,
         flat_data.base,
         flat_data.accession,
-      ].map(taker(filter(flat_data.pos, (d) => d >= start && d <= end)));
+        ].map(taker(filter(flat_data.pos, (d) => d >= start && d <= end)));
 
-      var rows_data_slice_updated = Array.from({ length }, (_, i) => ({
-        pos: flat_data_slice_updated.[0][i],
-        base: flat_data_slice_updated.[1][i],
-        accession: flat_data_slice_updated.[2][i],
-      }));
-      console.log('rows updated', rows_data_slice_updated)
+        var flat_data_slice_updated_final = {
+          pos: flat_data_slice_updated[0],
+          base: flat_data_slice_updated[1],
+          accession: flat_data_slice_updated[2] }
+
+        var rows_data_slice_updated = Array.from({ length }, (_, i) => ({
+          pos: flat_data_slice_updated_final.pos[i],
+          base: flat_data_slice_updated_final.base[i],
+          accession: flat_data_slice_updated_final.accession[i],
+        }));
+        console.log('rows updated', rows_data_slice_updated)
 
 
         xAxisFocus = d3
@@ -205,14 +209,16 @@ export default {
         var visCells = visFocus.selectAll(".cell")
         .data(rows_data_slice_updated);
 
-        visCells.exit().remove();
+        // visCells.exit().remove();
 
-        visCells.enter().append("rect")
+        visCells
+        // .enter().append("rect")
         .transition()
             .duration(800)
             .attr("x", function(d) {
-              console.log("test",d, d.pos, visXfocus(d.pos))
-              return visXfocus(d.pos);
+              // debugger
+              console.log("test visXfocus updated", d.pos, visXfocus(d.pos))
+              return visXfocus(parseFloat(d.pos));
             })
             .attr("y", function(d) {
               // console.log('vis y', visYfocus(d.accession))
@@ -224,7 +230,7 @@ export default {
               return colors[d.base];
             });
 
-          console.log('visXfocus', visXfocus.domain(), rows_data_slice_updated[0].pos, visXfocus(rows_data_slice_updated[0].pos))
+          // console.log('visXfocus', visXfocus.domain(), rows_data_slice_updated[0].pos, visXfocus(rows_data_slice_updated[0].pos))
 
             visFocus
             .selectAll(".cell")
@@ -314,6 +320,7 @@ export default {
         .select(".domain")
         .remove();
 
+      
       // Add the squares
       visFocus
         .selectAll()
@@ -326,6 +333,8 @@ export default {
         .append("rect")
         .attr("class", "cell")
         .attr("x", function(d) {
+          // debugger
+          console.log('d.pos', d.pos, 'd.pos xScale', visXfocus(d.pos), visXfocus.domain())
           return visXfocus(d.pos);
         })
         .attr("y", function(d) {
@@ -401,7 +410,7 @@ export default {
             .transition()
             .duration(800)
             .attr("x", function(d) {
-              return visXfocus(d.pos);
+              return visXfocus(parseFloat(d.pos));
             })
             .attr("y", function(d) {
               return visYfocus(d.accession);
@@ -438,7 +447,7 @@ export default {
             .transition()
             .duration(1000)
             .attr("x", function(d) {
-              return visXfocus(d.pos);
+              return visXfocus(parseFloat(d.pos));
             })
             .attr("y", function(d) {
               return visYfocus(d.accession);
@@ -480,7 +489,7 @@ export default {
             .transition()
             .duration(1000)
             .attr("x", function(d) {
-              return visXfocus(d.pos);
+              return visXfocus(parseFloat(d.pos));
             })
             .attr("y", function(d) {
               return visYfocus(d.accession);
@@ -565,7 +574,7 @@ export default {
             .transition()
             .duration(1000)
             .attr("x", function(d) {
-              return visXfocus(d.pos);
+              return visXfocus(parseFloat(d.pos));
             })
             .attr("y", function(d) {
               return visYfocus(d.accession);
