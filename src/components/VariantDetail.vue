@@ -9,7 +9,7 @@
     <select class="selectButtonVariants" id="selectButtonMSA"></select>
     <label for="selectButtonBrush"> Size Brush: </label>
     <select class="selectButtonVariants" id="selectButtonBrush">
-      <option value="" selected disabled hidden>400 positions</option>
+      <!-- <option value="2814" selected>200 positions</option> -->
     </select>
   </div>
   <div id="gene_chart"></div>
@@ -63,7 +63,7 @@ export default {
         flat_data.pos,
         flat_data.base,
         flat_data.accession,
-      ].map(taker(filter(flat_data.pos, (d) => d >= 3700 && d <= 4100)));
+      ].map(taker(filter(flat_data.pos, (d) => d >= 3700 && d <= 3900)));
 
       var flat_data_slice_default = {
         pos: flat_data_slice[0],
@@ -72,9 +72,9 @@ export default {
       };
 
       // const length = 1414; //length of slice (100)
-      // const length = 2814; //length of slice (200)
+      const length = 2814; //length of slice (200)
       // const length = 4214; //length of slice (300)
-      const length = 5614; //length of slice (400)
+      // const length = 5614; //length of slice (400)
 
       var rows_data_slice_default = Array.from({ length }, (_, i) => ({
         pos: flat_data_slice_default.pos[i],
@@ -144,7 +144,7 @@ export default {
         .attr("class", "brush")
         .attr("transform", "translate(0," + this.margin.top + ")")
         .call(this.brush)
-        .call(this.brush.move, [3700, 4100].map(visXcontext));
+        .call(this.brush.move, [3700, 3900].map(visXcontext));
 
       // removes handle to resize the brush
       d3.selectAll(".brush>.handle").remove();
@@ -668,6 +668,9 @@ export default {
       .attr("value", function(d) {
         return d;
       }); // corresponding value returned by the button
+
+    // set default option
+    d3.select('#selectButtonBrush').property('value', 2814);
 
     console.log("brush sizes", Object.keys(brushSizes));
 
