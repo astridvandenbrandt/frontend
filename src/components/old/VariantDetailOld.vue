@@ -70,10 +70,9 @@ export default {
 
       console.log("flat data", flat_data);
 
-      // default param settings 
-      var length_gene = 4382;
+      var length_gene = flat_data.pos.length / 14 - 1;
       console.log("length gene", length_gene);
-      var nr_accessions = 26;
+
       var start = 0;
       var end = 200;
 
@@ -90,7 +89,7 @@ export default {
       };
 
       // const length = 1414; //length of slice (100)
-      var length = (end-start+1)*26; //length of slice (200)
+      var length = 2814; //length of slice (200)
       // const length = 4214; //length of slice (300)
       // const length = 5614; //length of slice (400)
 
@@ -100,7 +99,7 @@ export default {
         accession: flat_data_slice_default.accession[i],
       }));
 
-      console.log("rows_data_slice_default", rows_data_slice_default);
+      console.log("data_rows", rows_data_slice_default);
 
       /// UPDATE CONTEXT VIS
       visXcontext.domain([0, length_gene]);
@@ -140,13 +139,13 @@ export default {
         .attr("class", "percentline")
         .attr("x1", function(d) {
           // console.log("x1", d.position, xScale(d.position));
-          return visXcontext(d.pos);
+          return visXcontext(d.position);
         })
         .attr("x2", function(d) {
-          return visXcontext(d.pos);
+          return visXcontext(d.position);
         })
         .attr("y1", 30)
-        .attr("y2", 60);
+        .attr("y2", 70);
 
       visContext
         .append("g")
@@ -174,10 +173,10 @@ export default {
         );
 
         var start = Math.round(rangeSelected[0]);
-        var end = Math.round(rangeSelected[1]);
-        console.log("start and end of brush: ", start, end);
+        var end = Math.round(rangeSelected[1]) + 1;
+        // console.log("start and end of brush: ", start, end);
 
-        visXfocus.domain(d3.range(start, end + 1)); // hier was ik gebleven
+        visXfocus.domain(d3.range(start, end));
 
         //rows data updated
         var flat_data_slice_updated = [
@@ -191,18 +190,16 @@ export default {
           base: flat_data_slice_updated[1],
           accession: flat_data_slice_updated[2],
         };
-        console.log("rows updated flat", flat_data_slice_updated_final);
 
-
-        var length = (end - start + 1) * nr_accessions ;
-        console.log("brush length", length);
+        var length = (end - start) * 14;
+        // console.log("brush length", length);
 
         var rows_data_slice_updated = Array.from({ length }, (_, i) => ({
           pos: parseFloat(flat_data_slice_updated_final.pos[i]), // position type should be changed from string to float
           base: flat_data_slice_updated_final.base[i],
           accession: flat_data_slice_updated_final.accession[i],
         }));
-        console.log("rows updated !", rows_data_slice_updated);
+        console.log("rows updated", rows_data_slice_updated);
 
         xAxisFocus = d3
           .axisTop(visXfocus)
@@ -286,66 +283,54 @@ export default {
         ); //show every fifth position
 
       var sortingOptions = {
-        alpha_asc: ["8__Tsu-0", "8__Kas-1", "8__Altai-5", "8_Sha", "7__Sku-30", "7__Ler-0", "7__Gro-3", "7_Ler", "6__Tsu-0", "6__Kas-1", "6__Altai-5", "6_Kyo", "5__Sku-30", "5__Ler-0", "5__Gro-3", "5_Eri", "4_Cvi", "3_C24", "2_An-1", "1__Tsu-0", "1__Sku-30", "1__Ler-0", "1__Kas-1", "1__Gro-3", "1__Altai-5", "1_Col-0"],
-        alpha_desc: ["8__Tsu-0", "8__Kas-1", "8__Altai-5", "8_Sha", "7__Sku-30", "7__Ler-0", "7__Gro-3", "7_Ler", "6__Tsu-0", "6__Kas-1", "6__Altai-5", "6_Kyo", "5__Sku-30", "5__Ler-0", "5__Gro-3", "5_Eri", "4_Cvi", "3_C24", "2_An-1", "1__Tsu-0", "1__Sku-30", "1__Ler-0", "1__Kas-1", "1__Gro-3", "1__Altai-5", "1_Col-0"].reverse(),
-        // phylo: [
-        //   "2_An-1",
-        //   "1_Kas-1",
-        //   "1_Col-0",
-        //   "4_Cvi-0",
-        //   "3_C24",
-        //   "8_Tsu-0",
-        //   "8_Altai-5",
-        //   "8_Sha",
-        //   "7_Ler",
-        //   "5_Sku-30",
-        //   "5_Ler",
-        //   "5_Gro-3",
-        //   "5_Eri-1",
-        //   "6_Kyo",
-        // ],
-        // phylo_rev: [
-        //   "2_An-1",
-        //   "1_Kas-1",
-        //   "1_Col-0",
-        //   "4_Cvi-0",
-        //   "3_C24",
-        //   "8_Tsu-0",
-        //   "8_Altai-5",
-        //   "8_Sha",
-        //   "7_Ler",
-        //   "5_Sku-30",
-        //   "5_Ler",
-        //   "5_Gro-3",
-        //   "5_Eri-1",
-        //   "6_Kyo",
-        // ].reverse(),
+        alpha_asc: flat_data.accession.filter(unique).sort(d3.descending),
+        alpha_desc: flat_data.accession.filter(unique).sort(d3.ascending),
+        phylo: [
+          "2_An-1",
+          "1_Kas-1",
+          "1_Col-0",
+          "4_Cvi-0",
+          "3_C24",
+          "8_Tsu-0",
+          "8_Altai-5",
+          "8_Sha",
+          "7_Ler",
+          "5_Sku-30",
+          "5_Ler",
+          "5_Gro-3",
+          "5_Eri-1",
+          "6_Kyo",
+        ],
+        phylo_rev: [
+          "2_An-1",
+          "1_Kas-1",
+          "1_Col-0",
+          "4_Cvi-0",
+          "3_C24",
+          "8_Tsu-0",
+          "8_Altai-5",
+          "8_Sha",
+          "7_Ler",
+          "5_Sku-30",
+          "5_Ler",
+          "5_Gro-3",
+          "5_Eri-1",
+          "6_Kyo",
+        ].reverse(),
         ref_first: [
-          "8__Tsu-0",
-          "8__Altai-5",
-          "8__Kas-1",
-          "5__Gro-3",
-          "5__Ler-0",
-          "5__Sku-30",
-          "6__Altai-5",
-          "6__Kas-1",
-          "6__Tsu-0",
-          "7__Sku-30",
-          "7__Gro-3",
-          "7__Ler-0",
-          "1__Gro-3",
-          "1__Ler-0",
-          "1__Sku-30",
-          "1__Altai-5",
-          "1__Kas-1",
-          "1__Tsu-0",
+          "8_Tsu-0",
+          "8_Altai-5",
+          "5_Gro-3",
+          "5_Ler",
+          "5_Sku-30",
+          "1_Kas-1",
           "2_An-1",
           "8_Sha",
-          "5_Eri",
+          "5_Eri-1",
           "6_Kyo",
           "3_C24",
           "7_Ler",
-          "4_Cvi",
+          "4_Cvi-0",
           "1_Col-0",
         ],
       };
@@ -534,9 +519,9 @@ export default {
     var margin = { top: 30, right: 20, bottom: 30, left: 80 },
       width =
         d3.select("#msa_chart").node().clientWidth - margin.left - margin.right,
-      height = 550 - margin.top - margin.bottom;
+      height = 450 - margin.top - margin.bottom;
 
-    var focusHeight = 30;
+    var focusHeight = 40;
 
     this.margin = margin;
     this.width = width;
@@ -688,7 +673,7 @@ export default {
       .append("g")
       .attr("class", "legendVariants")
       .attr("transform", function(d, i) {
-        return "translate(" + 50 * i + "," + 500 + ")";
+        return "translate(" + 50 * i + "," + 400 + ")";
       });
 
     legendVariants
@@ -729,15 +714,14 @@ export default {
 }
 
 .background-gene--context {
-  fill: lightgrey;
-  fill-opacity: 0.1;
-
+  fill: grey;
+  opacity: 0.2;
 }
 
 .percentline {
   stroke: black;
-  stroke-width: 1.5;
-  opacity: 0.2;
+  stroke-width: 1;
+  opacity: 0.8;
 }
 
 .selection {
