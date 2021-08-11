@@ -71,11 +71,12 @@ export default {
       console.log("flat data", flat_data);
 
       // default param settings 
-      var length_gene = 4382;
+      const nr_accessions = [...new Set(flat_data.accession)].length;
+      console.log("nr accessions", nr_accessions);
+      const length_gene = data.length/nr_accessions -1;
       console.log("length gene", length_gene);
-      var nr_accessions = 26;
-      var start = 0;
-      var end = 200;
+      const start = 0;
+      const end = 200;
 
       var flat_data_slice = [
         flat_data.pos,
@@ -109,20 +110,20 @@ export default {
       //Defines the y axis styles`
       var xAxisContext = d3
         .axisTop()
-        .scale(visXcontext)
-        .tickPadding(8)
-        .tickValues([
-          0,
-          500,
-          1000,
-          1500,
-          2000,
-          2500,
-          3000,
-          3500,
-          4000,
-          length_gene,
-        ]);
+        .scale(visXcontext);
+        // .tickPadding(8)
+        // .tickValues([
+        //   0,
+        //   500,
+        //   1000,
+        //   1500,
+        //   2000,
+        //   2500,
+        //   3000,
+        //   3500,
+        //   4000,
+        //   length_gene,
+        // ]);
 
       //Appends the x axis
       visContext
