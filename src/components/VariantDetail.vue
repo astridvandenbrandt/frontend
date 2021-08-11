@@ -288,38 +288,62 @@ export default {
       var sortingOptions = {
         alpha_asc: ["8__Tsu-0", "8__Kas-1", "8__Altai-5", "8_Sha", "7__Sku-30", "7__Ler-0", "7__Gro-3", "7_Ler", "6__Tsu-0", "6__Kas-1", "6__Altai-5", "6_Kyo", "5__Sku-30", "5__Ler-0", "5__Gro-3", "5_Eri", "4_Cvi", "3_C24", "2_An-1", "1__Tsu-0", "1__Sku-30", "1__Ler-0", "1__Kas-1", "1__Gro-3", "1__Altai-5", "1_Col-0"],
         alpha_desc: ["8__Tsu-0", "8__Kas-1", "8__Altai-5", "8_Sha", "7__Sku-30", "7__Ler-0", "7__Gro-3", "7_Ler", "6__Tsu-0", "6__Kas-1", "6__Altai-5", "6_Kyo", "5__Sku-30", "5__Ler-0", "5__Gro-3", "5_Eri", "4_Cvi", "3_C24", "2_An-1", "1__Tsu-0", "1__Sku-30", "1__Ler-0", "1__Kas-1", "1__Gro-3", "1__Altai-5", "1_Col-0"].reverse(),
-        // phylo: [
-        //   "2_An-1",
-        //   "1_Kas-1",
-        //   "1_Col-0",
-        //   "4_Cvi-0",
-        //   "3_C24",
-        //   "8_Tsu-0",
-        //   "8_Altai-5",
-        //   "8_Sha",
-        //   "7_Ler",
-        //   "5_Sku-30",
-        //   "5_Ler",
-        //   "5_Gro-3",
-        //   "5_Eri-1",
-        //   "6_Kyo",
-        // ],
-        // phylo_rev: [
-        //   "2_An-1",
-        //   "1_Kas-1",
-        //   "1_Col-0",
-        //   "4_Cvi-0",
-        //   "3_C24",
-        //   "8_Tsu-0",
-        //   "8_Altai-5",
-        //   "8_Sha",
-        //   "7_Ler",
-        //   "5_Sku-30",
-        //   "5_Ler",
-        //   "5_Gro-3",
-        //   "5_Eri-1",
-        //   "6_Kyo",
-        // ].reverse(),
+        phylo: [
+          "2_An-1",
+          "1__Tsu-0", 
+          "1__Sku-30", 
+          "1__Ler-0", 
+          "1__Kas-1", 
+          "1__Gro-3", 
+          "1__Altai-5",
+          "1_Col-0",
+          "4_Cvi",
+          "3_C24",
+          "8__Tsu-0",
+          "8__Kas-1",
+          "8__Altai-5",
+          "8_Sha",
+          "7__Sku-30",
+          "7__Ler-0", 
+          "7__Gro-3",
+          "7_Ler",
+          "5__Sku-30",
+          "5__Ler-0", 
+          "5__Gro-3",
+          "5_Eri",
+          "6__Tsu-0", 
+          "6__Kas-1",
+          "6__Altai-5",
+          "6_Kyo"
+        ],
+        phylo_rev: [
+          "2_An-1",
+          "1__Tsu-0", 
+          "1__Sku-30", 
+          "1__Ler-0", 
+          "1__Kas-1", 
+          "1__Gro-3", 
+          "1__Altai-5",
+          "1_Col-0",
+          "4_Cvi",
+          "3_C24",
+          "8__Tsu-0",
+          "8__Kas-1",
+          "8__Altai-5",
+          "8_Sha",
+          "7__Sku-30",
+          "7__Ler-0", 
+          "7__Gro-3",
+          "7_Ler",
+          "5__Sku-30",
+          "5__Ler-0", 
+          "5__Gro-3",
+          "5_Eri",
+          "6__Tsu-0", 
+          "6__Kas-1",
+          "6__Altai-5",
+          "6_Kyo"
+        ].reverse(),
         ref_first: [
           "8__Tsu-0",
           "8__Altai-5",
@@ -554,8 +578,8 @@ export default {
       c: "#ff7f00",
       T: "#377eb8",
       t: "#377eb8",
-      "-": "lightgray",
-      "*": "#999999",
+      "-": "#E6E6E6",
+      "*": "#686868",
     };
     this.colors = colors;
 
@@ -566,8 +590,8 @@ export default {
       "#ff7f00",
       "#e41a1c",
       "#377eb8",
-      "lightgray",
-      "#999999",
+      "#E6E6E6",
+      "#686868",
     ];
     var bases = ["A", "C", "G", "T", "-", "*"];
 
@@ -694,7 +718,7 @@ export default {
     legendVariants
       .append("rect")
       .attr("width", 10)
-      .attr("height", 20)
+      .attr("height", 18)
       .attr("rx", 2)
       .attr("ry", 2)
       .style("fill", function(d, i) {
@@ -729,7 +753,7 @@ export default {
 }
 
 .background-gene--context {
-  fill: lightgrey;
+  fill: slategray;
   fill-opacity: 0.1;
 
 }
@@ -741,8 +765,8 @@ export default {
 }
 
 .selection {
-  stroke: white;
-  fill: #ffff33;
+  stroke: cornflowerblue;
+  fill: cornflowerblue;
   fill-opacity: 0.3;
 }
 </style>
