@@ -19,6 +19,14 @@
                 <p>Select Accessions</p>
         
               </div>
+              <div class="sidebar-item">
+                <p>Select Tree Type</p>
+        
+              </div>
+              <div class="sidebar-item">
+                <p>Select Phenotypes</p>
+        
+              </div>
           </div>
         </div>
 
