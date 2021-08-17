@@ -1,5 +1,5 @@
 <template>
-  <h4>Phylogenetic Tree</h4>
+  <!-- <h4>Phylogenetic Tree</h4> -->
   <label id="show-length"> <input type="checkbox" /> Show branch length </label>
   <div id="phylo"></div>
 </template>

@@ -1,5 +1,5 @@
 <template>
-  <h4>Sequence Variants: AT1G01060</h4>
+  <h4>Sequence Variants</h4>
   <!-- <h5>{{ msg }}</h5> -->
   <div class="gene_chart"></div>
 </template>
