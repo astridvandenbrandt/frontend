@@ -269,7 +269,8 @@ export default {
       const length_gene = data.length / nr_accessions - 1;
       console.log("length gene", length_gene);
       const start = 0;
-      const end = 200;
+      const updateBrush = d3.select("#selectButtonBrush").node().value;
+      const end = updateBrush*100; // when new data loaded keep brush size
 
       var flat_data_slice = [
         flat_data.pos,
@@ -779,7 +780,7 @@ export default {
           updateMSAorder(sortingOptions["ref_first"]);
         }
       });
-
+      
       // Change brush size based on select
       d3.select("#selectButtonBrush").on("change", function() {
         var selectedBrush = d3.select("#selectButtonBrush").node().value;
