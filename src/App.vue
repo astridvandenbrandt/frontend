@@ -2,52 +2,47 @@
   <div id="app">
     <div class="container-fluid">
       <div class="min-vh-100">
-      <div class="row gx-2">
-        
-        <div class="col-md-2">
-          <div class="sidebar-section">
-            <div class="sidebar-item">
-              <h4>Menu</h4>
-      
-            </div>
-            <div class="sidebar-item">
+        <div class="row gx-2">
+          <div class="col-md-2">
+            <div class="sidebar-section">
+              <div class="sidebar-item">
+                <h4>Menu</h4>
+              </div>
+              <div class="sidebar-item">
                 <label for="selectButtonData"> Select Gene: </label>
                 <select class="selectButtonVariants" id="selectButtonData">
                 </select>
               </div>
               <div class="sidebar-item">
                 <p>Select Accessions</p>
-        
               </div>
               <div class="sidebar-item">
                 <p>Select Tree Type</p>
-        
               </div>
               <div class="sidebar-item">
                 <p>Select Phenotypes</p>
-        
               </div>
+            </div>
           </div>
-        </div>
 
-        <div class="col-md-3">
-          <div class="content-section">
-            <div class=content-title>
-              <p> Phylogenetic Tree </p>
+          <div class="col-md-3">
+            <div class="content-section">
+              <div class="content-title">
+                <p>Phylogenetic Tree</p>
+              </div>
+              <TreeVis ref="tree_data" />
             </div>
-            <TreeVis />
+          </div>
+          <div class="col-md-7">
+            <div class="content-section">
+              <!-- <VariantOverview ref="variant_data_overview" /> -->
+              <div class="content-title">
+                <p>Gene Variants</p>
+              </div>
+              <VariantDetail ref="variant_data" />
+            </div>
           </div>
         </div>
-        <div class="col-md-7">
-          <div class="content-section">
-            <!-- <VariantOverview ref="variant_data_overview" /> -->
-            <div class=content-title>
-              <p> Gene Variants </p>
-            </div>
-            <VariantDetail ref="variant_data" />
-          </div>
-        </div>
-      </div>
       </div>
     </div>
   </div>
@@ -69,6 +64,7 @@ export default {
     return {
       loadDataMSA: {},
       loadDataMut: {},
+      loadDataTree: {},
     };
   },
   mounted() {
@@ -90,11 +86,11 @@ export default {
         return geneIDs[d];
       }) // text showed in the menu
       .attr("value", function(d) {
-        console.log("data selection: ", d);
         return d;
       }); // corresponding value returned by the button
 
     this.fetchData(Object.keys(geneIDs)[0]); // inital data display
+    this.fetchDataTree();
     this.updateData();
   },
   methods: {
@@ -108,6 +104,19 @@ export default {
 
         this.fetchData(selectedGene);
       });
+    },
+    async fetchDataTree() {
+      //change later to type of tree
+      console.log("loading tree data");
+
+      const response = await fetch("./tree.txt");
+      const data_tree = await response.text();
+      // console.log(data_tree);
+
+      this.loadDataTree = data_tree;
+      let componentTree = this.$refs["tree_data"];
+
+      componentTree.updateVis(data_tree);
     },
     async fetchData(geneID) {
       console.log("initial Gene =", geneID);
@@ -123,16 +132,6 @@ export default {
       componentVariantDetails.updateVis(data_msa, data_msa_mutations);
     },
   },
-  // async mounted() {
-  //   const data_names = await d3.csv("/test.csv");
-  //   for (const { name, age } of data_names) {
-  //     console.log('TEST CSV', name, age);
-  //   }
-  //   const data_tsv = await d3.tsv("/data.tsv");
-  //   for (const { day, hour} of data_tsv) {
-  //     console.log('TEST TSV', day, hour);
-  //   }
-  // }
 };
 </script>
 
@@ -150,7 +149,6 @@ export default {
   padding: 5px 0 0px;
 }
 
-
 .sidebar-item {
   top: 0;
   left: 0;
@@ -158,13 +156,12 @@ export default {
   height: 100%;
 }
 
-
 .content-title {
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background:rgb(246,247,249);
+  background: rgb(246, 247, 249);
 }
 
 .content-title p {
@@ -174,14 +171,11 @@ export default {
   margin-left: 1%;
 }
 
-
 .content-section {
   background: rgba(255, 255, 255, 1);
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1), 0 3px 10px 0 rgba(0, 0, 0, 0.1);
   /* border-radius: 2px; */
-  
 }
-
 
 .sidebar-item {
   text-align: left;
@@ -191,5 +185,4 @@ export default {
   padding: 10px 0 30px;
   border-bottom: solid 1px rgba(39, 39, 39, 0.178);
 }
-
 </style>

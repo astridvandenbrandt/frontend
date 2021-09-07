@@ -966,7 +966,7 @@ export default {
   display: inline;
   float: left;
   margin-left: 80px;
-  margin-top: 20px;
+  margin-top: 0px;
   font-weight: 700;
 }
 
