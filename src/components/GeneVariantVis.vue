@@ -485,10 +485,10 @@ export default {
         .style("padding", "5px");
 
     
-      // remove x-axis 
-      visFocus
-        .selectAll('.x-axis--focus')
-        .remove();
+      // // remove x-axis 
+      // visFocus
+      //   .selectAll('.x-axis--focus')
+      //   .remove();
 
       // Call vis axes
       visFocus
@@ -643,11 +643,16 @@ export default {
             visContextBrush.move,
             [start_updated, end_updated].map(visXcontext)
           );
+
+          visFocus
+          .selectAll(".x-axis--focus")
+          .call(xAxisFocus);
+
+          visFocus.select(".x-axis--focus .domain").remove(); // to disable rendering the axis line
       });
     },
   },
   mounted() {
-    // set the dimensions and margins of the graph
     // ------CODE FROM MOUNTED------
     // set the dimensions and margins of the graph
     var margin = { top: 30, right: 20, bottom: 40, left: 80 },
