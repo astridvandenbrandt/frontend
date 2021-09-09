@@ -17,7 +17,9 @@
                 <p>Select Accessions</p>
               </div>
               <div class="sidebar-item">
-                <p>Select Tree Type</p>
+                <label for="selectButtonData"> Select Tree Type: </label>
+                <select class="selectButtonVariants" id="selectButtonTreeData">
+                </select>
               </div>
               <div class="sidebar-item">
                 <p>Select Phenotypes</p>
@@ -26,6 +28,11 @@
           </div>
 
           <div class="col-md-3">
+            <div class="content-section">
+              <div class="content-title">
+                <p>Sequence Similarity</p>
+              </div>
+            </div>
             <div class="content-section">
               <div class="content-title">
                 <p>Phylogenetic Tree</p>
@@ -37,9 +44,15 @@
             <div class="content-section">
               <!-- <VariantOverview ref="variant_data_overview" /> -->
               <div class="content-title">
+                <p>Variant Summary</p>
+              </div>
+            </div>
+            <div class="content-section">
+              <!-- <VariantOverview ref="variant_data_overview" /> -->
+              <div class="content-title">
                 <p>Gene Variants</p>
               </div>
-              <VariantDetail ref="variant_data" />
+              <GeneVariantVis ref="variant_data" />
             </div>
           </div>
         </div>
@@ -51,13 +64,13 @@
 <script>
 import * as d3 from "d3";
 import TreeVis from "./components/TreeVis.vue";
-import VariantDetail from "./components/VariantDetail.vue";
+import GeneVariantVis from "./components/GeneVariantVis.vue";
 
 export default {
   name: "App",
   components: {
     TreeVis,
-    VariantDetail,
+    GeneVariantVis,
     // VariantOverview,
   },
   data() {
@@ -89,8 +102,30 @@ export default {
         return d;
       }); // corresponding value returned by the button
 
+      // Trees
+    var treeTypes = {
+      kmer_distance: "k-mer distance",
+      gene_distance: "gene distance",
+      // coresnp: "core SNP tree",
+      ani: "ANI"
+    };
+
+     // add the options to the button
+     d3.select("#selectButtonTreeData")
+      .selectAll("myOptionsTreeData")
+      .data(Object.keys(treeTypes))
+      .enter()
+      .append("option")
+      .text(function(d) {
+        return treeTypes[d];
+      }) // text showed in the menu
+      .attr("value", function(d) {
+        return d;
+      }); // corresponding value
+
+
     this.fetchData(Object.keys(geneIDs)[0]); // inital data display
-    this.fetchDataTree();
+    this.fetchDataTree(Object.keys(treeTypes)[0]);
     this.updateData();
   },
   methods: {
@@ -104,12 +139,22 @@ export default {
 
         this.fetchData(selectedGene);
       });
+
+      // Change data based on select
+      d3.select("#selectButtonTreeData").on("change", () => {
+        var selectedTree = d3.select("#selectButtonTreeData").node().value;
+        console.log("selected Tree Type: ", selectedTree);
+
+        this.fetchDataTree(selectedTree);
+      });
     },
-    async fetchDataTree() {
+    async fetchDataTree(treeType) {
       //change later to type of tree
       console.log("loading tree data");
+      console.log("initial Tree =", treeType);
 
-      const response = await fetch("./tree.txt");
+
+      const response = await fetch("./trees/tree_" + treeType + ".txt");
       const data_tree = await response.text();
       // console.log(data_tree);
 
@@ -121,10 +166,10 @@ export default {
     async fetchData(geneID) {
       console.log("initial Gene =", geneID);
 
-      let data_msa = await d3.csv("./matrix_" + geneID + ".csv");
+      let data_msa = await d3.csv("./gene_variants/matrix_" + geneID + ".csv");
       this.loadDataMSA = data_msa;
 
-      let data_msa_mutations = await d3.csv("./mut_" + geneID + ".csv"); //  msa_AT1G01060_mutations.csv
+      let data_msa_mutations = await d3.csv("./gene_variants/mut_" + geneID + ".csv"); //  msa_AT1G01060_mutations.csv
       this.loadDataMut = data_msa_mutations;
 
       let componentVariantDetails = this.$refs["variant_data"];
