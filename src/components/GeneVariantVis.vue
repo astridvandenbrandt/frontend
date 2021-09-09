@@ -135,7 +135,7 @@ export default {
       //Defines the y axis styles`
       var xAxisContext = d3.axisTop().scale(visXcontext);
 
-      //revisit this code!!
+      // revisit this code!!
 
       // remove old 'g'
       visContext
@@ -162,7 +162,6 @@ export default {
         .append("line")
         .attr("class", "percentline")
         .attr("x1", function(d) {
-          // console.log("x1", d.position, xScale(d.position));
           return visXcontext(d.pos);
         })
         .attr("x2", function(d) {
