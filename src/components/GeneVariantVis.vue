@@ -240,25 +240,11 @@ export default {
             })
           );
 
-        visFocus
-          .append("g")
-          .selectAll(".x-axis--focus")
-          // .transition()
-          // .duration(300)
-          .call(xAxisFocus);
-        
-          visFocus.select(".x-axis--focus .domain").remove(); // to disable rendering the axis line
-        // .on("start", function() {
-        //   visFocus.select(".x-axis--focus .domain").remove();
-        // });
-
-
         var visCellsUpdate = visFocus
           .selectAll(".cell")
           .data(rows_data_slice_updated);
 
-        
-
+      
         var visCellsEnter = visCellsUpdate
           .enter()
           .append("rect")
@@ -292,6 +278,19 @@ export default {
           .on("mouseover", mouseover)
           .on("mousemove", mousemove)
           .on("mouseleave", mouseleave);
+
+          visFocus
+          // .append("g")
+          .selectAll(".x-axis--focus")
+          // .transition()
+          // .duration(300)
+          .call(xAxisFocus);
+        
+          visFocus.select(".x-axis--focus .domain").remove(); // to disable rendering the axis line
+        // .on("start", function() {
+        //   visFocus.select(".x-axis--focus .domain").remove();
+        // });
+
       }
 
       /// UPDATE FOCUS VIS
