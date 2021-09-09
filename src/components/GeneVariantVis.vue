@@ -139,7 +139,7 @@ export default {
 
       // remove old 'g'
       visContext
-      .selectAll('g')
+      .selectAll('.x-axis--context')
       .remove();
 
       //Appends the x axis
@@ -170,6 +170,11 @@ export default {
         })
         .attr("y1", 30)
         .attr("y2", 60);
+
+      // remove old brush
+      visContext
+      .selectAll(".brush")
+      .remove();
 
       visContext
         .append("g")
@@ -481,6 +486,7 @@ export default {
         .style("padding", "5px");
 
     
+      // remove x-axis 
       visFocus
         .selectAll('.x-axis--focus')
         .remove();
@@ -501,6 +507,11 @@ export default {
         .style("font-size", 15)
         .call(d3.axisLeft(visYfocus).tickSize(0))
         .select(".domain")
+        .remove();
+
+      // remove rects 
+      visFocus
+        .selectAll('.cell')
         .remove();
 
       // Add the squares
@@ -745,7 +756,7 @@ export default {
       .select("#gene_chart")
       .append("svg")
       .attr("width", width + margin.left + margin.right)
-      .attr("height", focusHeight + margin.top + margin.bottom)
+      .attr("height", focusHeight + margin.bottom)
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + 0 + ")");
 
