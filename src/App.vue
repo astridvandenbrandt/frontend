@@ -52,7 +52,7 @@
               <div class="content-title">
                 <p>Gene Variants</p>
               </div>
-              <GeneVariantVis ref="variant_data" />
+              <GeneVariantVisCopyNew ref="variant_data" />
             </div>
           </div>
         </div>
@@ -64,13 +64,13 @@
 <script>
 import * as d3 from "d3";
 import TreeVis from "./components/TreeVis.vue";
-import GeneVariantVis from "./components/GeneVariantVis.vue";
+import GeneVariantVisCopyNew from "./components/GeneVariantVisCopyNew.vue";
 
 export default {
   name: "App",
   components: {
     TreeVis,
-    GeneVariantVis,
+    GeneVariantVisCopyNew,
     // VariantOverview,
   },
   data() {

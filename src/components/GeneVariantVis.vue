@@ -138,9 +138,7 @@ export default {
       // revisit this code!!
 
       // remove old 'g'
-      visContext
-      .selectAll('.x-axis--context')
-      .remove();
+      visContext.selectAll(".x-axis--context").remove();
 
       //Appends the x axis
       visContext
@@ -150,10 +148,8 @@ export default {
         .call(xAxisContext);
 
       // remove old 'line'
-      visContext
-      .selectAll('line')
-      .remove();
-   
+      visContext.selectAll("line").remove();
+
       //Binds data to strips
       visContext
         .selectAll("line.percent")
@@ -171,9 +167,7 @@ export default {
         .attr("y2", 60);
 
       // remove old brush
-      visContext
-      .selectAll(".brush")
-      .remove();
+      visContext.selectAll(".brush").remove();
 
       visContext
         .append("g")
@@ -240,11 +234,25 @@ export default {
             })
           );
 
+        visFocus
+        .selectAll(".x-axis--focus .domain")
+        .remove();
+
+        visFocus
+          .selectAll(".x-axis--focus")
+          // .transition()
+          // .duration(300)
+          .call(xAxisFocus);
+
+        visFocus.select(".x-axis--focus .domain").remove(); // to disable rendering the axis line
+        // .on("start", function() {
+        //   visFocus.select(".x-axis--focus .domain").remove();
+        // });
+
         var visCellsUpdate = visFocus
           .selectAll(".cell")
           .data(rows_data_slice_updated);
 
-      
         var visCellsEnter = visCellsUpdate
           .enter()
           .append("rect")
@@ -278,19 +286,6 @@ export default {
           .on("mouseover", mouseover)
           .on("mousemove", mousemove)
           .on("mouseleave", mouseleave);
-
-          visFocus
-          // .append("g")
-          .selectAll(".x-axis--focus")
-          // .transition()
-          // .duration(300)
-          .call(xAxisFocus);
-        
-          visFocus.select(".x-axis--focus .domain").remove(); // to disable rendering the axis line
-        // .on("start", function() {
-        //   visFocus.select(".x-axis--focus .domain").remove();
-        // });
-
       }
 
       /// UPDATE FOCUS VIS
@@ -303,8 +298,6 @@ export default {
       var genePositions = flat_data_slice_default.pos.filter(unique);
       console.log("genePositions", genePositions);
 
-      
-      
       // Add domains and build axis
       visXfocus.domain(genePositions);
 
@@ -483,11 +476,10 @@ export default {
         .style("border-radius", "3px")
         .style("padding", "5px");
 
-    
-      // // remove x-axis 
-      // visFocus
-      //   .selectAll('.x-axis--focus')
-      //   .remove();
+      // remove x-axis
+      visFocus
+        .selectAll('.x-axis--focus .domain')
+        .remove();
 
       // Call vis axes
       visFocus
@@ -507,10 +499,8 @@ export default {
         .select(".domain")
         .remove();
 
-      // remove rects 
-      visFocus
-        .selectAll('.cell')
-        .remove();
+      // remove rects
+      visFocus.selectAll(".cell").remove();
 
       // Add the squares
       visFocus
@@ -643,11 +633,12 @@ export default {
             [start_updated, end_updated].map(visXcontext)
           );
 
-          visFocus
-          .selectAll(".x-axis--focus")
-          .call(xAxisFocus);
+        // visFocus.selectAll(".x-axis--focus .domain").remove();
 
-          visFocus.select(".x-axis--focus .domain").remove(); // to disable rendering the axis line
+
+        visFocus.selectAll(".x-axis--focus").call(xAxisFocus);
+
+        visFocus.select(".x-axis--focus .domain").remove(); // to disable rendering the axis line
       });
     },
   },
