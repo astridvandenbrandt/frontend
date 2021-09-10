@@ -710,8 +710,6 @@ export default {
 
     var yAxisFocusG = vis.svgFocus.append("g").attr("class", "y-axis--focus")
     // .style("font-size", 15)
-    // .select(".y-axis--focus .domain")
-    // .remove();
     vis.yAxisFocusG = yAxisFocusG;
 
     // append legend
