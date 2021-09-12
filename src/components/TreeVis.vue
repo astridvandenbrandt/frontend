@@ -118,6 +118,7 @@ export default {
         // merge data 
         visTreeEnter
           .merge(visTreeUpdate)
+          .transition()
           .attr("fill", "none")
           .attr("stroke", "#ccc")
           .attr("d", d => horizontalStraightBranchLengths(d));
@@ -138,6 +139,7 @@ export default {
 
           visTreeNodesEnter
           .merge(visTreeNodesUpdate)
+          .transition()
           .attr("fill", (d) => (d.children ? "none" : "#999"))
           .attr("r", 2)
           .attr("transform", d =>
@@ -162,6 +164,7 @@ export default {
 
           visTreeLabelsEnter
           .merge(visTreeLabelsUpdate)
+          .transition()
           .attr("fill", (d) => (d.children ? "none" : "#2c3e50"))
           .attr("font-size", "10px")
           .attr("transform", d =>
@@ -199,6 +202,7 @@ export default {
         // merge data 
         visTreeEnter
         .merge(visTreeUpdate)
+        .transition()
         .attr("fill", "none")
         .attr("stroke", "#ccc")
         .attr("d", d => horizontalStraightDendrogram(d));
@@ -219,6 +223,7 @@ export default {
 
         visTreeNodesEnter
         .merge(visTreeNodesUpdate)
+        .transition()
         .attr("fill", (d) => (d.children ? "none" : "#999"))
         .attr("r", 2)
         .attr("transform", d =>
@@ -243,6 +248,7 @@ export default {
 
         visTreeLabelsEnter
         .merge(visTreeLabelsUpdate)
+        .transition()
         .attr("fill", (d) => (d.children ? "none" : "#2c3e50"))
         .attr("font-size", "10px")
         .attr("transform", d =>
