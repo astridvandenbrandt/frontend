@@ -10,55 +10,13 @@
 
 <script>
 /* eslint-disable no-debugger */
+/* eslint-disable no-unused-vars */
 import * as d3 from "d3";
-
 export default {
   name: "TreeVis",
   methods: {
     updateVis(data_tree) {
-      // console.log("raw tree data from App: ", data_tree)
-
-      // REMOVE ELEMENTS
-      d3.select("#phylo")
-        .selectAll("*")
-        .remove();
-
-      // BEGIN COPIED FROM MOUNTED 
-      const margin = { top: 15, right: 100, bottom: 15, left: 30 }; //compute max label length for margin right
-      const width =
-          d3.select("#phylo").node().clientWidth - margin.left - margin.right,
-        height = 300 - margin.top - margin.bottom;
-      this.margin = margin;
-      this.width = width;
-      this.height = height;
-
-      // Chart svg container
-      var svg = d3
-        .select("#phylo")
-        .append("svg")
-        .attr("class", "chart")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom);
-
-      this.svg = svg;
-
-      var g = svg
-        .append("g")
-        .attr("transform", `translate(${margin.left}, ${margin.top})`);
-
-      this.g = g;
-
-      // Cluster
-      var cluster = d3.cluster().size([height, width]);
-      this.cluster = cluster;
-
-      // Initialize scale
-      let xScale = d3
-        .scaleLinear()
-        // .domain([0, maxLen])
-        .range([0, width]);
-      this.xScale = xScale;
-      // END COPIED FROM MOUNTED 
+      let vis = this;
 
       function parseNewick(a) {
         for (
@@ -94,42 +52,9 @@ export default {
       }
 
       const data = parseNewick(data_tree);
-      console.log("data tree parsed from App:", data);
+      console.log("data tree parsed", data);
 
-      var rootCopy = d3
-        .hierarchy(data, function(d) {
-          return d.branchset;
-        })
-        .sum(function(d) {
-          return d.branchset ? 0 : 1;
-        })
-        .sort(function(a, b) {
-          return (
-            a.value - b.value || d3.ascending(a.data.length, b.data.length)
-          );
-        });
-
-      // compute max length of branches in tree
-      var leaves = rootCopy.leaves();
-      var lnghts = [];
-      var i;
-      var j;
-      for (i = 0; i < leaves.length; i++) {
-        var lts = [];
-        // console.log("leaf", leaves[i].data, leaves.[i].ancestors())
-        for (j = 0; j < leaves[i].ancestors().length; j++) {
-          // console.log("ancestor", leaves[i].ancestors()[j].data.name, leaves[i].ancestors()[j].data.length)
-          lts.push(leaves[i].ancestors()[j].data.length);
-        }
-        // console.log(d3.sum(lts))
-        lnghts.push(d3.sum(lts));
-      }
-      // console.log("lengths data:", lnghts);
-      // console.log("max length data:", d3.max(lnghts));
-      var maxLen = d3.max(lnghts);
-      console.log("maxLength branches", maxLen);
-
-      // Sort nodes by ascending length
+      // Create data hierarchy and sort nodes by ascending length
       var root = d3
         .hierarchy(data, function(d) {
           return d.branchset;
@@ -143,38 +68,36 @@ export default {
         .sort(function(a, b) {
           return a.value || d3.ascending(a.data.length, b.data.length);
         });
+      vis.root = root;
 
-      // DEFINING VIS
-      var visTree = this.svg;
-      var visG = this.g;
-      var visCluster = this.cluster;
-      var visX = this.xScale;
+      // compute max length of branches in tree
+      var leaves = root.leaves();
+      var lnghts = [];
+      var i;
+      var j;
+      for (i = 0; i < leaves.length; i++) {
+        var lts = [];
+        for (j = 0; j < leaves[i].ancestors().length; j++) {
+          lts.push(leaves[i].ancestors()[j].data.length);
+        }
+        lnghts.push(d3.sum(lts));
+      }
 
-      /// UPDATE DOMAIN
-      visX.domain([0, maxLen]);
+      var maxLen = d3.max(lnghts);
+      console.log("maxLength branches", maxLen);
 
-      // Initialize axes
-      var xAxis = d3
-        .axisTop(visX)
-        .ticks(6)
-        .tickSizeOuter(0)
-        .tickSizeInner(-this.height); //change 6 for more ticks
+      // Set the scale input domains
+      vis.xScale.domain([0, maxLen]);
 
-      // Draw the axis (move xAxis to the bottom with 'translate')
-      // eslint-disable-next-line no-unused-vars
-      var xAxisGroup = visTree
-        .append("g")
-        .attr("class", "axis x-axis")
-        .attr(
-          "transform",
-          `translate(${this.margin.left}, ${this.margin.top + 10})`
-        )
-        .call(xAxis);
+      vis.renderVis();
+    },
+    renderVis() {
+      let vis = this;
 
       // Set initial horizontal cluster
-      visG
+      vis.g
         .selectAll(".link")
-        .data(visCluster(root).links())
+        .data(vis.cluster(vis.root).links())
         .enter()
         .append("path")
         // .each(function(d) {
@@ -183,14 +106,13 @@ export default {
         .attr("class", "links")
         .attr("fill", "none")
         .attr("stroke", "#ccc")
-        .attr("d", function(d) {   
+        .attr("d", function(d) {
           return horizontalStraightBranchLengths(d);
         });
 
-      // eslint-disable-next-line no-unused-vars
-      var node = visG
+      var node = vis.g
         .selectAll(".node")
-        .data(root.descendants())
+        .data(vis.root.descendants())
         .enter()
         .append("g")
         .attr("class", function(d) {
@@ -200,24 +122,23 @@ export default {
           // console.log("d.rootdist x xScale", xScale(d.rootDist));
           // return "translate(" + visX(d.rootDist) + "," + d.x + ")"; // to have label closer to branch
           return "translate(" + d.y + "," + d.x + ")";
-          
         });
 
-      // // Append circle to nodes.
-      // node
-      //   .append("circle")
-      //   .attr("fill", (d) => (d.children ? "none" : "#999"))
-      //   .attr("r", 4);
+      // Append circle to nodes.
+      node
+        .append("circle")
+        .attr("fill", (d) => (d.children ? "none" : "#999"))
+        .attr("r", 4);
 
       // Append text label to every leaf node.
-      var leafNodeG = visG.selectAll(".node--leaf");
+      var leafNodeG = vis.g.selectAll(".node--leaf");
 
       leafNodeG
         .append("text")
         .attr("class", "labels")
         .style("text-anchor", "start")
         .text(function(d) {
-          console.log("d text labels", d);
+          // console.log("d text labels", d);
           if (d.data.name.length < 7) {
             return d.data.name.slice(0, -1); //+ " (" + d.data.length + ")";}
           } else {
@@ -231,42 +152,19 @@ export default {
       //   );
       // });
 
-      // // Append rectangle to show metdata
-      // leafNodeG
-      //   .append("rect")
-      //   .style("fill", "grey")
-      //   .attr("width", 20)
-      //   .attr("height", 20)
-      //   // .attr("transform", "translate(" + 150 + "," + -11 + ")");
-      //   .attr("transform", function(d) {
-      //     return (
-      //       "translate(" + (this.width + 140 - visX(d.rootDist)) + "," + -11 + ")"
-      //     );
-      //   });
+
+      // update axis
+      vis.xAxisGroup.call(vis.xAxis);
 
       // Show branch length option
       d3.select("#showBranchLength").on("change", function() {
-        if (d3.select("#showBranchLength").property("checked")){
+        if (d3.select("#showBranchLength").property("checked")) {
           console.log("selected branch length option: ", "checked");
-          // visG
-          // .selectAll("links")
-          // .update()
-          // .attr("d", function(d) {
-          // return horizontalStraightBranchLengths(d);
-          // });
-
-        }
-        else {
+  
+        } else {
           console.log("selected branch length option: ", "unchecked");
-          visG
-          .selectAll("links")
-          .attr("d", function(d) {
-          return horizontalStraightDendrogram(d);
-          });
-        }
-
-
         
+        }
       });
 
       function horizontalStraightBranchLengths(d) {
@@ -279,7 +177,7 @@ export default {
               (array.parent ? array.parent.rootDist : 0) +
               (array.data.length || 0);
             // console.log("array rootdist", array.data.name, array.rootDist, xScale(array.rootDist))
-            return visX(array.rootDist); //change width to scale
+            return vis.xScale(array.rootDist); //change width to scale
             // return array.y; //dendrogram style
           })
           .y(function(array) {
@@ -311,39 +209,60 @@ export default {
         return line(array);
       }
     },
-
-    
   },
   mounted() {
+    let vis = this;
     //set the dimensions and margins of the graph
-    // const margin = { top: 15, right: 100, bottom: 15, left: 30 }; //compute max label length for margin right
-    // const width =
-    //     d3.select("#phylo").node().clientWidth - margin.left - margin.right,
-    //   height = 300 - margin.top - margin.bottom;
-    // this.margin = margin;
-    // this.width = width;
-    // this.height = height;
-    // // Chart svg container
-    // var svg = d3
-    //   .select("#phylo")
-    //   .append("svg")
-    //   .attr("class", "chart")
-    //   .attr("width", width + margin.left + margin.right)
-    //   .attr("height", height + margin.top + margin.bottom);
-    // this.svg = svg;
-    // var g = svg
-    //   .append("g")
-    //   .attr("transform", `translate(${margin.left}, ${margin.top})`);
-    // this.g = g;
-    // // Cluster
-    // var cluster = d3.cluster().size([height, width]);
-    // this.cluster = cluster;
-    // // Initialize scale
-    // let xScale = d3
-    //   .scaleLinear()
-    //   // .domain([0, maxLen])
-    //   .range([0, width]);
-    // this.xScale = xScale;
+    const margin = { top: 15, right: 100, bottom: 15, left: 30 }; //compute max label length for margin right
+    const width =
+        d3.select("#phylo").node().clientWidth - margin.left - margin.right,
+      height = 300 - margin.top - margin.bottom;
+    vis.margin = margin;
+    vis.width = width;
+    vis.height = height;
+
+    // Chart svg container
+    var svg = d3
+      .select("#phylo")
+      .append("svg")
+      .attr("class", "chart")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom);
+    vis.svg = svg;
+
+    var g = svg
+      .append("g")
+      .attr("transform", `translate(${margin.left}, ${margin.top})`);
+    vis.g = g;
+
+    // Cluster
+    var cluster = d3.cluster().size([height, width]);
+    vis.cluster = cluster;
+
+    // Initialize scale
+    let xScale = d3
+      .scaleLinear()
+      // .domain([0, maxLen])
+      .range([0, width]);
+    vis.xScale = xScale;
+
+    // Initialize axes
+    var xAxis = d3
+      .axisTop(vis.xScale)
+      .ticks(6)
+      .tickSizeOuter(0)
+      .tickSizeInner(-vis.height); //change 6 for more ticks
+    vis.xAxis = xAxis;
+
+    var xAxisGroup = vis.svg
+      .append("g")
+      .attr("class", "axis x-axis")
+      .attr(
+        "transform",
+        `translate(${vis.margin.left}, ${vis.margin.top + 10})`
+      );
+    vis.xAxisGroup = xAxisGroup;
+
     // function dist2(a, b) {
     //   return (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2;
     // }

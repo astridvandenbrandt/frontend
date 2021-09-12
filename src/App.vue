@@ -102,16 +102,16 @@ export default {
         return d;
       }); // corresponding value returned by the button
 
-      // Trees
+    // Trees
     var treeTypes = {
       kmer_distance: "k-mer distance",
       gene_distance: "gene distance",
       // coresnp: "core SNP tree",
-      ani: "ANI"
+      ani: "ANI",
     };
 
-     // add the options to the button
-     d3.select("#selectButtonTreeData")
+    // add the options to the button
+    d3.select("#selectButtonTreeData")
       .selectAll("myOptionsTreeData")
       .data(Object.keys(treeTypes))
       .enter()
@@ -123,14 +123,12 @@ export default {
         return d;
       }); // corresponding value
 
-
     this.fetchData(Object.keys(geneIDs)[0]); // inital data display
     this.fetchDataTree(Object.keys(treeTypes)[0]);
     this.updateData();
   },
   methods: {
     updateData() {
-      // var vis = this;
 
       // Change data based on select
       d3.select("#selectButtonData").on("change", () => {
@@ -150,9 +148,7 @@ export default {
     },
     async fetchDataTree(treeType) {
       //change later to type of tree
-      console.log("loading tree data");
       console.log("initial Tree =", treeType);
-
 
       const response = await fetch("./trees/tree_" + treeType + ".txt");
       const data_tree = await response.text();
@@ -169,7 +165,9 @@ export default {
       let data_msa = await d3.csv("./gene_variants/matrix_" + geneID + ".csv");
       this.loadDataMSA = data_msa;
 
-      let data_msa_mutations = await d3.csv("./gene_variants/mut_" + geneID + ".csv"); //  msa_AT1G01060_mutations.csv
+      let data_msa_mutations = await d3.csv(
+        "./gene_variants/mut_" + geneID + ".csv"
+      ); //  msa_AT1G01060_mutations.csv
       this.loadDataMut = data_msa_mutations;
 
       let componentVariantDetails = this.$refs["variant_data"];
