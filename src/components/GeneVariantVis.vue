@@ -1,5 +1,4 @@
 <template>
-  <!-- <h4>Gene Variants</h4> -->
   <div class="selectLabelVariants">
     <!-- <label for="selectButtonGene"> Select Gene: </label>
     <select class="selectButtonVariants" id="selectButtonGene"
@@ -23,24 +22,16 @@
 import * as d3 from "d3";
 export default {
   name: "GeneVariantVis",
-  // data() {
-  // },
-
   methods: {
+    // This function contains all the code to prepare the data before we render it.
     updateVis(data, data_mutations) {
-      // //REMOVE ELEMENTS
-      // d3.select("#gene_chart")
-      //   .selectAll("*")
-      //   .remove();
-      // d3.select("#msa_chart")
-      //   .selectAll("*")
-      //   .remove();
+      let vis = this;
 
-      // HELPER FUNCTIONS
+      // helper functions
       const unique = (value, index, self) => {
         return self.indexOf(value) === index;
       };
-      this.unique = unique;
+      vis.unique = unique;
 
       function filter(values, test) {
         const I = [],
@@ -52,55 +43,46 @@ export default {
         }
         return I;
       }
-      this.filter = filter;
+      vis.filter = filter;
 
       function taker(index) {
         return (values) => values.constructor.from(index, (i) => values[i]);
       }
-      this.taker = taker;
+      vis.taker = taker;
 
-      // DATA PREPROCESSING
-      console.log("data focus", data);
-      console.log("data context", data_mutations);
-      this.data_mutations = data_mutations;
+      // data preprocessing
+      vis.data_mutations = data_mutations;
+      console.log("data context vis:", data_mutations);
+      console.log("data focus vis: ", data);
 
       const flat_data = {
-        pos: data.map((d) => d.pos),
+        pos: data.map((d) => parseFloat(d.pos)),
         base: data.map((d) => d.base),
         accession: data.map((d) => d.accession),
       };
       console.log("flat data", flat_data);
-      this.flat_data = flat_data;
+      vis.flat_data = flat_data;
 
       const nr_accessions = [...new Set(flat_data.accession)].length;
       console.log("nr accessions", nr_accessions);
-      this.nr_accessions = nr_accessions;
+      vis.nr_accessions = nr_accessions;
 
       const length_gene = data.length / nr_accessions - 1;
-      this.length_gene = length_gene;
+      vis.length_gene = length_gene;
       console.log("length gene", length_gene);
 
-      this.renderVis();
-    },
-
-    renderVis() {
-      // DEFINE THIS VARS
-      let flat_data_vis = this.flat_data;
-      let nr_accessions_vis = this.nr_accessions;
-      let taker = this.taker;
-      let filter = this.filter;
-      let unique = this.unique;
-
       const start = 0;
+      vis.start = start;
       const updateBrush = d3.select("#selectButtonBrush").node().value;
       const end = updateBrush * 100; // when new data loaded keep brush size
-      const updateSort = d3.select("#selectButtonSort").node().value;
+      vis.end = end;
+      const updateSort = d3.select("#selectButtonSort").node().value; // when new data loaded keep sorting order
 
       var flat_data_slice = [
-        flat_data_vis.pos,
-        flat_data_vis.base,
-        flat_data_vis.accession,
-      ].map(taker(filter(flat_data_vis.pos, (d) => d >= start && d <= end)));
+        flat_data.pos,
+        flat_data.base,
+        flat_data.accession,
+      ].map(taker(filter(flat_data.pos, (d) => d >= start && d <= end)));
 
       var flat_data_slice_default = {
         pos: flat_data_slice[0],
@@ -108,85 +90,218 @@ export default {
         accession: flat_data_slice[2],
       };
 
-      var length = (end - start + 1) * 26; //length of slice (200)
+      var genePositions = flat_data_slice_default.pos.filter(unique);
+      // console.log("genePositions", genePositions);
+
+      var alpha = [
+          "8__Tsu-0",
+          "8__Kas-1",
+          "8__Altai-5",
+          "8_Sha",
+          "7__Sku-30",
+          "7__Ler-0",
+          "7__Gro-3",
+          "7_Ler",
+          "6__Tsu-0",
+          "6__Kas-1",
+          "6__Altai-5",
+          "6_Kyo",
+          "5__Sku-30",
+          "5__Ler-0",
+          "5__Gro-3",
+          "5_Eri",
+          "4_Cvi",
+          "3_C24",
+          "2_An-1",
+          "1__Tsu-0",
+          "1__Sku-30",
+          "1__Ler-0",
+          "1__Kas-1",
+          "1__Gro-3",
+          "1__Altai-5",
+          "1_Col-0",
+        ];
+        var phylo_kmer =  [
+          "2_An-1",
+          "1__Tsu-0",
+          "1__Sku-30",
+          "1__Ler-0",
+          "1__Kas-1",
+          "1__Gro-3",
+          "1__Altai-5",
+          "1_Col-0",
+          "4_Cvi",
+          "3_C24",
+          "8__Tsu-0",
+          "8__Kas-1",
+          "8__Altai-5",
+          "8_Sha",
+          "7__Sku-30",
+          "7__Ler-0",
+          "7__Gro-3",
+          "7_Ler",
+          "5__Sku-30",
+          "5__Ler-0",
+          "5__Gro-3",
+          "5_Eri",
+          "6__Tsu-0",
+          "6__Kas-1",
+          "6__Altai-5",
+          "6_Kyo",
+        ];
+        var ref_first = [
+          "8__Tsu-0",
+          "8__Altai-5",
+          "8__Kas-1",
+          "5__Gro-3",
+          "5__Ler-0",
+          "5__Sku-30",
+          "6__Altai-5",
+          "6__Kas-1",
+          "6__Tsu-0",
+          "7__Sku-30",
+          "7__Gro-3",
+          "7__Ler-0",
+          "1__Gro-3",
+          "1__Ler-0",
+          "1__Sku-30",
+          "1__Altai-5",
+          "1__Kas-1",
+          "1__Tsu-0",
+          "2_An-1",
+          "8_Sha",
+          "5_Eri",
+          "6_Kyo",
+          "3_C24",
+          "7_Ler",
+          "4_Cvi",
+          "1_Col-0",
+        ];
+
+      var sortingOptions = {
+        alpha_asc: alpha,
+        alpha_desc: alpha.slice().reverse(),
+        phylo: phylo_kmer,
+        phylo_rev: phylo_kmer.slice().reverse(),
+        ref_first: ref_first,
+        ref_last: ref_first.slice().reverse()
+      };
+      vis.sortingOptions = sortingOptions;
+
+      // Set the scale input domains
+      vis.xScaleContext.domain([0, vis.length_gene]);
+      vis.xScaleFocus.domain(genePositions);
+      vis.yScaleFocus.domain(sortingOptions[updateSort]);
+
+      var length = (end - start + 1) * nr_accessions; //nr of cells to render 
 
       var rows_data_slice_default = Array.from({ length }, (_, i) => ({
         pos: flat_data_slice_default.pos[i],
         base: flat_data_slice_default.base[i],
         accession: flat_data_slice_default.accession[i],
       }));
-      console.log("rows_data_slice_default", rows_data_slice_default);
+      // console.log("rows_data_slice_default", rows_data_slice_default);
+      vis.rows_data_slice_default = rows_data_slice_default;
 
-      // DEFINING VIS VARS
-      var visContext = this.svgContext;
-      var visXcontext = this.xScaleContext;
-      var visYcontext = this.yScaleContext;
-      var visContextBrush = this.brush;
+      vis.renderVis();
+    },
+    // This function contains the D3 code for binding data to visual elements.
+    renderVis() {
+      let vis = this;
 
-      var visFocus = this.svgFocus;
-      var visXfocus = this.xScaleFocus;
-      var visYfocus = this.yScaleFocus;
-      var visColors = this.colors;
+      // console.log('data mutations new:', vis.data_mutations)
+      var visGeneUpdate = vis.svgContext
+        .selectAll(".variants--summary")
+        .data(vis.data_mutations);
 
-      /// UPDATE CONTEXT VIS
-      visXcontext.domain([0, this.length_gene]);
-      visYcontext.domain([0, 50]);
-
-      //Defines the y axis styles`
-      var xAxisContext = d3.axisTop().scale(visXcontext);
-
-      // revisit this code!!
-
-      // remove old 'g'
-      visContext.selectAll(".x-axis--context").remove();
-
-      //Appends the x axis
-      visContext
-        .append("g")
-        .attr("class", "x-axis--context")
-        .attr("transform", "translate(0," + this.margin.top + ")")
-        .call(xAxisContext);
-
-      // remove old 'line'
-      visContext.selectAll("line").remove();
-
-      //Binds data to strips
-      visContext
-        .selectAll("line.percent")
-        .data(this.data_mutations)
+      var visGeneEnter = visGeneUpdate
         .enter()
         .append("line")
-        .attr("class", "percentline")
+        .attr("class", "variants--summary");
+
+      visGeneUpdate.exit().remove();
+
+      visGeneEnter
+        .merge(visGeneUpdate)
         .attr("x1", function(d) {
-          return visXcontext(d.pos);
+          return vis.xScaleContext(d.pos);
         })
         .attr("x2", function(d) {
-          return visXcontext(d.pos);
+          return vis.xScaleContext(d.pos);
         })
-        .attr("y1", 30)
-        .attr("y2", 60);
+        .attr("y1", vis.margin.top) // 30 
+        .attr("y2", vis.margin.top+vis.focusHeight); // 60
 
-      // remove old brush
-      visContext.selectAll(".brush").remove();
-
-      visContext
-        .append("g")
-        .attr("class", "brush")
-        .attr("transform", "translate(0," + this.margin.top + ")")
-        .call(visContextBrush)
-        .call(visContextBrush.move, [start, end].map(visXcontext));
+      vis.svgContext
+        .selectAll(".brush")
+        .call(vis.brush)
+        .call(vis.brush.move, [vis.start, vis.end].map(vis.xScaleContext));
 
       // removes handle to resize the brush
-      d3.selectAll(".brush>.handle").remove();
+      // d3.selectAll(".brush>.handle").remove();
       // removes crosshair cursor
-      d3.selectAll(".brush>.overlay").remove();
+      // d3.selectAll(".brush>.overlay").remove();
 
-      // UPDATE FOCUS BY BRUSH
-      visContextBrush.on("end", brushed); //change 'end' to 'brush' if want to see inbetween
+      // update figure when brushing
+      vis.brush.on("end", brushed); //change 'end' to 'brush' if want to see inbetween
+
+      var visCellsUpdate = vis.svgFocus
+        .selectAll(".snp-cell")
+        .data(vis.rows_data_slice_default);
+
+      var visCellsEnter = visCellsUpdate
+        .enter()
+        .append("rect")
+        .attr("class", "snp-cell");
+
+      visCellsUpdate.exit().remove();
+
+      visCellsEnter
+        .merge(visCellsUpdate)
+        // .transition()
+        .attr("x", function(d, i) {
+          return vis.xScaleFocus(d.pos);
+        })
+        .attr("y", function(d, i) {
+          return vis.yScaleFocus(d.accession);
+        })
+        .attr("rx", 1.5)
+        .attr("ry", 1.5)
+        .attr("width", vis.xScaleFocus.bandwidth())
+        .attr("height", vis.yScaleFocus.bandwidth())
+        .style("fill", function(d) {
+          return vis.colors[d.base];
+        })
+        .style("stroke-width", 4)
+        .style("stroke", "none")
+        .style("opacity", 0.8);
+
+      vis.svgFocus
+        .selectAll("snp-cell")
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove)
+        .on("mouseleave", mouseleave);
+
+      // update axes
+      vis.xAxisContextG.call(vis.xAxisContext);
+
+      vis.xAxisFocusG.call(
+        vis.xAxisFocus.tickValues(
+          vis.xScaleFocus.domain().filter(function(d, i) {
+            return !(i % 20); // defines tick interval
+          })
+        )
+      );
+      vis.xAxisFocusG.select(".x-axis--focus .domain").remove(); // to disable rendering the axis line
+      vis.yAxisFocusG.call(vis.yAxisFocus);
+      vis.yAxisFocusG.select(".y-axis--focus .domain").remove(); // to disable rendering the axis line
 
       function brushed({ selection }) {
         console.log("selection brush", { selection });
-        const rangeSelected = selection.map(visXcontext.invert, visXcontext);
+        const rangeSelected = selection.map(
+          vis.xScaleContext.invert,
+          vis.xScaleContext
+        );
         console.log(
           "range selected: ",
           // rangeSelected,
@@ -194,352 +309,100 @@ export default {
           Math.round(rangeSelected[1])
         );
 
-        var start = Math.round(rangeSelected[0]);
-        var end = Math.round(rangeSelected[1]);
-        console.log("start and end of brush: ", start, end);
+        var startUpdate = Math.round(rangeSelected[0]);
+        var endUpdate = Math.round(rangeSelected[1]);
+        console.log("start and end of brush: ", startUpdate, endUpdate);
 
-        visXfocus.domain(d3.range(start, end + 1)); // hier was ik gebleven
+        vis.xScaleFocus.domain(d3.range(startUpdate, endUpdate + 1));
 
         //rows data updated
         var flat_data_slice_updated = [
-          flat_data_vis.pos,
-          flat_data_vis.base,
-          flat_data_vis.accession,
-        ].map(taker(filter(flat_data_vis.pos, (d) => d >= start && d <= end)));
-        console.log("flat data slice updated", flat_data_slice_updated);
+          vis.flat_data.pos,
+          vis.flat_data.base,
+          vis.flat_data.accession,
+        ].map(
+          vis.taker(
+            vis.filter(
+              vis.flat_data.pos,
+              (d) => d >= startUpdate && d <= endUpdate
+            )
+          )
+        );
+        // console.log("flat data slice updated", flat_data_slice_updated);
 
         var flat_data_slice_updated_final = {
           pos: flat_data_slice_updated[0],
           base: flat_data_slice_updated[1],
           accession: flat_data_slice_updated[2],
         };
-        console.log("rows updated flat", flat_data_slice_updated_final);
+        // console.log("rows updated flat", flat_data_slice_updated_final);
 
-        var length = (end - start + 1) * nr_accessions_vis;
-        console.log("brush length", length);
+        var length = (endUpdate - startUpdate + 1) * vis.nr_accessions;
+        console.log("nr of cells to render", length);
 
         var rows_data_slice_updated = Array.from({ length }, (_, i) => ({
-          pos: parseFloat(flat_data_slice_updated_final.pos[i]), // position type should be changed from string to float
+          pos: flat_data_slice_updated_final.pos[i], // position type should be changed from string to float
           base: flat_data_slice_updated_final.base[i],
           accession: flat_data_slice_updated_final.accession[i],
         }));
-        console.log("rows updated !", rows_data_slice_updated);
+        // console.log("rows updated !", rows_data_slice_updated);
 
-        xAxisFocus = d3
-          .axisTop(visXfocus)
-          .tickSize(10)
+        vis.svgFocus.selectAll(".x-axis--focus").call(
+          vis.xAxisFocus
           .tickValues(
-            visXfocus.domain().filter(function(d, i) {
-              return !(i % 20);
+            vis.xScaleFocus.domain().filter(function(d, i) {
+              return !(i % 20); // defines tick interval
             })
-          );
+          )
+        );
+        vis.svgFocus.select(".x-axis--focus .domain").remove(); // to disable rendering the axis line
 
-        visFocus
-        .selectAll(".x-axis--focus .domain")
-        .remove();
-
-        visFocus
-          .selectAll(".x-axis--focus")
-          // .transition()
-          // .duration(300)
-          .call(xAxisFocus);
-
-        visFocus.select(".x-axis--focus .domain").remove(); // to disable rendering the axis line
-        // .on("start", function() {
-        //   visFocus.select(".x-axis--focus .domain").remove();
-        // });
-
-        var visCellsUpdate = visFocus
-          .selectAll(".cell")
+        // check new data
+        var visCellsUpdate = vis.svgFocus
+          .selectAll(".snp-cell")
           .data(rows_data_slice_updated);
 
+        // make cells 
         var visCellsEnter = visCellsUpdate
           .enter()
           .append("rect")
-          .attr("class", "cell");
+          .attr("class", "snp-cell");
 
+        // remove old cells
         visCellsUpdate.exit().remove();
 
+        // merge cells with existing 
         visCellsEnter
           .merge(visCellsUpdate)
           // .transition()
-          //     .duration(800)
+          //     .duration(300)
           .attr("x", function(d, i) {
-            return visXfocus(d.pos);
+            return vis.xScaleFocus(d.pos);
           })
           .attr("y", function(d, i) {
-            return visYfocus(d.accession);
+            return vis.yScaleFocus(d.accession);
           })
-          .attr("rx", 2)
-          .attr("ry", 2)
-          .attr("width", visXfocus.bandwidth())
-          .attr("height", visYfocus.bandwidth())
+          .attr("rx", 1.5)
+          .attr("ry", 1.5)
+          .attr("width", vis.xScaleFocus.bandwidth())
+          .attr("height", vis.yScaleFocus.bandwidth())
           .style("fill", function(d) {
-            return visColors[d.base];
+            return vis.colors[d.base];
           })
           .style("stroke-width", 4)
           .style("stroke", "none")
           .style("opacity", 0.8);
 
-        visFocus
-          .selectAll(".cell")
+        vis.svgFocus
+          .selectAll(".snp-cell")
           .on("mouseover", mouseover)
           .on("mousemove", mousemove)
           .on("mouseleave", mouseleave);
       }
 
-      /// UPDATE FOCUS VIS
-      // Create labels for gene positions
-      // var genePositions = d3
-      //   .map(data, function(d) {
-      //     return d.pos;
-      //   })
-      //   .filter(unique);
-      var genePositions = flat_data_slice_default.pos.filter(unique);
-      console.log("genePositions", genePositions);
-
-      // Add domains and build axis
-      visXfocus.domain(genePositions);
-
-      var xAxisFocus = d3
-        .axisTop(visXfocus)
-        .tickSize(10)
-        .tickValues(
-          visXfocus.domain().filter(function(d, i) {
-            return !(i % 20);
-          })
-        ); //show every fifth position
-
-      var sortingOptions = {
-        alpha_asc: [
-          "8__Tsu-0",
-          "8__Kas-1",
-          "8__Altai-5",
-          "8_Sha",
-          "7__Sku-30",
-          "7__Ler-0",
-          "7__Gro-3",
-          "7_Ler",
-          "6__Tsu-0",
-          "6__Kas-1",
-          "6__Altai-5",
-          "6_Kyo",
-          "5__Sku-30",
-          "5__Ler-0",
-          "5__Gro-3",
-          "5_Eri",
-          "4_Cvi",
-          "3_C24",
-          "2_An-1",
-          "1__Tsu-0",
-          "1__Sku-30",
-          "1__Ler-0",
-          "1__Kas-1",
-          "1__Gro-3",
-          "1__Altai-5",
-          "1_Col-0",
-        ],
-        alpha_desc: [
-          "8__Tsu-0",
-          "8__Kas-1",
-          "8__Altai-5",
-          "8_Sha",
-          "7__Sku-30",
-          "7__Ler-0",
-          "7__Gro-3",
-          "7_Ler",
-          "6__Tsu-0",
-          "6__Kas-1",
-          "6__Altai-5",
-          "6_Kyo",
-          "5__Sku-30",
-          "5__Ler-0",
-          "5__Gro-3",
-          "5_Eri",
-          "4_Cvi",
-          "3_C24",
-          "2_An-1",
-          "1__Tsu-0",
-          "1__Sku-30",
-          "1__Ler-0",
-          "1__Kas-1",
-          "1__Gro-3",
-          "1__Altai-5",
-          "1_Col-0",
-        ].reverse(),
-        phylo: [
-          "2_An-1",
-          "1__Tsu-0",
-          "1__Sku-30",
-          "1__Ler-0",
-          "1__Kas-1",
-          "1__Gro-3",
-          "1__Altai-5",
-          "1_Col-0",
-          "4_Cvi",
-          "3_C24",
-          "8__Tsu-0",
-          "8__Kas-1",
-          "8__Altai-5",
-          "8_Sha",
-          "7__Sku-30",
-          "7__Ler-0",
-          "7__Gro-3",
-          "7_Ler",
-          "5__Sku-30",
-          "5__Ler-0",
-          "5__Gro-3",
-          "5_Eri",
-          "6__Tsu-0",
-          "6__Kas-1",
-          "6__Altai-5",
-          "6_Kyo",
-        ],
-        phylo_rev: [
-          "2_An-1",
-          "1__Tsu-0",
-          "1__Sku-30",
-          "1__Ler-0",
-          "1__Kas-1",
-          "1__Gro-3",
-          "1__Altai-5",
-          "1_Col-0",
-          "4_Cvi",
-          "3_C24",
-          "8__Tsu-0",
-          "8__Kas-1",
-          "8__Altai-5",
-          "8_Sha",
-          "7__Sku-30",
-          "7__Ler-0",
-          "7__Gro-3",
-          "7_Ler",
-          "5__Sku-30",
-          "5__Ler-0",
-          "5__Gro-3",
-          "5_Eri",
-          "6__Tsu-0",
-          "6__Kas-1",
-          "6__Altai-5",
-          "6_Kyo",
-        ].reverse(),
-        ref_first: [
-          "8__Tsu-0",
-          "8__Altai-5",
-          "8__Kas-1",
-          "5__Gro-3",
-          "5__Ler-0",
-          "5__Sku-30",
-          "6__Altai-5",
-          "6__Kas-1",
-          "6__Tsu-0",
-          "7__Sku-30",
-          "7__Gro-3",
-          "7__Ler-0",
-          "1__Gro-3",
-          "1__Ler-0",
-          "1__Sku-30",
-          "1__Altai-5",
-          "1__Kas-1",
-          "1__Tsu-0",
-          "2_An-1",
-          "8_Sha",
-          "5_Eri",
-          "6_Kyo",
-          "3_C24",
-          "7_Ler",
-          "4_Cvi",
-          "1_Col-0",
-        ],
-      };
-      // console.log("sorting options", sortingOptions);
-      //Default sorting rows
-      // visYfocus.domain(
-      //   d3
-      //     .map(data, function(d) {
-      //       return d.accession;
-      //     })
-      //     .filter(unique)
-      //     .sort(d3.descending)
-      // );
-      visYfocus.domain(sortingOptions[updateSort]); // sorting from select button
-
-      // create a tooltip
-      var tooltip = d3
-        .select("#msa_chart")
-        .append("div")
-        .attr("class", "tooltip")
-        .style("background-color", "black")
-        .style("opacity", 0)
-        .style("border", "solid")
-        .style("border-width", "0px")
-        .style("border-radius", "3px")
-        .style("padding", "5px");
-
-      // remove x-axis
-      visFocus
-        .selectAll('.x-axis--focus .domain')
-        .remove();
-
-      // Call vis axes
-      visFocus
-        .append("g")
-        .attr("class", "x-axis--focus")
-        .style("font-size", 15)
-        // .attr("transform", "translate(0," + this.height + ")")
-        .call(xAxisFocus)
-        .select(".domain")
-        .remove();
-
-      visFocus
-        .append("g")
-        .attr("class", "y-axis--focus")
-        .style("font-size", 15)
-        .call(d3.axisLeft(visYfocus).tickSize(0))
-        .select(".domain")
-        .remove();
-
-      // remove rects
-      visFocus.selectAll(".cell").remove();
-
-      // Add the squares
-      visFocus
-        .selectAll()
-        // .data(flat_data_slice_final, function(d) {
-        //   console.log(d)
-        //   return d.pos + ":" + d.accesion;
-        // })
-        .data(rows_data_slice_default)
-        .enter()
-        .append("rect")
-        .attr("class", "cell")
-        .attr("x", function(d) {
-          // console.log('d.pos', d.pos, 'd.pos xScale', visXfocus(d.pos), visXfocus.domain())
-          return visXfocus(d.pos);
-        })
-        .attr("y", function(d) {
-          return visYfocus(d.accession);
-        })
-        .attr("rx", 2)
-        .attr("ry", 2)
-        .attr("width", visXfocus.bandwidth())
-        .attr("height", visYfocus.bandwidth())
-        .style("fill", function(d) {
-          return visColors[d.base];
-        })
-        .style("stroke-width", 4)
-        .style("stroke", "none")
-        .style("opacity", 0.8);
-
-      visFocus
-        .selectAll(".cell")
-        .on("mouseover", mouseover)
-        .on("mousemove", mousemove)
-        .on("mouseleave", mouseleave);
-
       // Three functions that change the tooltip when user hover / move / leave a cell
       var mouseover = function() {
-        tooltip.style("opacity", 0.6).style("color", "white");
+        vis.tooltip.style("opacity", 0.6).style("color", "white");
         d3.select(this)
           .style("stroke", "black")
           .style("stroke-width", "1px")
@@ -547,7 +410,7 @@ export default {
       };
 
       var mousemove = function(event, d) {
-        tooltip
+        vis.tooltip
           .html(
             "<strong>base:</strong> " +
               d.base +
@@ -560,7 +423,7 @@ export default {
           .style("top", d3.pointer(event)[1] + 150 + "px");
       };
       var mouseleave = function() {
-        tooltip.style("opacity", 0);
+        vis.tooltip.style("opacity", 0);
         d3.select(this)
           .style("stroke", "none")
           .style("opacity", 0.8);
@@ -569,27 +432,23 @@ export default {
       // function to update the MSA ordering
       function updateMSAorder(sortingOption) {
         console.log("option chosen: ", sortingOption);
-        visYfocus.domain(sortingOption);
-        visFocus
-          .selectAll(".y-axis--focus")
+
+        vis.yScaleFocus.domain(sortingOption);
+        vis.svgFocus.select(".y-axis--focus").call(vis.yAxisFocus);
+        vis.svgFocus.select(".y-axis--focus .domain").remove(); // to disable rendering the axis line
+
+        vis.svgFocus
+          .selectAll(".snp-cell")
           .transition()
-          .duration(800)
-          .call(d3.axisLeft(visYfocus).tickSize(0))
-          .on("start", function() {
-            visFocus.select(".y-axis--focus .domain").remove();
-          });
-        visFocus
-          .selectAll(".cell")
-          .transition()
-          .duration(800)
-          .attr("x", function(d) {
-            return visXfocus(d.pos);
+          // .duration(800)
+          .attr("x", function(d, i) {
+            return vis.xScaleFocus(d.pos);
           })
-          .attr("y", function(d) {
-            return visYfocus(d.accession);
+          .attr("y", function(d, i) {
+            return vis.yScaleFocus(d.accession);
           });
-        visFocus
-          .selectAll(".cell")
+        vis.svgFocus
+          .selectAll(".snp-cell")
           .on("mouseover", mouseover)
           .on("mousemove", mousemove)
           .on("mouseleave", mouseleave);
@@ -598,24 +457,9 @@ export default {
       // Change row ordering based on select
       d3.select("#selectButtonSort").on("change", function() {
         var selected = d3.select("#selectButtonSort").node().value;
-        // console.log("selected order MSA: ", selected);
+        console.log("selected order MSA: ", selected);
+        updateMSAorder(vis.sortingOptions[selected]);
 
-        if (selected === "alpha_asc") {
-          updateMSAorder(sortingOptions["alpha_asc"]);
-        }
-        if (selected === "alpha_desc") {
-          updateMSAorder(sortingOptions["alpha_desc"]);
-        }
-        if (selected === "phylo") {
-          updateMSAorder(sortingOptions["phylo"]);
-        }
-        if (selected === "phylo_rev") {
-          updateMSAorder(sortingOptions["phylo_rev"]);
-        }
-
-        if (selected === "ref_first") {
-          updateMSAorder(sortingOptions["ref_first"]);
-        }
       });
 
       // Change brush size based on select
@@ -626,39 +470,40 @@ export default {
         var start_updated = 0;
         var end_updated = parseInt(selectedBrush) * 100;
 
-        visContext
+        vis.svgContext
           .selectAll(".brush")
           .call(
-            visContextBrush.move,
-            [start_updated, end_updated].map(visXcontext)
+            vis.brush.move,
+            [start_updated, end_updated].map(vis.xScaleContext)
           );
 
-        // visFocus.selectAll(".x-axis--focus .domain").remove();
-
-
-        visFocus.selectAll(".x-axis--focus").call(xAxisFocus);
-
-        visFocus.select(".x-axis--focus .domain").remove(); // to disable rendering the axis line
+        vis.svgFocus.selectAll(".x-axis--focus").call(
+          vis.xAxisFocus.tickValues(
+            vis.xScaleFocus.domain().filter(function(d, i) {
+              return !(i % 20);
+            })
+          )
+        );
+        vis.svgFocus.select(".x-axis--focus .domain").remove(); // to disable rendering the axis line
       });
     },
   },
   mounted() {
-    // ------CODE FROM MOUNTED------
-    // set the dimensions and margins of the graph
+    // function initVis() {
+    let vis = this;
+
+    // set dimensions
     var margin = { top: 30, right: 20, bottom: 40, left: 80 },
       width =
         d3.select("#msa_chart").node().clientWidth - margin.left - margin.right,
       height = 550 - margin.top - margin.bottom;
-
     var focusHeight = 30;
+    vis.focusHeight = focusHeight;
+    vis.margin = margin;
+    vis.width = width;
+    vis.height = height;
 
-    this.margin = margin;
-    this.width = width;
-    this.height = height;
-
-    // build color scale categories:
-    // https://colorbrewer2.org/#type=qualitative&scheme=Set1&n=9
-    // http://www.jalview.org/help/html/colourSchemes/ (following jalview convention)
+    // set color scale 
     var colors = {
       A: "#4daf4a",
       a: "#4daf4a",
@@ -671,7 +516,7 @@ export default {
       "-": "#E6E6E6",
       "*": "#686868",
     };
-    this.colors = colors;
+    vis.colors = colors;
 
     // legendVariants labels
     var dataLabels = [1, 2, 3, 4, 5, 6];
@@ -692,9 +537,9 @@ export default {
       phylo: "phylogeny",
       phylo_rev: "phylogeny reversed",
       ref_first: "reference accessions first",
+      ref_last: "reference accessions last",
     };
-
-    this.orders = orders;
+    vis.orders = orders;
 
     // define brush sizes
     var brushSizes = {
@@ -703,49 +548,45 @@ export default {
       3: "300 positions",
       4: "400 positions",
     };
-    this.brushSizes = brushSizes;
+    vis.brushSizes = brushSizes;
 
-    // add the options to the button
-    d3.select("#selectButtonSort")
-      .selectAll("myOptions")
-      .data(Object.keys(orders))
-      .enter()
-      .append("option")
-      .text(function(d) {
-        return orders[d];
-      }) // text showed in the menu
-      .attr("value", function(d) {
-        return d;
-      }); // corresponding value returned by the button
-
-    console.log("orders", Object.keys(orders));
-
-    // add the options to the button
-    d3.select("#selectButtonBrush")
-      .selectAll("myOptionsBrush")
-      .data(Object.keys(brushSizes))
-      .enter()
-      .append("option")
-      .text(function(d) {
-        return brushSizes[d];
-      }) // text showed in the menu
-      .attr("value", function(d) {
-        return d;
-      }); // corresponding value returned by the button
-
-    // set default option
-    d3.select("#selectButtonBrush").property("value", 2);
-
-    console.log("brush sizes", Object.keys(brushSizes));
-
-    //Creates the context xScale
+    // initialize scales
     var xScaleContext = d3.scaleLinear().range([0, width]);
-    this.xScaleContext = xScaleContext;
+    vis.xScaleContext = xScaleContext;
 
-    //Creates the context yScale
     var yScaleContext = d3.scaleLinear().range([focusHeight, 0]);
-    this.yScaleContext = yScaleContext;
+    vis.yScaleContext = yScaleContext;
 
+    var xScaleFocus = d3
+      .scaleBand()
+      .range([0, width])
+      .padding(0.1);
+    vis.xScaleFocus = xScaleFocus;
+
+    var yScaleFocus = d3
+      .scaleBand()
+      .range([height, 0])
+      .padding(0.05);
+    vis.yScaleFocus = yScaleFocus;
+
+    //initialize axes
+    var xAxisContext = d3.axisTop().scale(vis.xScaleContext);
+    vis.xAxisContext = xAxisContext;
+
+    var xAxisFocus = d3.axisTop(vis.xScaleFocus);
+    vis.xAxisFocus = xAxisFocus;
+
+    var yAxisFocus = d3.axisLeft(vis.yScaleFocus);
+    vis.yAxisFocus = yAxisFocus;
+
+    // initalize brush
+    var brush = d3.brushX().extent([
+      [0, 0],
+      [width, focusHeight],
+    ]);
+    vis.brush = brush;
+
+    // define svg
     var svgContext = d3
       .select("#gene_chart")
       .append("svg")
@@ -754,9 +595,7 @@ export default {
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + 0 + ")");
 
-    this.svgContext = svgContext;
-
-    //Appends background color
+    // append background
     svgContext
       .append("rect")
       .attr("class", "background-gene--context")
@@ -764,26 +603,13 @@ export default {
       .attr("height", focusHeight)
       .attr("transform", "translate(0," + margin.top + ")");
 
-    var brush = d3.brushX().extent([
-      [0, 0],
-      [width, focusHeight],
-    ]);
+    // append brush
+    svgContext
+      .append("g")
+      .attr("class", "brush")
+      .attr("transform", "translate(0," + margin.top + ")");
 
-    this.brush = brush;
-
-    var xScaleFocus = d3
-      .scaleBand()
-      .range([0, width])
-      .padding(0.05);
-
-    this.xScaleFocus = xScaleFocus;
-
-    var yScaleFocus = d3
-      .scaleBand()
-      .range([height, 0])
-      .padding(0.05);
-
-    this.yScaleFocus = yScaleFocus;
+    vis.svgContext = svgContext;
 
     var svgFocus = d3
       .select("#msa_chart")
@@ -793,8 +619,26 @@ export default {
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    this.svgFocus = svgFocus;
+    vis.svgFocus = svgFocus;
 
+    // append empty axis groups
+    var xAxisContextG = vis.svgContext
+      .append("g")
+      .attr("class", "x-axis--context")
+      .style("font-size", 10)
+      .attr("transform", "translate(0," + vis.margin.top + ")");
+    vis.xAxisContextG = xAxisContextG;
+
+    var xAxisFocusG = vis.svgFocus.append("g").attr("class", "x-axis--focus")
+    .style("font-size", 10)
+    // .attr("transform", "translate(0," + this.height + ")")
+    vis.xAxisFocusG = xAxisFocusG;
+
+    var yAxisFocusG = vis.svgFocus.append("g").attr("class", "y-axis--focus")
+    .style("font-size", 10)
+    vis.yAxisFocusG = yAxisFocusG;
+
+    // append legend
     var legendVariants = svgFocus
       .selectAll(".legendVariants")
       .data(dataLabels)
@@ -809,8 +653,8 @@ export default {
       .append("rect")
       .attr("width", 10)
       .attr("height", 18)
-      .attr("rx", 2)
-      .attr("ry", 2)
+      .attr("rx", 1.5)
+      .attr("ry", 1.5)
       .style("fill", function(d, i) {
         return cols[i];
       });
@@ -823,7 +667,52 @@ export default {
       .text(function(d, i) {
         return bases[i];
       });
-    // ------END CODE FROM MOUNTED------
+
+    // add the options to the button
+    d3.select("#selectButtonSort")
+      .selectAll("myOptions")
+      .data(Object.keys(orders))
+      .enter()
+      .append("option")
+      .text(function(d) {
+        return orders[d];
+      }) // text showed in the menu
+      .attr("value", function(d) {
+        return d;
+      }); // corresponding value returned by the button
+    // console.log("orders", Object.keys(orders));
+
+    // add the options to the button
+    d3.select("#selectButtonBrush")
+      .selectAll("myOptionsBrush")
+      .data(Object.keys(brushSizes))
+      .enter()
+      .append("option")
+      .text(function(d) {
+        return brushSizes[d];
+      }) // text showed in the menu
+      .attr("value", function(d) {
+        return d;
+      }); // corresponding value returned by the button
+
+    // // set default option
+    // d3.select("#selectButtonBrush").property("value", 1);
+
+    // create a tooltip
+    var tooltip = d3
+      .select("#msa_chart")
+      .append("div")
+      .attr("class", "tooltip")
+      .style("background-color", "black")
+      .style("opacity", 0)
+      .style("border", "solid")
+      .style("border-width", "0px")
+      .style("border-radius", "3px")
+      .style("padding", "5px");
+    vis.tooltip = tooltip;
+
+    // }
+    // initVis();
   },
 };
 </script>
@@ -848,7 +737,7 @@ export default {
   fill-opacity: 0.1;
 }
 
-.percentline {
+.variants--summary {
   stroke: black;
   stroke-width: 1.5;
   opacity: 0.2;
