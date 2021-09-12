@@ -2,7 +2,7 @@
   <!-- <h4>Phylogenetic Tree</h4> -->
   <div class="selectLabelTree">
     <label id="show-length">
-      <input type="checkbox" id="showBranchLength" /> Show branch length
+      <input type="checkbox" id="showBranchLength" checked/> Show branch length
     </label>
   </div>
   <div id="phylo"></div>
@@ -94,75 +94,189 @@ export default {
     renderVis() {
       let vis = this;
 
-      // Set initial horizontal cluster
-      vis.g
-        .selectAll(".link")
-        .data(vis.cluster(vis.root).links())
-        .enter()
-        .append("path")
-        // .each(function(d) {
-        //   d.target.linkNode = this;
-        // })
-        .attr("class", "links")
-        .attr("fill", "none")
-        .attr("stroke", "#ccc")
-        .attr("d", function(d) {
-          return horizontalStraightBranchLengths(d);
-        });
-
-      var node = vis.g
-        .selectAll(".node")
-        .data(vis.root.descendants())
-        .enter()
-        .append("g")
-        .attr("class", function(d) {
-          return "nodes" + (d.children ? " node--internal" : " node--leaf");
-        })
-        .attr("transform", function(d) {
-          // console.log("d.rootdist x xScale", xScale(d.rootDist));
-          // return "translate(" + visX(d.rootDist) + "," + d.x + ")"; // to have label closer to branch
-          return "translate(" + d.y + "," + d.x + ")";
-        });
-
-      // Append circle to nodes.
-      node
-        .append("circle")
-        .attr("fill", (d) => (d.children ? "none" : "#999"))
-        .attr("r", 4);
-
-      // Append text label to every leaf node.
-      var leafNodeG = vis.g.selectAll(".node--leaf");
-
-      leafNodeG
-        .append("text")
-        .attr("class", "labels")
-        .style("text-anchor", "start")
-        .text(function(d) {
-          // console.log("d text labels", d);
-          if (d.data.name.length < 7) {
-            return d.data.name.slice(0, -1); //+ " (" + d.data.length + ")";}
-          } else {
-            return d.data.name.slice(0, -2); //+ " (" + d.data.length + ")";
-          }
-        })
-        .attr("transform", "translate(" + 5 + "," + 5 + ")");
-      // .attr("transform", function(d) {
-      //   return (
-      //     "translate(" + (this.width + 30 - visX(d.rootDist)) + "," + 2 + ")"
-      //   );
-      // });
-
+      updateTreeChart(vis.cluster(vis.root).links(), vis.root.descendants());
 
       // update axis
       vis.xAxisGroup.call(vis.xAxis);
+
+      function updateTreeChart(dataLinks, dataNodes) {
+
+          // check new data 
+        let visTreeUpdate = vis.g
+          .selectAll(".links")
+          .data(dataLinks);
+
+        // remove old tree
+        visTreeUpdate.exit().remove();
+
+        // append data to links
+        let visTreeEnter = visTreeUpdate
+          .enter()
+          .append("path")
+          .attr("class", "links");
+      
+        // merge data 
+        visTreeEnter
+          .merge(visTreeUpdate)
+          .attr("fill", "none")
+          .attr("stroke", "#ccc")
+          .attr("d", d => horizontalStraightBranchLengths(d));
+
+        // check new node data 
+        let visTreeNodesUpdate = vis.g
+          .selectAll(".nodes")
+          .data(dataNodes);
+
+        // remove old nodes
+        visTreeNodesUpdate.exit().remove();
+
+        // append data to links
+        let visTreeNodesEnter = visTreeNodesUpdate
+          .enter()
+          .append("circle")
+          .attr("class", "nodes");
+
+          visTreeNodesEnter
+          .merge(visTreeNodesUpdate)
+          .attr("fill", (d) => (d.children ? "none" : "#999"))
+          .attr("r", 2)
+          .attr("transform", d =>
+            // console.log("d.rootdist x xScale", xScale(d.rootDist));
+            "translate(" + vis.xScale(d.rootDist) + "," + d.x + ")" // to have label closer to branch
+            //  "translate(" + d.y + "," + d.x + ")"
+          );
+
+        // check new node data 
+        let visTreeLabelsUpdate = vis.g
+          .selectAll(".node-labels")
+          .data(dataNodes);
+
+        // remove old nodes
+        visTreeLabelsUpdate.exit().remove();
+
+        // append data to links
+        let visTreeLabelsEnter = visTreeLabelsUpdate
+          .enter()
+          .append("text")
+          .attr("class", "node-labels");
+
+          visTreeLabelsEnter
+          .merge(visTreeLabelsUpdate)
+          .attr("fill", (d) => (d.children ? "none" : "#2c3e50"))
+          .attr("font-size", "10px")
+          .attr("transform", d =>
+            // console.log("d.rootdist x xScale", xScale(d.rootDist));
+            "translate(" + (vis.xScale(d.rootDist) + 5) + "," + ( d.x + 2) + ")" // to have label closer to branch
+            //  "translate(" + (d.y + 5) + "," +  ( d.x + 2) + ")"
+          )
+          .text(d => {
+            if (d.data.name.length < 7) {
+                return d.data.name.slice(0, -1); //+ " (" + d.data.length + ")";}
+              } else {
+                return d.data.name.slice(0, -2); //+ " (" + d.data.length + ")";
+              }
+            })
+          .style("text-anchor", "start")
+
+      }
+
+      function updateDendrogramChart(dataLinks, dataNodes) {
+
+        // check new data 
+        let visTreeUpdate = vis.g
+        .selectAll(".links")
+        .data(dataLinks);
+
+        // remove old tree
+        visTreeUpdate.exit().remove();
+
+        // append data to links
+        let visTreeEnter = visTreeUpdate
+        .enter()
+        .append("path")
+        .attr("class", "links");
+
+        // merge data 
+        visTreeEnter
+        .merge(visTreeUpdate)
+        .attr("fill", "none")
+        .attr("stroke", "#ccc")
+        .attr("d", d => horizontalStraightDendrogram(d));
+
+        // check new node data 
+        let visTreeNodesUpdate = vis.g
+        .selectAll(".nodes")
+        .data(dataNodes);
+
+        // remove old nodes
+        visTreeNodesUpdate.exit().remove();
+
+        // append data to links
+        let visTreeNodesEnter = visTreeNodesUpdate
+        .enter()
+        .append("circle")
+        .attr("class", "nodes");
+
+        visTreeNodesEnter
+        .merge(visTreeNodesUpdate)
+        .attr("fill", (d) => (d.children ? "none" : "#999"))
+        .attr("r", 2)
+        .attr("transform", d =>
+          // console.log("d.rootdist x xScale", xScale(d.rootDist));
+          // "translate(" + vis.xScale(d.rootDist) + "," + d.x + ")" // to have label closer to branch
+           "translate(" + d.y + "," + d.x + ")"
+        );
+
+        // check new node data 
+        let visTreeLabelsUpdate = vis.g
+        .selectAll(".node-labels")
+        .data(dataNodes);
+
+        // remove old nodes
+        visTreeLabelsUpdate.exit().remove();
+
+        // append data to links
+        let visTreeLabelsEnter = visTreeLabelsUpdate
+        .enter()
+        .append("text")
+        .attr("class", "node-labels");
+
+        visTreeLabelsEnter
+        .merge(visTreeLabelsUpdate)
+        .attr("fill", (d) => (d.children ? "none" : "#2c3e50"))
+        .attr("font-size", "10px")
+        .attr("transform", d =>
+          // console.log("d.rootdist x xScale", xScale(d.rootDist));
+          // "translate(" + (vis.xScale(d.rootDist) + 5) + "," + ( d.x + 2) + ")" // to have label closer to branch
+           "translate(" + (d.y + 5) + "," +  ( d.x + 2) + ")"
+        )
+        .text(d => {
+          if (d.data.name.length < 7) {
+              return d.data.name.slice(0, -1); //+ " (" + d.data.length + ")";}
+            } else {
+              return d.data.name.slice(0, -2); //+ " (" + d.data.length + ")";
+            }
+          })
+        // .style("text-anchor", "start")
+
+        }
 
       // Show branch length option
       d3.select("#showBranchLength").on("change", function() {
         if (d3.select("#showBranchLength").property("checked")) {
           console.log("selected branch length option: ", "checked");
+          updateTreeChart(vis.cluster(vis.root).links(), vis.root.descendants());
+          d3.select("#x-axis--tree").style("opacity", "1");
+
   
         } else {
           console.log("selected branch length option: ", "unchecked");
+          updateDendrogramChart(vis.cluster(vis.root).links(), vis.root.descendants());
+          // vis.xAxisGroup.select(".axis x-axis").remove(); // to disable rendering the axis line
+          d3.select("#x-axis--tree").style("opacity", "0");
+
+
+
         
         }
       });
@@ -257,6 +371,7 @@ export default {
     var xAxisGroup = vis.svg
       .append("g")
       .attr("class", "axis x-axis")
+      .attr("id", "x-axis--tree")
       .attr(
         "transform",
         `translate(${vis.margin.left}, ${vis.margin.top + 10})`
@@ -316,7 +431,7 @@ export default {
 }
 
 .labels {
-  font-size: 15px;
+  font-size: 10px;
   font-family: sans-serif;
   fill: #2c3e50;
 }

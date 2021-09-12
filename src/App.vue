@@ -14,12 +14,12 @@
                 </select>
               </div>
               <div class="sidebar-item">
-                <p>Select Accessions</p>
-              </div>
-              <div class="sidebar-item">
                 <label for="selectButtonData"> Select Tree Type: </label>
                 <select class="selectButtonVariants" id="selectButtonTreeData">
                 </select>
+              </div>
+              <div class="sidebar-item">
+                <p>Select Accessions</p>
               </div>
               <div class="sidebar-item">
                 <p>Select Phenotypes</p>
@@ -106,8 +106,9 @@ export default {
     var treeTypes = {
       kmer_distance: "k-mer distance",
       gene_distance: "gene distance",
-      // coresnp: "core SNP tree",
       ani: "ANI",
+      // coresnp: "core SNP tree",
+     
     };
 
     // add the options to the button
