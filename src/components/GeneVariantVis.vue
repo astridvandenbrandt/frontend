@@ -210,17 +210,21 @@ export default {
       let vis = this;
 
       // console.log('data mutations new:', vis.data_mutations)
-      var visGeneUpdate = vis.svgContext
+      // check new data 
+      let visGeneUpdate = vis.svgContext
         .selectAll(".variants--summary")
         .data(vis.data_mutations);
 
-      var visGeneEnter = visGeneUpdate
+      // make new lines
+      let visGeneEnter = visGeneUpdate
         .enter()
         .append("line")
         .attr("class", "variants--summary");
 
+      // remove old lines
       visGeneUpdate.exit().remove();
 
+      // merge lines
       visGeneEnter
         .merge(visGeneUpdate)
         .attr("x1", function(d) {
@@ -245,36 +249,7 @@ export default {
       // update figure when brushing
       vis.brush.on("end", brushed); //change 'end' to 'brush' if want to see inbetween
 
-      var visCellsUpdate = vis.svgFocus
-        .selectAll(".snp-cell")
-        .data(vis.rows_data_slice_default);
-
-      var visCellsEnter = visCellsUpdate
-        .enter()
-        .append("rect")
-        .attr("class", "snp-cell");
-
-      visCellsUpdate.exit().remove();
-
-      visCellsEnter
-        .merge(visCellsUpdate)
-        // .transition()
-        .attr("x", function(d, i) {
-          return vis.xScaleFocus(d.pos);
-        })
-        .attr("y", function(d, i) {
-          return vis.yScaleFocus(d.accession);
-        })
-        .attr("rx", 1.5)
-        .attr("ry", 1.5)
-        .attr("width", vis.xScaleFocus.bandwidth())
-        .attr("height", vis.yScaleFocus.bandwidth())
-        .style("fill", function(d) {
-          return vis.colors[d.base];
-        })
-        .style("stroke-width", 4)
-        .style("stroke", "none")
-        .style("opacity", 0.8);
+      updateVariantFocusChart(vis.rows_data_slice_default);
 
       vis.svgFocus
         .selectAll("snp-cell")
@@ -295,6 +270,41 @@ export default {
       vis.xAxisFocusG.select(".x-axis--focus .domain").remove(); // to disable rendering the axis line
       vis.yAxisFocusG.call(vis.yAxisFocus);
       vis.yAxisFocusG.select(".y-axis--focus .domain").remove(); // to disable rendering the axis line
+
+      
+      function updateVariantFocusChart(data) {
+
+        // check new data
+        let visCellsUpdate = vis.svgFocus
+          .selectAll(".snp-cell")
+          .data(data, d => d);
+
+        // make new cells 
+        let visCellsEnter = visCellsUpdate
+          .enter()
+          .append("rect")
+          .attr("class", "snp-cell");
+
+        // remove old cells
+        visCellsUpdate.exit().remove();
+
+        // merge cells with existing 
+        visCellsEnter
+          .merge(visCellsUpdate)
+          // .transition()
+          //     .duration(300)
+          .attr("x", d => vis.xScaleFocus(d.pos))
+          .attr("y", d => vis.yScaleFocus(d.accession))
+          .attr("rx", 1.5)
+          .attr("ry", 1.5)
+          .attr("width", vis.xScaleFocus.bandwidth())
+          .attr("height", vis.yScaleFocus.bandwidth())
+          .style("fill", d => vis.colors[d.base])
+          .style("stroke-width", 4)
+          .style("stroke", "none")
+          .style("opacity", 0.8);
+
+      }
 
       function brushed({ selection }) {
         console.log("selection brush", { selection });
@@ -357,41 +367,7 @@ export default {
         );
         vis.svgFocus.select(".x-axis--focus .domain").remove(); // to disable rendering the axis line
 
-        // check new data
-        var visCellsUpdate = vis.svgFocus
-          .selectAll(".snp-cell")
-          .data(rows_data_slice_updated);
-
-        // make cells 
-        var visCellsEnter = visCellsUpdate
-          .enter()
-          .append("rect")
-          .attr("class", "snp-cell");
-
-        // remove old cells
-        visCellsUpdate.exit().remove();
-
-        // merge cells with existing 
-        visCellsEnter
-          .merge(visCellsUpdate)
-          // .transition()
-          //     .duration(300)
-          .attr("x", function(d, i) {
-            return vis.xScaleFocus(d.pos);
-          })
-          .attr("y", function(d, i) {
-            return vis.yScaleFocus(d.accession);
-          })
-          .attr("rx", 1.5)
-          .attr("ry", 1.5)
-          .attr("width", vis.xScaleFocus.bandwidth())
-          .attr("height", vis.yScaleFocus.bandwidth())
-          .style("fill", function(d) {
-            return vis.colors[d.base];
-          })
-          .style("stroke-width", 4)
-          .style("stroke", "none")
-          .style("opacity", 0.8);
+        updateVariantFocusChart(rows_data_slice_updated);
 
         vis.svgFocus
           .selectAll(".snp-cell")
@@ -441,12 +417,8 @@ export default {
           .selectAll(".snp-cell")
           .transition()
           // .duration(800)
-          .attr("x", function(d, i) {
-            return vis.xScaleFocus(d.pos);
-          })
-          .attr("y", function(d, i) {
-            return vis.yScaleFocus(d.accession);
-          });
+          .attr("x", d => vis.xScaleFocus(d.pos))
+          .attr("y", d => vis.yScaleFocus(d.accession));
         vis.svgFocus
           .selectAll(".snp-cell")
           .on("mouseover", mouseover)
