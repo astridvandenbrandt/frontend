@@ -12,8 +12,8 @@
     </select>
   </div>
   <div id="gene_chart"></div>
-
   <div id="msa_chart"></div>
+  <div id="tooltip"></div>
 </template>
 
 <script>
@@ -376,9 +376,11 @@ export default {
           .on("mouseleave", mouseleave);
       }
 
-      // Three functions that change the tooltip when user hover / move / leave a cell
       var mouseover = function() {
-        vis.tooltip.style("opacity", 0.6).style("color", "white");
+        d3.select('#tooltip')
+         .style('display', 'block')
+         .style("opacity", 0.6)
+         .style("color", "white");
         d3.select(this)
           .style("stroke", "black")
           .style("stroke-width", "1px")
@@ -386,20 +388,23 @@ export default {
       };
 
       var mousemove = function(event, d) {
-        vis.tooltip
-          .html(
+
+        d3.select('#tooltip')
+        .style('display', 'block')
+        .html(
             "<strong>base:</strong> " +
               d.base +
               "<br/>" +
               "<strong>position:</strong> " +
               d.pos
           )
-          // .html("base: " + d.base)
           .style("left", d3.pointer(event)[0] + 750 + "px")
           .style("top", d3.pointer(event)[1] + 150 + "px");
       };
+
       var mouseleave = function() {
-        vis.tooltip.style("opacity", 0);
+        d3.select('#tooltip')
+        .style('display', 'none');
         d3.select(this)
           .style("stroke", "none")
           .style("opacity", 0.8);
@@ -671,17 +676,18 @@ export default {
     // d3.select("#selectButtonBrush").property("value", 1);
 
     // create a tooltip
-    var tooltip = d3
-      .select("#msa_chart")
-      .append("div")
-      .attr("class", "tooltip")
-      .style("background-color", "black")
-      .style("opacity", 0)
-      .style("border", "solid")
-      .style("border-width", "0px")
-      .style("border-radius", "3px")
-      .style("padding", "5px");
-    vis.tooltip = tooltip;
+    // var tooltip = d3
+    //   .select("#msa_chart")
+    //   .append("div")
+    //   .attr("class", "tooltip")
+    //   .style("background-color", "black")
+    //   .style("opacity", 0)
+    //   .style("border", "solid")
+    //   .style("border-width", "0px")
+    //   .style("border-radius", "3px")
+    //   .style("padding", "5px");
+    // vis.tooltip = tooltip;
+
 
     // }
     // initVis();
@@ -691,6 +697,16 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
+#tooltip {
+  position: absolute;
+  display: none;
+  background-color: black;
+  border: solid;
+  border-width: 0px;
+  border-radius: 3px;
+  padding: 5px;
+}
+
 .selectButtonVariants {
   margin-left: 5px;
   margin-right: 20px;
@@ -720,4 +736,6 @@ export default {
   fill: cornflowerblue;
   fill-opacity: 0.3;
 }
+
+
 </style>
