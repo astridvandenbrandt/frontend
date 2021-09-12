@@ -76,7 +76,7 @@ export default {
       const updateBrush = d3.select("#selectButtonBrush").node().value;
       const end = updateBrush * 100; // when new data loaded keep brush size
       vis.end = end;
-      const updateSort = d3.select("#selectButtonSort").node().value;
+      const updateSort = d3.select("#selectButtonSort").node().value; // when new data loaded keep sorting order
 
       var flat_data_slice = [
         flat_data.pos,
@@ -91,167 +91,116 @@ export default {
       };
 
       var genePositions = flat_data_slice_default.pos.filter(unique);
-      console.log("genePositions", genePositions);
+      // console.log("genePositions", genePositions);
+
+      var alpha = [
+          "8__Tsu-0",
+          "8__Kas-1",
+          "8__Altai-5",
+          "8_Sha",
+          "7__Sku-30",
+          "7__Ler-0",
+          "7__Gro-3",
+          "7_Ler",
+          "6__Tsu-0",
+          "6__Kas-1",
+          "6__Altai-5",
+          "6_Kyo",
+          "5__Sku-30",
+          "5__Ler-0",
+          "5__Gro-3",
+          "5_Eri",
+          "4_Cvi",
+          "3_C24",
+          "2_An-1",
+          "1__Tsu-0",
+          "1__Sku-30",
+          "1__Ler-0",
+          "1__Kas-1",
+          "1__Gro-3",
+          "1__Altai-5",
+          "1_Col-0",
+        ];
+        var phylo_kmer =  [
+          "2_An-1",
+          "1__Tsu-0",
+          "1__Sku-30",
+          "1__Ler-0",
+          "1__Kas-1",
+          "1__Gro-3",
+          "1__Altai-5",
+          "1_Col-0",
+          "4_Cvi",
+          "3_C24",
+          "8__Tsu-0",
+          "8__Kas-1",
+          "8__Altai-5",
+          "8_Sha",
+          "7__Sku-30",
+          "7__Ler-0",
+          "7__Gro-3",
+          "7_Ler",
+          "5__Sku-30",
+          "5__Ler-0",
+          "5__Gro-3",
+          "5_Eri",
+          "6__Tsu-0",
+          "6__Kas-1",
+          "6__Altai-5",
+          "6_Kyo",
+        ];
+        var ref_first = [
+          "8__Tsu-0",
+          "8__Altai-5",
+          "8__Kas-1",
+          "5__Gro-3",
+          "5__Ler-0",
+          "5__Sku-30",
+          "6__Altai-5",
+          "6__Kas-1",
+          "6__Tsu-0",
+          "7__Sku-30",
+          "7__Gro-3",
+          "7__Ler-0",
+          "1__Gro-3",
+          "1__Ler-0",
+          "1__Sku-30",
+          "1__Altai-5",
+          "1__Kas-1",
+          "1__Tsu-0",
+          "2_An-1",
+          "8_Sha",
+          "5_Eri",
+          "6_Kyo",
+          "3_C24",
+          "7_Ler",
+          "4_Cvi",
+          "1_Col-0",
+        ];
 
       var sortingOptions = {
-        alpha_asc: [
-          "8__Tsu-0",
-          "8__Kas-1",
-          "8__Altai-5",
-          "8_Sha",
-          "7__Sku-30",
-          "7__Ler-0",
-          "7__Gro-3",
-          "7_Ler",
-          "6__Tsu-0",
-          "6__Kas-1",
-          "6__Altai-5",
-          "6_Kyo",
-          "5__Sku-30",
-          "5__Ler-0",
-          "5__Gro-3",
-          "5_Eri",
-          "4_Cvi",
-          "3_C24",
-          "2_An-1",
-          "1__Tsu-0",
-          "1__Sku-30",
-          "1__Ler-0",
-          "1__Kas-1",
-          "1__Gro-3",
-          "1__Altai-5",
-          "1_Col-0",
-        ],
-        alpha_desc: [
-          "8__Tsu-0",
-          "8__Kas-1",
-          "8__Altai-5",
-          "8_Sha",
-          "7__Sku-30",
-          "7__Ler-0",
-          "7__Gro-3",
-          "7_Ler",
-          "6__Tsu-0",
-          "6__Kas-1",
-          "6__Altai-5",
-          "6_Kyo",
-          "5__Sku-30",
-          "5__Ler-0",
-          "5__Gro-3",
-          "5_Eri",
-          "4_Cvi",
-          "3_C24",
-          "2_An-1",
-          "1__Tsu-0",
-          "1__Sku-30",
-          "1__Ler-0",
-          "1__Kas-1",
-          "1__Gro-3",
-          "1__Altai-5",
-          "1_Col-0",
-        ].reverse(),
-        phylo: [
-          "2_An-1",
-          "1__Tsu-0",
-          "1__Sku-30",
-          "1__Ler-0",
-          "1__Kas-1",
-          "1__Gro-3",
-          "1__Altai-5",
-          "1_Col-0",
-          "4_Cvi",
-          "3_C24",
-          "8__Tsu-0",
-          "8__Kas-1",
-          "8__Altai-5",
-          "8_Sha",
-          "7__Sku-30",
-          "7__Ler-0",
-          "7__Gro-3",
-          "7_Ler",
-          "5__Sku-30",
-          "5__Ler-0",
-          "5__Gro-3",
-          "5_Eri",
-          "6__Tsu-0",
-          "6__Kas-1",
-          "6__Altai-5",
-          "6_Kyo",
-        ],
-        phylo_rev: [
-          "2_An-1",
-          "1__Tsu-0",
-          "1__Sku-30",
-          "1__Ler-0",
-          "1__Kas-1",
-          "1__Gro-3",
-          "1__Altai-5",
-          "1_Col-0",
-          "4_Cvi",
-          "3_C24",
-          "8__Tsu-0",
-          "8__Kas-1",
-          "8__Altai-5",
-          "8_Sha",
-          "7__Sku-30",
-          "7__Ler-0",
-          "7__Gro-3",
-          "7_Ler",
-          "5__Sku-30",
-          "5__Ler-0",
-          "5__Gro-3",
-          "5_Eri",
-          "6__Tsu-0",
-          "6__Kas-1",
-          "6__Altai-5",
-          "6_Kyo",
-        ].reverse(),
-        ref_first: [
-          "8__Tsu-0",
-          "8__Altai-5",
-          "8__Kas-1",
-          "5__Gro-3",
-          "5__Ler-0",
-          "5__Sku-30",
-          "6__Altai-5",
-          "6__Kas-1",
-          "6__Tsu-0",
-          "7__Sku-30",
-          "7__Gro-3",
-          "7__Ler-0",
-          "1__Gro-3",
-          "1__Ler-0",
-          "1__Sku-30",
-          "1__Altai-5",
-          "1__Kas-1",
-          "1__Tsu-0",
-          "2_An-1",
-          "8_Sha",
-          "5_Eri",
-          "6_Kyo",
-          "3_C24",
-          "7_Ler",
-          "4_Cvi",
-          "1_Col-0",
-        ],
+        alpha_asc: alpha,
+        alpha_desc: alpha.slice().reverse(),
+        phylo: phylo_kmer,
+        phylo_rev: phylo_kmer.slice().reverse(),
+        ref_first: ref_first,
+        ref_last: ref_first.slice().reverse()
       };
       vis.sortingOptions = sortingOptions;
 
       // Set the scale input domains
       vis.xScaleContext.domain([0, vis.length_gene]);
-      vis.yScaleContext.domain([0, 50]);
-
       vis.xScaleFocus.domain(genePositions);
       vis.yScaleFocus.domain(sortingOptions[updateSort]);
 
-      var length = (end - start + 1) * 26; //length of slice (200)
+      var length = (end - start + 1) * nr_accessions; //nr of cells to render 
 
       var rows_data_slice_default = Array.from({ length }, (_, i) => ({
         pos: flat_data_slice_default.pos[i],
         base: flat_data_slice_default.base[i],
         accession: flat_data_slice_default.accession[i],
       }));
-      console.log("rows_data_slice_default", rows_data_slice_default);
+      // console.log("rows_data_slice_default", rows_data_slice_default);
       vis.rows_data_slice_default = rows_data_slice_default;
 
       vis.renderVis();
@@ -280,8 +229,8 @@ export default {
         .attr("x2", function(d) {
           return vis.xScaleContext(d.pos);
         })
-        .attr("y1", 30)
-        .attr("y2", 60);
+        .attr("y1", vis.margin.top) // 30 
+        .attr("y2", vis.margin.top+vis.focusHeight); // 60
 
       vis.svgContext
         .selectAll(".brush")
@@ -289,9 +238,9 @@ export default {
         .call(vis.brush.move, [vis.start, vis.end].map(vis.xScaleContext));
 
       // removes handle to resize the brush
-      d3.selectAll(".brush>.handle").remove();
+      // d3.selectAll(".brush>.handle").remove();
       // removes crosshair cursor
-      d3.selectAll(".brush>.overlay").remove();
+      // d3.selectAll(".brush>.overlay").remove();
 
       // update figure when brushing
       vis.brush.on("end", brushed); //change 'end' to 'brush' if want to see inbetween
@@ -316,8 +265,8 @@ export default {
         .attr("y", function(d, i) {
           return vis.yScaleFocus(d.accession);
         })
-        .attr("rx", 2)
-        .attr("ry", 2)
+        .attr("rx", 1.5)
+        .attr("ry", 1.5)
         .attr("width", vis.xScaleFocus.bandwidth())
         .attr("height", vis.yScaleFocus.bandwidth())
         .style("fill", function(d) {
@@ -328,7 +277,7 @@ export default {
         .style("opacity", 0.8);
 
       vis.svgFocus
-        .selectAll(".snp-cell")
+        .selectAll("snp-cell")
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
@@ -339,7 +288,7 @@ export default {
       vis.xAxisFocusG.call(
         vis.xAxisFocus.tickValues(
           vis.xScaleFocus.domain().filter(function(d, i) {
-            return !(i % 20); // tick interval
+            return !(i % 20); // defines tick interval
           })
         )
       );
@@ -389,7 +338,7 @@ export default {
         // console.log("rows updated flat", flat_data_slice_updated_final);
 
         var length = (endUpdate - startUpdate + 1) * vis.nr_accessions;
-        console.log("brush length", length);
+        console.log("nr of cells to render", length);
 
         var rows_data_slice_updated = Array.from({ length }, (_, i) => ({
           pos: flat_data_slice_updated_final.pos[i], // position type should be changed from string to float
@@ -399,38 +348,42 @@ export default {
         // console.log("rows updated !", rows_data_slice_updated);
 
         vis.svgFocus.selectAll(".x-axis--focus").call(
-          vis.xAxisFocus.tickValues(
+          vis.xAxisFocus
+          .tickValues(
             vis.xScaleFocus.domain().filter(function(d, i) {
-              return !(i % 20);
+              return !(i % 20); // defines tick interval
             })
           )
         );
-
         vis.svgFocus.select(".x-axis--focus .domain").remove(); // to disable rendering the axis line
 
+        // check new data
         var visCellsUpdate = vis.svgFocus
           .selectAll(".snp-cell")
           .data(rows_data_slice_updated);
 
+        // make cells 
         var visCellsEnter = visCellsUpdate
           .enter()
           .append("rect")
           .attr("class", "snp-cell");
 
+        // remove old cells
         visCellsUpdate.exit().remove();
 
+        // merge cells with existing 
         visCellsEnter
           .merge(visCellsUpdate)
           // .transition()
-          //     .duration(800)
+          //     .duration(300)
           .attr("x", function(d, i) {
             return vis.xScaleFocus(d.pos);
           })
           .attr("y", function(d, i) {
             return vis.yScaleFocus(d.accession);
           })
-          .attr("rx", 2)
-          .attr("ry", 2)
+          .attr("rx", 1.5)
+          .attr("ry", 1.5)
           .attr("width", vis.xScaleFocus.bandwidth())
           .attr("height", vis.yScaleFocus.bandwidth())
           .style("fill", function(d) {
@@ -481,14 +434,6 @@ export default {
         console.log("option chosen: ", sortingOption);
 
         vis.yScaleFocus.domain(sortingOption);
-        // vis.svgFocus
-        //   .selectAll(".y-axis--focus")
-        //   .transition()
-        //   .duration(800)
-        //   .call(vis.yAxisFocus)
-        //   // .on("start", function() {
-        //   //   vis.svgFocus.select(".y-axis--focus .domain").remove();
-        //   // });
         vis.svgFocus.select(".y-axis--focus").call(vis.yAxisFocus);
         vis.svgFocus.select(".y-axis--focus .domain").remove(); // to disable rendering the axis line
 
@@ -512,24 +457,9 @@ export default {
       // Change row ordering based on select
       d3.select("#selectButtonSort").on("change", function() {
         var selected = d3.select("#selectButtonSort").node().value;
-        // console.log("selected order MSA: ", selected);
+        console.log("selected order MSA: ", selected);
+        updateMSAorder(vis.sortingOptions[selected]);
 
-        if (selected === "alpha_asc") {
-          updateMSAorder(vis.sortingOptions["alpha_asc"]);
-        }
-        if (selected === "alpha_desc") {
-          updateMSAorder(vis.sortingOptions["alpha_desc"]);
-        }
-        if (selected === "phylo") {
-          updateMSAorder(vis.sortingOptions["phylo"]);
-        }
-        if (selected === "phylo_rev") {
-          updateMSAorder(vis.sortingOptions["phylo_rev"]);
-        }
-
-        if (selected === "ref_first") {
-          updateMSAorder(vis.sortingOptions["ref_first"]);
-        }
       });
 
       // Change brush size based on select
@@ -556,13 +486,6 @@ export default {
         );
         vis.svgFocus.select(".x-axis--focus .domain").remove(); // to disable rendering the axis line
       });
-
-      // Change brush size based on select
-      d3.select("this.parentNode#selectButtonData").on("change", function() {
-        var selectedData = d3.select("this.parentNode#selectButtonData").node()
-          .value;
-        console.log("selected data gene: ", selectedData);
-      });
     },
   },
   mounted() {
@@ -575,11 +498,12 @@ export default {
         d3.select("#msa_chart").node().clientWidth - margin.left - margin.right,
       height = 550 - margin.top - margin.bottom;
     var focusHeight = 30;
+    vis.focusHeight = focusHeight;
     vis.margin = margin;
     vis.width = width;
     vis.height = height;
 
-    // set color scales
+    // set color scale 
     var colors = {
       A: "#4daf4a",
       a: "#4daf4a",
@@ -613,6 +537,7 @@ export default {
       phylo: "phylogeny",
       phylo_rev: "phylogeny reversed",
       ref_first: "reference accessions first",
+      ref_last: "reference accessions last",
     };
     vis.orders = orders;
 
@@ -635,7 +560,7 @@ export default {
     var xScaleFocus = d3
       .scaleBand()
       .range([0, width])
-      .padding(0.05);
+      .padding(0.1);
     vis.xScaleFocus = xScaleFocus;
 
     var yScaleFocus = d3
@@ -700,16 +625,17 @@ export default {
     var xAxisContextG = vis.svgContext
       .append("g")
       .attr("class", "x-axis--context")
+      .style("font-size", 10)
       .attr("transform", "translate(0," + vis.margin.top + ")");
     vis.xAxisContextG = xAxisContextG;
 
-    var xAxisFocusG = vis.svgFocus.append("g").attr("class", "x-axis--focus");
-    // .style("font-size", 15)
+    var xAxisFocusG = vis.svgFocus.append("g").attr("class", "x-axis--focus")
+    .style("font-size", 10)
     // .attr("transform", "translate(0," + this.height + ")")
     vis.xAxisFocusG = xAxisFocusG;
 
     var yAxisFocusG = vis.svgFocus.append("g").attr("class", "y-axis--focus")
-    // .style("font-size", 15)
+    .style("font-size", 10)
     vis.yAxisFocusG = yAxisFocusG;
 
     // append legend
@@ -727,8 +653,8 @@ export default {
       .append("rect")
       .attr("width", 10)
       .attr("height", 18)
-      .attr("rx", 2)
-      .attr("ry", 2)
+      .attr("rx", 1.5)
+      .attr("ry", 1.5)
       .style("fill", function(d, i) {
         return cols[i];
       });
@@ -769,8 +695,8 @@ export default {
         return d;
       }); // corresponding value returned by the button
 
-    // set default option
-    d3.select("#selectButtonBrush").property("value", 2);
+    // // set default option
+    // d3.select("#selectButtonBrush").property("value", 1);
 
     // create a tooltip
     var tooltip = d3
