@@ -269,11 +269,7 @@ export default {
 
       // update figure when brushing
       vis.brush.on("end", brushed); //change 'end' to 'brush' if want to see inbetween
-      
-
-      console.log('brush range', d3.extent(vis.xScaleFocus.domain()))
-
-
+  
       updateVariantFocusChart(vis.rows_data_slice_default);
 
       vis.svgFocus
@@ -302,7 +298,7 @@ export default {
         // check new data
         let visCellsUpdate = vis.svgFocus
           .selectAll(".snp-cell")
-          .data(data, d => d);
+          .data(data, d => d); //key function? 
 
         // make new cells 
         let visCellsEnter = visCellsUpdate
