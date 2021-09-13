@@ -4,15 +4,36 @@
     <select class="selectButtonVariants" id="selectButtonGene"
       ><option value="" selected disabled hidden>gene ID</option></select
     > -->
-    <label for="selectButtonSort"> Sort By: </label>
+    <img src="./buttons/sort-down.svg" alt="" width="20" height="20" title="Sort"> 
+    <!-- <label for="selectButtonSort"> select order </label> -->
     <select class="selectButtonVariants" id="selectButtonSort"></select>
     <label for="selectButtonBrush"> Size Brush: </label>
     <select class="selectButtonVariants" id="selectButtonBrush">
       <!-- <option value="2814" selected>200 positions</option> -->
     </select>
   </div>
-  <div id="gene_chart"></div>
-  <div id="msa_chart"></div>
+  <div class="container">
+    <div id="gene_chart"></div>
+    <div class="row" id="header-arrows">
+      <div class="col" id="footer-col-right">
+        <div class="float-start border rounded" id="btn-arrow-left">
+        <button type="button" class="btn btn-link btn-sm" id="arrow-left">
+          <img src="./buttons/arrow-left.svg" alt="" width="20" height="20" title="arrow-left"> 
+        </button>
+      </div>
+      </div>
+      <div class="col" id="footer-col-left">
+        <div class="float-end border rounded" id="btn-arrow-right">
+        <button type="button" class="btn btn-link btn-sm" id="arrow-right">
+          <img src="./buttons/arrow-right.svg" alt="" width="20" height="20" title="arrow-right"> 
+        </button>
+      </div>
+      </div>
+    </div>
+    <div id="msa_chart"></div>
+   
+  </div>
+
   <div id="tooltip"></div>
 </template>
 
@@ -248,6 +269,10 @@ export default {
 
       // update figure when brushing
       vis.brush.on("end", brushed); //change 'end' to 'brush' if want to see inbetween
+      
+
+      console.log('brush range', d3.extent(vis.xScaleFocus.domain()))
+
 
       updateVariantFocusChart(vis.rows_data_slice_default);
 
@@ -324,6 +349,9 @@ export default {
         console.log("start and end of brush: ", startUpdate, endUpdate);
 
         vis.xScaleFocus.domain(d3.range(startUpdate, endUpdate + 1));
+
+        console.log('brush range', d3.extent(vis.xScaleFocus.domain()))
+
 
         //rows data updated
         var flat_data_slice_updated = [
@@ -463,6 +491,111 @@ export default {
         );
         vis.svgFocus.select(".x-axis--focus .domain").remove(); // to disable rendering the axis line
       });
+
+      // Change with arrow left
+      d3.select("#btn-arrow-left").on("click", function() {
+        console.log('clicked left arrow')
+        brushArrow("left");
+      });
+
+
+      // Change focus with arrow right
+      d3.select("#btn-arrow-right").on("click", function() {
+        console.log('clicked right arrow')
+        brushArrow("right");
+      });
+
+      function brushArrow(arrow) {
+        const rangeOld = d3.extent(vis.xScaleFocus.domain())
+        console.log('old brush start', rangeOld[0] )
+        console.log('old brush end', rangeOld[1] )
+
+        if (arrow === "left") {
+          if (rangeOld[0] <= 0){
+            var startUpdate = 0;
+            var endUpdate = rangeOld[1]-1;
+          }
+          else {
+            startUpdate = rangeOld[0]-1;
+            endUpdate = rangeOld[1]-1;
+          console.log("new start and end of left brush: ", startUpdate, endUpdate);
+          }
+        }
+        if (arrow == "right") {
+          if (rangeOld[1] >= vis.length_gene){
+              startUpdate = rangeOld[0]+1;
+              endUpdate = vis.length_gene;
+          }
+          else {
+            startUpdate = rangeOld[0]+1;
+            endUpdate = rangeOld[1]+1;
+            console.log("new start and end of right brush: ", startUpdate, endUpdate);
+          }
+        }
+
+        // update brush selection 
+        vis.svgContext
+          .selectAll(".brush")
+          .call(
+            vis.brush.move,
+            [startUpdate, endUpdate].map(vis.xScaleContext)
+          );
+
+        // update focus domain
+        vis.xScaleFocus.domain(d3.range(startUpdate, endUpdate + 1));
+        // console.log('brush range', d3.extent(vis.xScaleFocus.domain()))
+
+        //rows data updated
+        var flat_data_slice_updated = [
+          vis.flat_data.pos,
+          vis.flat_data.base,
+          vis.flat_data.accession,
+        ].map(
+          vis.taker(
+            vis.filter(
+              vis.flat_data.pos,
+              (d) => d >= startUpdate && d <= endUpdate
+            )
+          )
+        );
+        // console.log("flat data slice updated", flat_data_slice_updated);
+
+        var flat_data_slice_updated_final = {
+          pos: flat_data_slice_updated[0],
+          base: flat_data_slice_updated[1],
+          accession: flat_data_slice_updated[2],
+        };
+        // console.log("rows updated flat", flat_data_slice_updated_final);
+
+        var length = (endUpdate - startUpdate + 1) * vis.nr_accessions;
+        console.log("nr of cells to render", length);
+
+        var rows_data_slice_updated = Array.from({ length }, (_, i) => ({
+          pos: flat_data_slice_updated_final.pos[i], // position type should be changed from string to float
+          base: flat_data_slice_updated_final.base[i],
+          accession: flat_data_slice_updated_final.accession[i],
+        }));
+        // console.log("rows updated !", rows_data_slice_updated);
+
+        vis.svgFocus.selectAll(".x-axis--focus").call(
+          vis.xAxisFocus
+          .tickValues(
+            vis.xScaleFocus.domain().filter(function(d, i) {
+              return !(i % 20); // defines tick interval
+            })
+          )
+        );
+        vis.svgFocus.select(".x-axis--focus .domain").remove(); // to disable rendering the axis line
+
+        updateVariantFocusChart(rows_data_slice_updated);
+
+        vis.svgFocus
+          .selectAll(".snp-cell")
+          .on("mouseover", mouseover)
+          .on("mousemove", mousemove)
+          .on("mouseleave", mouseleave);
+      }
+
     },
   },
   mounted() {
@@ -736,6 +869,9 @@ export default {
   fill: cornflowerblue;
   fill-opacity: 0.3;
 }
+
+#btn-arrow-left {margin-left: 11%; }  /* improve this code */
+
 
 
 </style>
