@@ -4,7 +4,13 @@
     <select class="selectButtonVariants" id="selectButtonGene"
       ><option value="" selected disabled hidden>gene ID</option></select
     > -->
-    <img src="./buttons/sort-down.svg" alt="" width="20" height="20" title="Sort"> 
+    <img
+      src="./buttons/sort-down.svg"
+      alt=""
+      width="20"
+      height="20"
+      title="Sort"
+    />
     <!-- <label for="selectButtonSort"> select order </label> -->
     <select class="selectButtonVariants" id="selectButtonSort"></select>
     <label for="selectButtonBrush"> Size Brush: </label>
@@ -17,21 +23,32 @@
     <div class="row" id="header-arrows">
       <div class="col" id="footer-col-right">
         <div class="float-start border rounded" id="btn-arrow-left">
-        <button type="button" class="btn btn-link btn-sm" id="arrow-left">
-          <img src="./buttons/arrow-left.svg" alt="" width="20" height="20" title="arrow-left"> 
-        </button>
-      </div>
+          <button type="button" class="btn btn-link btn-sm" id="arrow-left">
+            <img
+              src="./buttons/arrow-left.svg"
+              alt=""
+              width="20"
+              height="20"
+              title="arrow-left"
+            />
+          </button>
+        </div>
       </div>
       <div class="col" id="footer-col-left">
         <div class="float-end border rounded" id="btn-arrow-right">
-        <button type="button" class="btn btn-link btn-sm" id="arrow-right">
-          <img src="./buttons/arrow-right.svg" alt="" width="20" height="20" title="arrow-right"> 
-        </button>
-      </div>
+          <button type="button" class="btn btn-link btn-sm" id="arrow-right">
+            <img
+              src="./buttons/arrow-right.svg"
+              alt=""
+              width="20"
+              height="20"
+              title="arrow-right"
+            />
+          </button>
+        </div>
       </div>
     </div>
     <div id="msa_chart"></div>
-   
   </div>
 
   <div id="tooltip"></div>
@@ -115,89 +132,89 @@ export default {
       // console.log("genePositions", genePositions);
 
       var alpha = [
-          "8__Tsu-0",
-          "8__Kas-1",
-          "8__Altai-5",
-          "8_Sha",
-          "7__Sku-30",
-          "7__Ler-0",
-          "7__Gro-3",
-          "7_Ler",
-          "6__Tsu-0",
-          "6__Kas-1",
-          "6__Altai-5",
-          "6_Kyo",
-          "5__Sku-30",
-          "5__Ler-0",
-          "5__Gro-3",
-          "5_Eri",
-          "4_Cvi",
-          "3_C24",
-          "2_An-1",
-          "1__Tsu-0",
-          "1__Sku-30",
-          "1__Ler-0",
-          "1__Kas-1",
-          "1__Gro-3",
-          "1__Altai-5",
-          "1_Col-0",
-        ];
-        var phylo_kmer =  [
-          "2_An-1",
-          "1__Tsu-0",
-          "1__Sku-30",
-          "1__Ler-0",
-          "1__Kas-1",
-          "1__Gro-3",
-          "1__Altai-5",
-          "1_Col-0",
-          "4_Cvi",
-          "3_C24",
-          "8__Tsu-0",
-          "8__Kas-1",
-          "8__Altai-5",
-          "8_Sha",
-          "7__Sku-30",
-          "7__Ler-0",
-          "7__Gro-3",
-          "7_Ler",
-          "5__Sku-30",
-          "5__Ler-0",
-          "5__Gro-3",
-          "5_Eri",
-          "6__Tsu-0",
-          "6__Kas-1",
-          "6__Altai-5",
-          "6_Kyo",
-        ];
-        var ref_first = [
-          "8__Tsu-0",
-          "8__Altai-5",
-          "8__Kas-1",
-          "5__Gro-3",
-          "5__Ler-0",
-          "5__Sku-30",
-          "6__Altai-5",
-          "6__Kas-1",
-          "6__Tsu-0",
-          "7__Sku-30",
-          "7__Gro-3",
-          "7__Ler-0",
-          "1__Gro-3",
-          "1__Ler-0",
-          "1__Sku-30",
-          "1__Altai-5",
-          "1__Kas-1",
-          "1__Tsu-0",
-          "2_An-1",
-          "8_Sha",
-          "5_Eri",
-          "6_Kyo",
-          "3_C24",
-          "7_Ler",
-          "4_Cvi",
-          "1_Col-0",
-        ];
+        "8__Tsu-0",
+        "8__Kas-1",
+        "8__Altai-5",
+        "8_Sha",
+        "7__Sku-30",
+        "7__Ler-0",
+        "7__Gro-3",
+        "7_Ler",
+        "6__Tsu-0",
+        "6__Kas-1",
+        "6__Altai-5",
+        "6_Kyo",
+        "5__Sku-30",
+        "5__Ler-0",
+        "5__Gro-3",
+        "5_Eri",
+        "4_Cvi",
+        "3_C24",
+        "2_An-1",
+        "1__Tsu-0",
+        "1__Sku-30",
+        "1__Ler-0",
+        "1__Kas-1",
+        "1__Gro-3",
+        "1__Altai-5",
+        "1_Col-0",
+      ];
+      var phylo_kmer = [
+        "2_An-1",
+        "1__Tsu-0",
+        "1__Sku-30",
+        "1__Ler-0",
+        "1__Kas-1",
+        "1__Gro-3",
+        "1__Altai-5",
+        "1_Col-0",
+        "4_Cvi",
+        "3_C24",
+        "8__Tsu-0",
+        "8__Kas-1",
+        "8__Altai-5",
+        "8_Sha",
+        "7__Sku-30",
+        "7__Ler-0",
+        "7__Gro-3",
+        "7_Ler",
+        "5__Sku-30",
+        "5__Ler-0",
+        "5__Gro-3",
+        "5_Eri",
+        "6__Tsu-0",
+        "6__Kas-1",
+        "6__Altai-5",
+        "6_Kyo",
+      ];
+      var ref_first = [
+        "8__Tsu-0",
+        "8__Altai-5",
+        "8__Kas-1",
+        "5__Gro-3",
+        "5__Ler-0",
+        "5__Sku-30",
+        "6__Altai-5",
+        "6__Kas-1",
+        "6__Tsu-0",
+        "7__Sku-30",
+        "7__Gro-3",
+        "7__Ler-0",
+        "1__Gro-3",
+        "1__Ler-0",
+        "1__Sku-30",
+        "1__Altai-5",
+        "1__Kas-1",
+        "1__Tsu-0",
+        "2_An-1",
+        "8_Sha",
+        "5_Eri",
+        "6_Kyo",
+        "3_C24",
+        "7_Ler",
+        "4_Cvi",
+        "1_Col-0",
+      ];
 
       var sortingOptions = {
         alpha_asc: alpha,
@@ -205,7 +222,7 @@ export default {
         phylo: phylo_kmer,
         phylo_rev: phylo_kmer.slice().reverse(),
         ref_first: ref_first,
-        ref_last: ref_first.slice().reverse()
+        ref_last: ref_first.slice().reverse(),
       };
       vis.sortingOptions = sortingOptions;
 
@@ -214,7 +231,7 @@ export default {
       vis.xScaleFocus.domain(genePositions);
       vis.yScaleFocus.domain(sortingOptions[updateSort]);
 
-      var length = (end - start + 1) * nr_accessions; //nr of cells to render 
+      var length = (end - start + 1) * nr_accessions; //nr of cells to render
 
       var rows_data_slice_default = Array.from({ length }, (_, i) => ({
         pos: flat_data_slice_default.pos[i],
@@ -231,7 +248,7 @@ export default {
       let vis = this;
 
       // console.log('data mutations new:', vis.data_mutations)
-      // check new data 
+      // check new data
       let visGeneUpdate = vis.svgContext
         .selectAll(".variants--summary")
         .data(vis.data_mutations);
@@ -254,13 +271,44 @@ export default {
         .attr("x2", function(d) {
           return vis.xScaleContext(d.pos);
         })
-        .attr("y1", vis.margin.top) // 30 
-        .attr("y2", vis.margin.top+vis.focusHeight); // 60
+        .attr("y1", vis.margin.top) // 30
+        .attr("y2", vis.margin.top + vis.focusHeight); // 60
 
       vis.svgContext
         .selectAll(".brush")
         .call(vis.brush)
         .call(vis.brush.move, [vis.start, vis.end].map(vis.xScaleContext));
+
+      console.log(
+        "test brush inital values", vis.start, 
+        [vis.start, vis.end].map(vis.xScaleContext)[1]
+      );
+
+        // label left 
+        const textUpdateL = vis.svgContextLabels.selectAll(".brushLabelL")
+        .data([vis.start]);
+
+        const textEnterL = textUpdateL.append("text");
+
+        const textExitL = textUpdateL.exit().remove();
+
+        textEnterL.merge(textUpdateL)
+            .style("text-anchor", "end")
+            .attr("x", [vis.start, vis.end].map(vis.xScaleContext)[0])
+            .text(d => d);
+
+        // label right 
+        const textUpdateR = vis.svgContextLabels.selectAll(".brushLabelR")
+        .data([vis.end]);
+
+        const textEnterR = textUpdateR.append("text");
+
+        const textExitR = textUpdateR.exit().remove();
+
+        textEnterR.merge(textUpdateR)
+            .style("text-anchor", "start")
+            .attr("x", [vis.start, vis.end].map(vis.xScaleContext)[1])
+            .text(d => d);
 
       // removes handle to resize the brush
       // d3.selectAll(".brush>.handle").remove();
@@ -269,7 +317,8 @@ export default {
 
       // update figure when brushing
       vis.brush.on("end", brushed); //change 'end' to 'brush' if want to see inbetween
-  
+      // hier was ik gebleven! use brush for labels!! 
+
       updateVariantFocusChart(vis.rows_data_slice_default);
 
       vis.svgFocus
@@ -292,15 +341,13 @@ export default {
       vis.yAxisFocusG.call(vis.yAxisFocus);
       vis.yAxisFocusG.select(".y-axis--focus .domain").remove(); // to disable rendering the axis line
 
-      
       function updateVariantFocusChart(data) {
-
         // check new data
         let visCellsUpdate = vis.svgFocus
           .selectAll(".snp-cell")
-          .data(data, d => d); //key function? 
+          .data(data, (d) => d); //key function?
 
-        // make new cells 
+        // make new cells
         let visCellsEnter = visCellsUpdate
           .enter()
           .append("rect")
@@ -309,22 +356,21 @@ export default {
         // remove old cells
         visCellsUpdate.exit().remove();
 
-        // merge cells with existing 
+        // merge cells with existing
         visCellsEnter
           .merge(visCellsUpdate)
           // .transition()
           //     .duration(300)
-          .attr("x", d => vis.xScaleFocus(d.pos))
-          .attr("y", d => vis.yScaleFocus(d.accession))
+          .attr("x", (d) => vis.xScaleFocus(d.pos))
+          .attr("y", (d) => vis.yScaleFocus(d.accession))
           .attr("rx", 1.5)
           .attr("ry", 1.5)
           .attr("width", vis.xScaleFocus.bandwidth())
           .attr("height", vis.yScaleFocus.bandwidth())
-          .style("fill", d => vis.colors[d.base])
+          .style("fill", (d) => vis.colors[d.base])
           .style("stroke-width", 4)
           .style("stroke", "none")
           .style("opacity", 0.8);
-
       }
 
       function brushed({ selection }) {
@@ -346,8 +392,33 @@ export default {
 
         vis.xScaleFocus.domain(d3.range(startUpdate, endUpdate + 1));
 
-        console.log('brush range', d3.extent(vis.xScaleFocus.domain()))
+        console.log("brush range", d3.extent(vis.xScaleFocus.domain()));
 
+        // update label left 
+        const textUpdateL = vis.svgContextLabels.selectAll(".brushLabelL")
+        .data([startUpdate]);
+
+        textUpdateL.selectAll("text").remove(); //remove old label
+
+        const textEnterL = textUpdateL.append("text");
+
+        textEnterL.merge(textUpdateL)
+            .style("text-anchor", "end")
+            .attr("x", [startUpdate, endUpdate].map(vis.xScaleContext)[0])
+            .text(d => d);
+
+         // update label right
+        const textUpdateR = vis.svgContextLabels.selectAll(".brushLabelR")
+        .data([endUpdate]);
+
+        textUpdateR.selectAll("text").remove(); //remove old label
+
+        const textEnterR = textUpdateR.append("text");
+
+        textEnterR.merge(textUpdateR)
+            .style("text-anchor", "start")
+            .attr("x", [startUpdate, endUpdate].map(vis.xScaleContext)[1])
+            .text(d => d);
 
         //rows data updated
         var flat_data_slice_updated = [
@@ -382,8 +453,7 @@ export default {
         // console.log("rows updated !", rows_data_slice_updated);
 
         vis.svgFocus.selectAll(".x-axis--focus").call(
-          vis.xAxisFocus
-          .tickValues(
+          vis.xAxisFocus.tickValues(
             vis.xScaleFocus.domain().filter(function(d, i) {
               return !(i % 20); // defines tick interval
             })
@@ -401,10 +471,10 @@ export default {
       }
 
       var mouseover = function() {
-        d3.select('#tooltip')
-         .style('display', 'block')
-         .style("opacity", 0.6)
-         .style("color", "white");
+        d3.select("#tooltip")
+          .style("display", "block")
+          .style("opacity", 0.6)
+          .style("color", "white");
         d3.select(this)
           .style("stroke", "black")
           .style("stroke-width", "1px")
@@ -412,10 +482,9 @@ export default {
       };
 
       var mousemove = function(event, d) {
-
-        d3.select('#tooltip')
-        .style('display', 'block')
-        .html(
+        d3.select("#tooltip")
+          .style("display", "block")
+          .html(
             "<strong>base:</strong> " +
               d.base +
               "<br/>" +
@@ -427,8 +496,7 @@ export default {
       };
 
       var mouseleave = function() {
-        d3.select('#tooltip')
-        .style('display', 'none');
+        d3.select("#tooltip").style("display", "none");
         d3.select(this)
           .style("stroke", "none")
           .style("opacity", 0.8);
@@ -446,8 +514,8 @@ export default {
           .selectAll(".snp-cell")
           .transition()
           // .duration(800)
-          .attr("x", d => vis.xScaleFocus(d.pos))
-          .attr("y", d => vis.yScaleFocus(d.accession));
+          .attr("x", (d) => vis.xScaleFocus(d.pos))
+          .attr("y", (d) => vis.yScaleFocus(d.accession));
         vis.svgFocus
           .selectAll(".snp-cell")
           .on("mouseover", mouseover)
@@ -460,7 +528,6 @@ export default {
         var selected = d3.select("#selectButtonSort").node().value;
         console.log("selected order MSA: ", selected);
         updateMSAorder(vis.sortingOptions[selected]);
-
       });
 
       // Change brush size based on select
@@ -478,6 +545,11 @@ export default {
             [start_updated, end_updated].map(vis.xScaleContext)
           );
 
+        console.log(
+          "test brush values",
+          [start_updated, end_updated].map(vis.xScaleContext)
+        );
+
         vis.svgFocus.selectAll(".x-axis--focus").call(
           vis.xAxisFocus.tickValues(
             vis.xScaleFocus.domain().filter(function(d, i) {
@@ -490,46 +562,51 @@ export default {
 
       // Change with arrow left
       d3.select("#btn-arrow-left").on("click", function() {
-        console.log('clicked left arrow')
+        console.log("clicked left arrow");
         brushArrow("left");
       });
 
-
       // Change focus with arrow right
       d3.select("#btn-arrow-right").on("click", function() {
-        console.log('clicked right arrow')
+        console.log("clicked right arrow");
         brushArrow("right");
       });
 
       function brushArrow(arrow) {
-        const rangeOld = d3.extent(vis.xScaleFocus.domain())
-        console.log('old brush start', rangeOld[0] )
-        console.log('old brush end', rangeOld[1] )
+        const rangeOld = d3.extent(vis.xScaleFocus.domain());
+        console.log("old brush start", rangeOld[0]);
+        console.log("old brush end", rangeOld[1]);
 
         if (arrow === "left") {
-          if (rangeOld[0] <= 0){
+          if (rangeOld[0] <= 0) {
             var startUpdate = 0;
-            var endUpdate = rangeOld[1]-1;
-          }
-          else {
-            startUpdate = rangeOld[0]-1;
-            endUpdate = rangeOld[1]-1;
-          console.log("new start and end of left brush: ", startUpdate, endUpdate);
+            var endUpdate = rangeOld[1] - 1;
+          } else {
+            startUpdate = rangeOld[0] - 1;
+            endUpdate = rangeOld[1] - 1;
+            console.log(
+              "new start and end of left brush: ",
+              startUpdate,
+              endUpdate
+            );
           }
         }
         if (arrow == "right") {
-          if (rangeOld[1] >= vis.length_gene){
-              startUpdate = rangeOld[0]+1;
-              endUpdate = vis.length_gene;
-          }
-          else {
-            startUpdate = rangeOld[0]+1;
-            endUpdate = rangeOld[1]+1;
-            console.log("new start and end of right brush: ", startUpdate, endUpdate);
+          if (rangeOld[1] >= vis.length_gene) {
+            startUpdate = rangeOld[0] + 1;
+            endUpdate = vis.length_gene;
+          } else {
+            startUpdate = rangeOld[0] + 1;
+            endUpdate = rangeOld[1] + 1;
+            console.log(
+              "new start and end of right brush: ",
+              startUpdate,
+              endUpdate
+            );
           }
         }
 
-        // update brush selection 
+        // update brush selection
         vis.svgContext
           .selectAll(".brush")
           .call(
@@ -574,8 +651,7 @@ export default {
         // console.log("rows updated !", rows_data_slice_updated);
 
         vis.svgFocus.selectAll(".x-axis--focus").call(
-          vis.xAxisFocus
-          .tickValues(
+          vis.xAxisFocus.tickValues(
             vis.xScaleFocus.domain().filter(function(d, i) {
               return !(i % 20); // defines tick interval
             })
@@ -591,7 +667,6 @@ export default {
           .on("mousemove", mousemove)
           .on("mouseleave", mouseleave);
       }
-
     },
   },
   mounted() {
@@ -609,7 +684,7 @@ export default {
     vis.width = width;
     vis.height = height;
 
-    // set color scale 
+    // set color scale
     var colors = {
       A: "#4daf4a",
       a: "#4daf4a",
@@ -697,7 +772,7 @@ export default {
       .select("#gene_chart")
       .append("svg")
       .attr("width", width + margin.left + margin.right)
-      .attr("height", focusHeight + margin.bottom)
+      .attr("height", focusHeight + margin.bottom + 15)
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + 0 + ")");
 
@@ -717,6 +792,32 @@ export default {
 
     vis.svgContext = svgContext;
 
+    const svgContextLabels = svgContext
+      .append("g")
+      .attr("class", "brushLabels")
+      .style("font-size", 11)
+      .style("font-family", "sans-serif")
+      .style("fill", "cornflowerblue")
+      .style("font-weight", 600)
+      .attr(
+        "transform",
+        `translate(${0}, ${margin.top + vis.focusHeight + 15})`
+      );
+
+    vis.svgContextLabels = svgContextLabels;
+
+    var labelL = vis.svgContextLabels
+    .append("g")
+    .attr("class", "brushLabelL");
+
+    vis.labelL = labelL;
+
+    var labelR = vis.svgContextLabels
+    .append("g")
+    .attr("class", "brushLabelR");
+
+    vis.labelR = labelR;
+
     var svgFocus = d3
       .select("#msa_chart")
       .append("svg")
@@ -735,13 +836,17 @@ export default {
       .attr("transform", "translate(0," + vis.margin.top + ")");
     vis.xAxisContextG = xAxisContextG;
 
-    var xAxisFocusG = vis.svgFocus.append("g").attr("class", "x-axis--focus")
-    .style("font-size", 10)
+    var xAxisFocusG = vis.svgFocus
+      .append("g")
+      .attr("class", "x-axis--focus")
+      .style("font-size", 10);
     // .attr("transform", "translate(0," + this.height + ")")
     vis.xAxisFocusG = xAxisFocusG;
 
-    var yAxisFocusG = vis.svgFocus.append("g").attr("class", "y-axis--focus")
-    .style("font-size", 10)
+    var yAxisFocusG = vis.svgFocus
+      .append("g")
+      .attr("class", "y-axis--focus")
+      .style("font-size", 10);
     vis.yAxisFocusG = yAxisFocusG;
 
     // append legend
@@ -817,7 +922,6 @@ export default {
     //   .style("padding", "5px");
     // vis.tooltip = tooltip;
 
-
     // }
     // initVis();
   },
@@ -866,8 +970,7 @@ export default {
   fill-opacity: 0.3;
 }
 
-#btn-arrow-left {margin-left: 11%; }  /* improve this code */
-
-
-
+#btn-arrow-left {
+  margin-left: 11%;
+} /* improve this code */
 </style>
