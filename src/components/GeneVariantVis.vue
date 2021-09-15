@@ -284,36 +284,9 @@ export default {
         [vis.start, vis.end].map(vis.xScaleContext)[1]
       );
 
-        // label left 
-        const textUpdateL = vis.svgContextLabels.selectAll(".brushLabelL")
-        .data([vis.start]);
-
-        const textEnterL = textUpdateL.append("text");
-
-        const textExitL = textUpdateL.exit().remove();
-
-        textEnterL.merge(textUpdateL)
-            .style("text-anchor", "end")
-            .attr("x", [vis.start, vis.end].map(vis.xScaleContext)[0])
-            .text(d => d);
-
-        // label right 
-        const textUpdateR = vis.svgContextLabels.selectAll(".brushLabelR")
-        .data([vis.end]);
-
-        const textEnterR = textUpdateR.append("text");
-
-        const textExitR = textUpdateR.exit().remove();
-
-        textEnterR.merge(textUpdateR)
-            .style("text-anchor", "start")
-            .attr("x", [vis.start, vis.end].map(vis.xScaleContext)[1])
-            .text(d => d);
-
-      // removes handle to resize the brush
-      // d3.selectAll(".brush>.handle").remove();
-      // removes crosshair cursor
-      // d3.selectAll(".brush>.overlay").remove();
+       // update brush labels 
+        updateLabelBrush("left",vis.start,vis.end);
+        updateLabelBrush("right",vis.start,vis.end);
 
       // update figure when brushing
       vis.brush.on("end", brushed); //change 'end' to 'brush' if want to see inbetween
@@ -331,15 +304,47 @@ export default {
       vis.xAxisContextG.call(vis.xAxisContext);
 
       vis.xAxisFocusG.call(
-        vis.xAxisFocus.tickValues(
+        vis.xAxisFocus
+        .tickValues(
           vis.xScaleFocus.domain().filter(function(d, i) {
-            return !(i % 20); // defines tick interval
+            return !(i % 10); // defines tick interval
           })
         )
       );
       vis.xAxisFocusG.select(".x-axis--focus .domain").remove(); // to disable rendering the axis line
       vis.yAxisFocusG.call(vis.yAxisFocus);
       vis.yAxisFocusG.select(".y-axis--focus .domain").remove(); // to disable rendering the axis line
+
+
+      // updates labels brush 
+      function updateLabelBrush(side,start,end) {
+        
+        if (side == "left") {
+          var brushClass = ".brushLabelL";
+          var style = "end";
+          var data = [start];
+          var xPos = 0;
+        } 
+        else {
+          brushClass = ".brushLabelR";
+          style = "start"
+          data = [end];
+          xPos = 1;
+        }
+        const textUpdate = vis.svgContextLabels.selectAll(brushClass)
+        .data(data);
+
+        textUpdate.selectAll("text").remove(); //remove old label
+
+        const textEnter = textUpdate.append("text");
+
+        const textExit = textUpdate.exit().remove();
+
+        textEnter.merge(textUpdate)
+            .style("text-anchor", style)
+            .attr("x", [start, end].map(vis.xScaleContext)[xPos])
+            .text(d => d);
+      }
 
       function updateVariantFocusChart(data) {
         // check new data
@@ -394,31 +399,9 @@ export default {
 
         console.log("brush range", d3.extent(vis.xScaleFocus.domain()));
 
-        // update label left 
-        const textUpdateL = vis.svgContextLabels.selectAll(".brushLabelL")
-        .data([startUpdate]);
-
-        textUpdateL.selectAll("text").remove(); //remove old label
-
-        const textEnterL = textUpdateL.append("text");
-
-        textEnterL.merge(textUpdateL)
-            .style("text-anchor", "end")
-            .attr("x", [startUpdate, endUpdate].map(vis.xScaleContext)[0])
-            .text(d => d);
-
-         // update label right
-        const textUpdateR = vis.svgContextLabels.selectAll(".brushLabelR")
-        .data([endUpdate]);
-
-        textUpdateR.selectAll("text").remove(); //remove old label
-
-        const textEnterR = textUpdateR.append("text");
-
-        textEnterR.merge(textUpdateR)
-            .style("text-anchor", "start")
-            .attr("x", [startUpdate, endUpdate].map(vis.xScaleContext)[1])
-            .text(d => d);
+        // update brush labels 
+        updateLabelBrush("left",startUpdate,endUpdate);
+        updateLabelBrush("right",startUpdate,endUpdate);
 
         //rows data updated
         var flat_data_slice_updated = [
@@ -483,13 +466,16 @@ export default {
 
       var mousemove = function(event, d) {
         d3.select("#tooltip")
-          .style("display", "block")
+          // .style("display", "block")
           .html(
             "<strong>base:</strong> " +
               d.base +
               "<br/>" +
               "<strong>position:</strong> " +
-              d.pos
+              d.pos +
+              "<br/>" +
+              "<strong>accession:</strong> " +
+              d.accession
           )
           .style("left", d3.pointer(event)[0] + 750 + "px")
           .style("top", d3.pointer(event)[1] + 150 + "px");
@@ -938,6 +924,7 @@ export default {
   border-width: 0px;
   border-radius: 3px;
   padding: 5px;
+  text-align: left;
 }
 
 .selectButtonVariants {
