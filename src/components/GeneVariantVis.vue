@@ -291,6 +291,29 @@ export default {
       // update figure when brushing
       vis.brush.on("end", brushed); //change 'end' to 'brush' if want to see inbetween
       // hier was ik gebleven! use brush for labels!! 
+      vis.brush.on("brush", brushUpdate);
+
+      function brushUpdate({ selection }) {
+        console.log("selection brush", { selection });
+        const rangeSelected = selection.map(
+          vis.xScaleContext.invert,
+          vis.xScaleContext
+        );
+        console.log(
+          "range selected: ",
+          // rangeSelected,
+          Math.round(rangeSelected[0]),
+          Math.round(rangeSelected[1])
+        );
+
+        var startUpdate = Math.round(rangeSelected[0]);
+        var endUpdate = Math.round(rangeSelected[1]);
+
+        updateLabelBrush("left",startUpdate,endUpdate);
+        updateLabelBrush("right",startUpdate,endUpdate)
+
+
+      }
 
       updateVariantFocusChart(vis.rows_data_slice_default);
 
@@ -399,9 +422,9 @@ export default {
 
         console.log("brush range", d3.extent(vis.xScaleFocus.domain()));
 
-        // update brush labels 
-        updateLabelBrush("left",startUpdate,endUpdate);
-        updateLabelBrush("right",startUpdate,endUpdate);
+        // // update brush labels 
+        // updateLabelBrush("left",startUpdate,endUpdate);
+        // updateLabelBrush("right",startUpdate,endUpdate);
 
         //rows data updated
         var flat_data_slice_updated = [
@@ -737,7 +760,7 @@ export default {
     vis.yScaleFocus = yScaleFocus;
 
     //initialize axes
-    var xAxisContext = d3.axisTop().scale(vis.xScaleContext);
+    var xAxisContext = d3.axisBottom().scale(vis.xScaleContext);
     vis.xAxisContext = xAxisContext;
 
     var xAxisFocus = d3.axisTop(vis.xScaleFocus);
@@ -758,7 +781,7 @@ export default {
       .select("#gene_chart")
       .append("svg")
       .attr("width", width + margin.left + margin.right)
-      .attr("height", focusHeight + margin.bottom + 15)
+      .attr("height", focusHeight + margin.bottom + 25)
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + 0 + ")");
 
@@ -787,7 +810,7 @@ export default {
       .style("font-weight", 600)
       .attr(
         "transform",
-        `translate(${0}, ${margin.top + vis.focusHeight + 15})`
+        `translate(${0}, ${vis.margin.top - 5})`
       );
 
     vis.svgContextLabels = svgContextLabels;
@@ -819,8 +842,27 @@ export default {
       .append("g")
       .attr("class", "x-axis--context")
       .style("font-size", 10)
-      .attr("transform", "translate(0," + vis.margin.top + ")");
+      .attr("transform", "translate(0," + (margin.top + focusHeight) + ")");
     vis.xAxisContextG = xAxisContextG;
+
+     // Append both axis titles
+     vis.svgContext.append('text')
+        .attr('class', 'axis-title')
+        .attr('y', (vis.margin.top + vis.focusHeight) + 25)
+        .attr('x', width / 2)
+        .attr('dy', '0.5em')
+        .style('text-anchor', 'middle')
+        .style("font-size", 11)
+        .style("font-family", "sans-serif")
+        // .style("font-weight", 500)
+        .text('Length Gene');
+
+    // vis.svg.append('text')
+    //     .attr('class', 'axis-title')
+    //     .attr('x', 0)
+    //     .attr('y', 0)
+    //     .attr('dy', '.71em')
+    //     .text('Hours');
 
     var xAxisFocusG = vis.svgFocus
       .append("g")
