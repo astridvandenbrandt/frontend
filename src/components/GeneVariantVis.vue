@@ -228,6 +228,7 @@ export default {
 
       // Set the scale input domains
       vis.xScaleContext.domain([0, vis.length_gene]);
+      vis.yScaleContext.domain([0, 12]); // 11 is max vars on one pos 
       vis.xScaleFocus.domain(genePositions);
       vis.yScaleFocus.domain(sortingOptions[updateSort]);
 
@@ -247,32 +248,50 @@ export default {
     renderVis() {
       let vis = this;
 
-      // console.log('data mutations new:', vis.data_mutations)
+      console.log('data mutations new:', vis.data_mutations)
       // check new data
       let visGeneUpdate = vis.svgContext
-        .selectAll(".variants--summary")
+        .selectAll(".variants--summary-bar")
         .data(vis.data_mutations);
 
-      // make new lines
+
+        // make new rects
       let visGeneEnter = visGeneUpdate
         .enter()
-        .append("line")
-        .attr("class", "variants--summary");
+        .append("rect")
+        .attr("class", "variants--summary-bar");
 
-      // remove old lines
+      // remove old rects
       visGeneUpdate.exit().remove();
 
-      // merge lines
+      //merge rects
       visGeneEnter
         .merge(visGeneUpdate)
-        .attr("x1", function(d) {
-          return vis.xScaleContext(d.pos);
-        })
-        .attr("x2", function(d) {
-          return vis.xScaleContext(d.pos);
-        })
-        .attr("y1", vis.margin.top) // 30
-        .attr("y2", vis.margin.top + vis.focusHeight); // 60
+        .attr('height', d => vis.focusHeight - vis.yScaleContext(d.accession))
+        .attr('width', 2)
+        .attr('x', (d) => vis.xScaleContext(d.pos))
+        .attr("y",(d)=> vis.focusHeight + vis.yScaleContext(d.accession))
+
+      // // make new lines
+      // let visGeneEnter = visGeneUpdate
+      //   .enter()
+      //   .append("line")
+      //   .attr("class", "variants--summary");
+
+      // // remove old lines
+      // visGeneUpdate.exit().remove();
+
+      // // merge lines
+      // visGeneEnter
+      //   .merge(visGeneUpdate)
+      //   .attr("x1", function(d) {
+      //     return vis.xScaleContext(d.pos);
+      //   })
+      //   .attr("x2", function(d) {
+      //     return vis.xScaleContext(d.pos);
+      //   })
+      //   .attr("y1", 30) // 30
+      //   .attr("y2", 60); // 60 vis.margin.top + vis.focusHeight
 
       vis.svgContext
         .selectAll(".brush")
@@ -325,6 +344,7 @@ export default {
 
       // update axes
       vis.xAxisContextG.call(vis.xAxisContext);
+      vis.yAxisContextG.call(vis.yAxisContext);
 
       vis.xAxisFocusG.call(
         vis.xAxisFocus
@@ -760,8 +780,11 @@ export default {
     vis.yScaleFocus = yScaleFocus;
 
     //initialize axes
-    var xAxisContext = d3.axisBottom().scale(vis.xScaleContext);
+    var xAxisContext = d3.axisBottom().scale(vis.xScaleContext).tickSizeOuter(0);
     vis.xAxisContext = xAxisContext;
+
+    var yAxisContext = d3.axisLeft(vis.yScaleContext).ticks(3).tickSizeOuter(0);
+    vis.yAxisContext= yAxisContext;
 
     var xAxisFocus = d3.axisTop(vis.xScaleFocus);
     vis.xAxisFocus = xAxisFocus;
@@ -844,6 +867,14 @@ export default {
       .style("font-size", 10)
       .attr("transform", "translate(0," + (margin.top + focusHeight) + ")");
     vis.xAxisContextG = xAxisContextG;
+
+    // append empty axis groups
+    var yAxisContextG = vis.svgContext
+      .append("g")
+      .attr("class", "y-axis--context")
+      .style("font-size", 10)
+      .attr("transform", "translate(0," + (margin.top) + ")");
+    vis.yAxisContextG = yAxisContextG;
 
      // Append both axis titles
      vis.svgContext.append('text')
@@ -983,14 +1014,23 @@ export default {
 }
 
 .background-gene--context {
-  fill: slategray;
-  fill-opacity: 0.1;
+  /* fill: slategray; */
+  fill: #8da0cb;
+  /* fill: #e7298a; */
+  fill-opacity: 0.05;
 }
 
-.variants--summary {
+/* .variants--summary {
   stroke: black;
   stroke-width: 1.5;
   opacity: 0.2;
+} */
+
+.variants--summary-bar {
+  /* fill: rgb(190, 99, 150); */
+  fill: #e7298a;
+  /* fill: #8da0cb; */
+  opacity: 1;
 }
 
 .selection {

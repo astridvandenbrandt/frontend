@@ -167,7 +167,7 @@ export default {
       this.loadDataMSA = data_msa;
 
       let data_msa_mutations = await d3.csv(
-        "./gene_variants/mut_" + geneID + ".csv"
+        "./gene_variants/var_count_" + geneID + ".csv"
       ); //  msa_AT1G01060_mutations.csv
       this.loadDataMut = data_msa_mutations;
 
