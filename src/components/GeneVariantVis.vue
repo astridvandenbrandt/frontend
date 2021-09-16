@@ -52,6 +52,7 @@
   </div>
 
   <div id="tooltip"></div>
+  <div id="tooltip-bars"></div>
 </template>
 
 <script>
@@ -108,6 +109,11 @@ export default {
       const length_gene = data.length / nr_accessions - 1;
       vis.length_gene = length_gene;
       console.log("length gene", length_gene);
+
+      const mutations = data_mutations.map((d) => parseFloat(d.accession));
+      const max_mutations = d3.max(mutations);
+      vis.max_mutations = max_mutations;
+      console.log("max mutations", mutations, max_mutations);
 
       const start = 0;
       vis.start = start;
@@ -228,7 +234,7 @@ export default {
 
       // Set the scale input domains
       vis.xScaleContext.domain([0, vis.length_gene]);
-      vis.yScaleContext.domain([0, 12]); // 11 is max vars on one pos 
+      vis.yScaleContext.domain([0, vis.max_mutations]); // 11 is max vars on one pos 
       vis.xScaleFocus.domain(genePositions);
       vis.yScaleFocus.domain(sortingOptions[updateSort]);
 
@@ -337,10 +343,16 @@ export default {
       updateVariantFocusChart(vis.rows_data_slice_default);
 
       vis.svgFocus
-        .selectAll("snp-cell")
+        .selectAll(".snp-cell")
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
+
+      vis.svgContext
+          .selectAll(".variants--summary-bar")
+          .on("mouseover", mouseoverBar)
+          .on("mousemove", mousemoveBar)
+          .on("mouseleave", mouseleaveBar);
 
       // update axes
       vis.xAxisContextG.call(vis.xAxisContext);
@@ -440,7 +452,7 @@ export default {
 
         vis.xScaleFocus.domain(d3.range(startUpdate, endUpdate + 1));
 
-        console.log("brush range", d3.extent(vis.xScaleFocus.domain()));
+        // console.log("brush range", d3.extent(vis.xScaleFocus.domain()));
 
         // // update brush labels 
         // updateLabelBrush("left",startUpdate,endUpdate);
@@ -489,18 +501,26 @@ export default {
 
         updateVariantFocusChart(rows_data_slice_updated);
 
+        vis.svgContext
+          .selectAll(".variants--summary-bar")
+          .on("mouseover", mouseoverBar)
+          .on("mousemove", mousemoveBar)
+          .on("mouseleave", mouseleaveBar);
+
         vis.svgFocus
           .selectAll(".snp-cell")
           .on("mouseover", mouseover)
           .on("mousemove", mousemove)
           .on("mouseleave", mouseleave);
+
       }
 
       var mouseover = function() {
         d3.select("#tooltip")
           .style("display", "block")
-          .style("opacity", 0.6)
-          .style("color", "white");
+          .style("opacity", 0.8)
+          // .style("color", "white");
+          .style("color", "black");
         d3.select(this)
           .style("stroke", "black")
           .style("stroke-width", "1px")
@@ -520,8 +540,38 @@ export default {
               "<strong>accession:</strong> " +
               d.accession
           )
-          .style("left", d3.pointer(event)[0] + 750 + "px")
+          .style("left", d3.pointer(event)[0] + 630 + "px")
           .style("top", d3.pointer(event)[1] + 150 + "px");
+      };
+
+      var mouseleaveBar = function() {
+        d3.select("#tooltip-bars").style("display", "none");
+        d3.select(this)
+          .style("stroke", "none")
+          .style("opacity", 0.8);
+      };
+
+      var mouseoverBar = function() {
+        d3.select("#tooltip-bars")
+          .style("display", "block")
+          .style("opacity", 0.8)
+          // .style("color", "white");
+          .style("color", "black");
+        d3.select(this)
+          .style("stroke", "black")
+          .style("stroke-width", "1px")
+          .style("opacity", 1);
+      };
+
+      var mousemoveBar = function(event, d) {
+        d3.select("#tooltip-bars")
+          // .style("display", "block")
+          .html(
+            "<strong>#SNPs:</strong> " +
+              d.accession 
+          )
+          .style("left", d3.pointer(event)[0] + 630 + "px")
+          .style("top", d3.pointer(event)[1] + 160 + "px");
       };
 
       var mouseleave = function() {
@@ -783,7 +833,7 @@ export default {
     var xAxisContext = d3.axisBottom().scale(vis.xScaleContext).tickSizeOuter(0);
     vis.xAxisContext = xAxisContext;
 
-    var yAxisContext = d3.axisLeft(vis.yScaleContext).ticks(3).tickSizeOuter(0);
+    var yAxisContext = d3.axisLeft(vis.yScaleContext).ticks(2).tickSizeOuter(0);
     vis.yAxisContext= yAxisContext;
 
     var xAxisFocus = d3.axisTop(vis.xScaleFocus);
@@ -878,22 +928,27 @@ export default {
 
      // Append both axis titles
      vis.svgContext.append('text')
-        .attr('class', 'axis-title')
+        .attr('class', 'x-axis-title')
         .attr('y', (vis.margin.top + vis.focusHeight) + 25)
         .attr('x', width / 2)
         .attr('dy', '0.5em')
         .style('text-anchor', 'middle')
-        .style("font-size", 11)
+        .style("font-size", 10)
         .style("font-family", "sans-serif")
         // .style("font-weight", 500)
         .text('Length Gene');
 
-    // vis.svg.append('text')
-    //     .attr('class', 'axis-title')
-    //     .attr('x', 0)
-    //     .attr('y', 0)
-    //     .attr('dy', '.71em')
-    //     .text('Hours');
+      vis.svgContext.append('text')
+        .attr('transform', `translate(${-80}, ${vis.focusHeight / 2 - 5}) rotate(-90)`)
+        .attr('class', 'y-axis-title')
+        .attr('y', (vis.margin.top + vis.focusHeight/2))
+        .attr('x', -40)
+        .attr('dy', '0.5em')
+        // .attr("transform", "rotate(270)")
+        .style('text-anchor', 'middle')
+        .style("font-size", 10)
+        .style("font-family", "sans-serif")
+        .text('# SNPs');
 
     var xAxisFocusG = vis.svgFocus
       .append("g")
@@ -989,7 +1044,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-#tooltip {
+/* #tooltip {
   position: absolute;
   display: none;
   background-color: black;
@@ -997,6 +1052,30 @@ export default {
   border-width: 0px;
   border-radius: 3px;
   padding: 5px;
+  text-align: left;
+} */
+
+#tooltip {
+  position: absolute;
+  opacity: 0;
+  background: #fff;
+  box-shadow: 2px 2px 3px 0px rgb(92 92 92 / 0.5);
+  border: 1px solid #ddd;
+  font-size: .8rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  text-align: left;
+}
+
+#tooltip-bars {
+  position: absolute;
+  opacity: 0;
+  background: #fff;
+  box-shadow: 2px 2px 3px 0px rgb(92 92 92 / 0.5);
+  border: 1px solid #ddd;
+  font-size: .8rem;
+  font-weight: 600;
+  padding: 2px 8px;
   text-align: left;
 }
 
