@@ -318,28 +318,6 @@ export default {
       // hier was ik gebleven! use brush for labels!! 
       vis.brush.on("brush", brushUpdate);
 
-      function brushUpdate({ selection }) {
-        console.log("selection brush", { selection });
-        const rangeSelected = selection.map(
-          vis.xScaleContext.invert,
-          vis.xScaleContext
-        );
-        console.log(
-          "range selected: ",
-          // rangeSelected,
-          Math.round(rangeSelected[0]),
-          Math.round(rangeSelected[1])
-        );
-
-        var startUpdate = Math.round(rangeSelected[0]);
-        var endUpdate = Math.round(rangeSelected[1]);
-
-        updateLabelBrush("left",startUpdate,endUpdate);
-        updateLabelBrush("right",startUpdate,endUpdate)
-
-
-      }
-
       updateVariantFocusChart(vis.rows_data_slice_default);
 
       vis.svgFocus
@@ -370,6 +348,27 @@ export default {
       vis.yAxisFocusG.call(vis.yAxisFocus);
       vis.yAxisFocusG.select(".y-axis--focus .domain").remove(); // to disable rendering the axis line
 
+      function brushUpdate({ selection }) {
+        console.log("selection brush", { selection });
+        const rangeSelected = selection.map(
+          vis.xScaleContext.invert,
+          vis.xScaleContext
+        );
+        console.log(
+          "range selected: ",
+          // rangeSelected,
+          Math.round(rangeSelected[0]),
+          Math.round(rangeSelected[1])
+        );
+
+        var startUpdate = Math.round(rangeSelected[0]);
+        var endUpdate = Math.round(rangeSelected[1]);
+
+        updateLabelBrush("left",startUpdate,endUpdate);
+        updateLabelBrush("right",startUpdate,endUpdate)
+
+
+      }
 
       // updates labels brush 
       function updateLabelBrush(side,start,end) {
