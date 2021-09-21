@@ -9,17 +9,19 @@
                 <h4>Menu</h4>
               </div>
               <div class="sidebar-item">
-                <label for="selectButtonData"> Select Gene: </label>
+                <label for="selectButtonData"> Gene: </label>
                 <select class="selectButtonVariants" id="selectButtonData">
                 </select>
               </div>
               <div class="sidebar-item">
-                <label for="selectButtonData"> Select Tree Type: </label>
-                <select class="selectButtonVariants" id="selectButtonTreeData">
+                <label for="selectButtonData"> Visual Reference: </label>
+                <select class="selectButtonVariants" id="selectButtonAccessionData">
                 </select>
               </div>
               <div class="sidebar-item">
-                <p>Select Accessions</p>
+                <label for="selectButtonData"> Tree Type: </label>
+                <select class="selectButtonVariants" id="selectButtonTreeData">
+                </select>
               </div>
               <div class="sidebar-item">
                 <p>Select Phenotypes</p>
@@ -27,32 +29,41 @@
             </div>
           </div>
 
-          <div class="col-md-3">
-            <div class="content-section">
-              <div class="content-title">
-                <p>Sequence Similarity</p>
-              </div>
-            </div>
-            <div class="content-section">
-              <div class="content-title">
-                <p>Phylogenetic Tree</p>
-              </div>
-              <TreeVis ref="tree_data" />
-            </div>
-          </div>
-          <div class="col-md-7">
+          <div class="col-md-2">
             <div class="content-section">
               <!-- <VariantOverview ref="variant_data_overview" /> -->
               <div class="content-title">
                 <p>Variant Summary</p>
               </div>
             </div>
+          </div>
+          
+          <div class="col-md-5">
+            <!-- <div class="content-section"> -->
+              <!-- <VariantOverview ref="variant_data_overview" /> -->
+              <!-- <div class="content-title">
+                <p>Variant Summary</p>
+              </div>
+            </div> -->
             <div class="content-section">
               <!-- <VariantOverview ref="variant_data_overview" /> -->
               <div class="content-title">
-                <p>Gene Variants</p>
+                <p>Gene Sequences</p>
               </div>
               <GeneVariantVis ref="variant_data" />
+            </div>
+          </div>
+          <div class="col-md-3">
+            <!-- <div class="content-section">
+              <div class="content-title">
+                <p>Sequence Similarity</p>
+              </div>
+            </div> -->
+            <div class="content-section">
+              <div class="content-title">
+                <p>Phylogenetic Tree</p>
+              </div>
+              <TreeVis ref="tree_data" />
             </div>
           </div>
         </div>
@@ -102,6 +113,39 @@ export default {
         return d;
       }); // corresponding value returned by the button
 
+     // Gene Ids
+     var accessionIDs = {
+      _full: "None",
+      "_1_Col-0": "1_Col-0",
+      "_2_An-1": "2_An-1",
+      "_3_C24":  "3_C24",
+      "_4_Cvi": "4_Cvi",
+      "_5_Eri": "5_Eri",
+      "_6_Kyo": "6_Kyo",
+      "_7_Ler": "7_Ler",
+      "_8_Sha": "8_Sha",
+      "_Altai-5": "Altai-5",
+      "_Gro-3": "Gro-3",
+      "_Kas-1": "Kas-1",
+      "_Ler-0": "Ler-0",
+      "_Sku-30": "Sku-30",
+      "_Tsu-0": "Tsu-0"
+
+    };
+
+    // add the options to the button
+    d3.select("#selectButtonAccessionData")
+      .selectAll("myOptionsAccessionData")
+      .data(Object.keys(accessionIDs))
+      .enter()
+      .append("option")
+      .text(function(d) {
+        return accessionIDs[d];
+      }) // text showed in the menu
+      .attr("value", function(d) {
+        return d;
+      }); // corresponding value returned by the button
+
     // Trees
     var treeTypes = {
       kmer_distance: "k-mer distance",
@@ -124,7 +168,7 @@ export default {
         return d;
       }); // corresponding value
 
-    this.fetchData(Object.keys(geneIDs)[0]); // inital data display
+    this.fetchData(Object.keys(geneIDs)[0], Object.keys(accessionIDs)[0]); // inital data display
     this.fetchDataTree(Object.keys(treeTypes)[0]);
     this.updateData();
   },
@@ -136,7 +180,10 @@ export default {
         var selectedGene = d3.select("#selectButtonData").node().value;
         console.log("selected gene ID: ", selectedGene);
 
-        this.fetchData(selectedGene);
+        var selectedAccession = d3.select("#selectButtonAccessionData").node().value;
+        console.log("selected Accession: ", selectedAccession);
+
+        this.fetchData(selectedGene, selectedAccession);
       });
 
       // Change data based on select
@@ -145,6 +192,16 @@ export default {
         console.log("selected Tree Type: ", selectedTree);
 
         this.fetchDataTree(selectedTree);
+      });
+      // Change data based on select
+      d3.select("#selectButtonAccessionData").on("change", () => {
+        var selectedGene = d3.select("#selectButtonData").node().value;
+        console.log("selected gene ID: ", selectedGene);
+
+        var selectedAccession = d3.select("#selectButtonAccessionData").node().value;
+        console.log("selected Accession: ", selectedAccession);
+
+        this.fetchData(selectedGene, selectedAccession);
       });
     },
     async fetchDataTree(treeType) {
@@ -160,14 +217,16 @@ export default {
 
       componentTree.updateVis(data_tree);
     },
-    async fetchData(geneID) {
-      console.log("initial Gene =", geneID);
+    async fetchData(geneID, accession) {
+      // console.log("initial Gene =", geneID);
+      // console.log("initial Accession =", accession);
+    
 
-      let data_msa = await d3.csv("./gene_variants/matrix_" + geneID + ".csv");
+      let data_msa = await d3.csv("./gene_variants/matrix_" + geneID + accession + ".csv");
       this.loadDataMSA = data_msa;
 
       let data_msa_mutations = await d3.csv(
-        "./gene_variants/var_count_" + geneID + ".csv"
+        "./gene_variants/var_count_" + geneID + accession +".csv"
       ); //  msa_AT1G01060_mutations.csv
       this.loadDataMut = data_msa_mutations;
 

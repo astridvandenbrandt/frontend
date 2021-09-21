@@ -137,32 +137,48 @@ export default {
       var genePositions = flat_data_slice_default.pos.filter(unique);
       // console.log("genePositions", genePositions);
 
+      // var alpha = [
+      //   "8__Tsu-0",
+      //   "8__Kas-1",
+      //   "8__Altai-5",
+      //   "8_Sha",
+      //   "7__Sku-30",
+      //   "7__Ler-0",
+      //   "7__Gro-3",
+      //   "7_Ler",
+      //   "6__Tsu-0",
+      //   "6__Kas-1",
+      //   "6__Altai-5",
+      //   "6_Kyo",
+      //   "5__Sku-30",
+      //   "5__Ler-0",
+      //   "5__Gro-3",
+      //   "5_Eri",
+      //   "4_Cvi",
+      //   "3_C24",
+      //   "2_An-1",
+      //   "1__Tsu-0",
+      //   "1__Sku-30",
+      //   "1__Ler-0",
+      //   "1__Kas-1",
+      //   "1__Gro-3",
+      //   "1__Altai-5",
+      //   "1_Col-0",
+      // ];
       var alpha = [
-        "8__Tsu-0",
-        "8__Kas-1",
-        "8__Altai-5",
         "8_Sha",
-        "7__Sku-30",
-        "7__Ler-0",
-        "7__Gro-3",
         "7_Ler",
-        "6__Tsu-0",
-        "6__Kas-1",
-        "6__Altai-5",
         "6_Kyo",
-        "5__Sku-30",
-        "5__Ler-0",
-        "5__Gro-3",
         "5_Eri",
         "4_Cvi",
         "3_C24",
         "2_An-1",
-        "1__Tsu-0",
-        "1__Sku-30",
-        "1__Ler-0",
-        "1__Kas-1",
-        "1__Gro-3",
-        "1__Altai-5",
+        "Tsu-0",
+        "Sku-30",
+        "Ler-0",
+        "Kas-1",
+        "Gro-3",
+        "Altai-5",
         "1_Col-0",
       ];
       var phylo_kmer = [
@@ -567,7 +583,10 @@ export default {
           // .style("display", "block")
           .html(
             "<strong>#SNPs:</strong> " +
-              d.accession 
+              d.accession +
+              "<br/>" +
+              "<strong>Position:</strong> " +
+              d.pos
           )
           .style("left", d3.pointer(event)[0] + 630 + "px")
           .style("top", d3.pointer(event)[1] + 160 + "px");
@@ -772,8 +791,12 @@ export default {
       c: "#ff7f00",
       T: "#377eb8",
       t: "#377eb8",
-      "-": "#E6E6E6",
-      "*": "#686868",
+      // "-": "#E6E6E6",
+      "-": "rgb(214,218,224)",
+      // "*": "rgb(240,240,244)",
+      "*": "rgb(39,43,50)",
+      // "*": "#686868",
+      // "*": "white",
     };
     vis.colors = colors;
 
@@ -784,10 +807,14 @@ export default {
       "#ff7f00",
       "#e41a1c",
       "#377eb8",
-      "#E6E6E6",
-      "#686868",
+      // "#E6E6E6",
+      "rgb(214,218,224)",
+      // "rgb(240,240,244)",
+      "rgb(39,43,50)",
+      //  "#686868",
+      // "white"
     ];
-    var bases = ["A", "C", "G", "T", "-", "*"];
+    var bases = ["A", "C", "G", "T", "same", "unknown or gap"];
 
     // define the accession orders
     var orders = {
@@ -970,13 +997,13 @@ export default {
       .append("g")
       .attr("class", "legendVariants")
       .attr("transform", function(d, i) {
-        return "translate(" + 50 * i + "," + 490 + ")";
+        return "translate(" + 66 * i + "," + 490 + ")";
       });
 
     legendVariants
       .append("rect")
-      .attr("width", 10)
-      .attr("height", 18)
+      .attr("width", 15)
+      .attr("height", 15)
       .attr("rx", 1.5)
       .attr("ry", 1.5)
       .style("fill", function(d, i) {
@@ -985,8 +1012,8 @@ export default {
 
     legendVariants
       .append("text")
-      .attr("x", 16)
-      .attr("y", 10)
+      .attr("x", 18)
+      .attr("y", 8)
       .attr("dy", ".35em")
       .text(function(d, i) {
         return bases[i];
