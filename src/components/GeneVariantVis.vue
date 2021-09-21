@@ -764,6 +764,28 @@ export default {
           .on("mousemove", mousemove)
           .on("mouseleave", mouseleave);
       }
+
+      // Hide y-axis when no VR
+        var newAcc = d3.select("#selectButtonAccessionData").node().value;
+        console.log("selected VR from component sequence: ", newAcc);
+
+        if (newAcc === "_full") {
+
+          console.log('no vr --> axis should NOT be visible')
+
+          d3.select(".y-axis--context").style("opacity", "0");
+          d3.select(".y-axis-title").style("opacity", "0");
+
+
+        }
+        else {
+
+          console.log('vr --> axis should be visible')
+
+          d3.select(".y-axis--context").style("opacity", "1");
+          d3.select(".y-axis-title").style("opacity", "1");
+        }
+
     },
   },
   mounted() {
