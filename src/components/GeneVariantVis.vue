@@ -290,7 +290,7 @@ export default {
       visGeneEnter
         .merge(visGeneUpdate)
         .attr('height', d => vis.focusHeight - vis.yScaleContext(d.accession))
-        .attr('width', 2)
+        .attr('width', 1.5)
         .attr('x', (d) => vis.xScaleContext(d.pos))
         .attr("y",(d)=> vis.focusHeight + vis.yScaleContext(d.accession))
 
@@ -1030,7 +1030,8 @@ export default {
       .attr("ry", 1.5)
       .style("fill", function(d, i) {
         return cols[i];
-      });
+      })
+      .style("opacity", 0.8);
 
     legendVariants
       .append("text")
@@ -1142,9 +1143,9 @@ export default {
 
 .background-gene--context {
   /* fill: slategray; */
-  fill: #8da0cb;
-  /* fill: #e7298a; */
-  fill-opacity: 0.05;
+  /* fill: #8da0cb; */
+  fill: #e7298a;
+  fill-opacity: 0.06;
 }
 
 /* .variants--summary {
@@ -1157,7 +1158,7 @@ export default {
   /* fill: rgb(190, 99, 150); */
   fill: #e7298a;
   /* fill: #8da0cb; */
-  opacity: 1;
+  opacity: 0.8;
 }
 
 .selection {
