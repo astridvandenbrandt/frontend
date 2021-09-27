@@ -23,22 +23,23 @@
                 <select class="selectButtonVariants" id="selectButtonTreeData">
                 </select>
               </div>
-              <div class="sidebar-item">
+              <!-- <div class="sidebar-item">
                 <p>Select Phenotypes</p>
-              </div>
+              </div> -->
             </div>
           </div>
 
-          <div class="col-md-2">
-            <div class="content-section">
+          <!-- <div class="col-md-2">
+            <div class="content-section"> -->
               <!-- <VariantOverview ref="variant_data_overview" /> -->
-              <div class="content-title">
-                <p>Variant Summary</p>
-              </div>
-            </div>
-          </div>
+              <!-- <div class="content-title">
+                <p>Matrix dragging</p>
+              </div> -->
+              <!-- <matrixDrag/> -->
+            <!-- </div>
+          </div> -->
           
-          <div class="col-md-5">
+          <div class="col-md-8">
             <!-- <div class="content-section"> -->
               <!-- <VariantOverview ref="variant_data_overview" /> -->
               <!-- <div class="content-title">
@@ -53,7 +54,7 @@
               <GeneVariantVis ref="variant_data" />
             </div>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-2">
             <!-- <div class="content-section">
               <div class="content-title">
                 <p>Sequence Similarity</p>
@@ -65,6 +66,12 @@
               </div>
               <TreeVis ref="tree_data" />
             </div>
+            <!-- <div class="content-section">
+              <div class="content-title">
+                <p>Matrix rows example</p>
+              </div>
+              <matrixDrag/>
+            </div> -->
           </div>
         </div>
       </div>
@@ -76,13 +83,14 @@
 import * as d3 from "d3";
 import TreeVis from "./components/TreeVis.vue";
 import GeneVariantVis from "./components/GeneVariantVis.vue";
+// import matrixDrag from "./components/matrixDrag.vue";
 
 export default {
   name: "App",
   components: {
     TreeVis,
     GeneVariantVis,
-    // VariantOverview,
+    // matrixDrag
   },
   data() {
     return {

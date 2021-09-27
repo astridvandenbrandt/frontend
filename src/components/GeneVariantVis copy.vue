@@ -19,7 +19,7 @@
     </select>
   </div>
   <div class="container">
-    <div id="chart"></div>
+    <div id="gene_chart"></div>
     <div class="row" id="header-arrows">
       <div class="col" id="footer-col-right">
         <div class="float-start border rounded" id="btn-arrow-left">
@@ -27,8 +27,8 @@
             <img
               src="./buttons/arrow-left.svg"
               alt=""
-              width="12"
-              height="12"
+              width="20"
+              height="20"
               title="arrow-left"
             />
           </button>
@@ -40,14 +40,15 @@
             <img
               src="./buttons/arrow-right.svg"
               alt=""
-              width="12"
-              height="12"
+              width="20"
+              height="20"
               title="arrow-right"
             />
           </button>
         </div>
       </div>
-    </div>
+    </div> 
+      <div id="msa_chart"></div>
   </div>
 
   <div id="tooltip"></div>
@@ -279,12 +280,13 @@ export default {
         // alpha_desc: alpha.slice().reverse(),
         phylo: phylo_kmer,
         phylo_rev: phylo_kmer.slice().reverse(),
+        
       };
       vis.sortingOptions = sortingOptions;
 
       // Set the scale input domains
       vis.xScaleContext.domain([0, vis.length_gene]);
-      vis.yScaleContext.domain([0, vis.max_mutations]); // 11 is max vars on one pos
+      vis.yScaleContext.domain([0, vis.max_mutations]); // 11 is max vars on one pos 
       vis.xScaleFocus.domain(genePositions);
       vis.yScaleFocus.domain(sortingOptions[updateSort]);
 
@@ -304,13 +306,14 @@ export default {
     renderVis() {
       let vis = this;
 
-      console.log("data mutations new:", vis.data_mutations);
+      console.log('data mutations new:', vis.data_mutations)
       // check new data
       let visGeneUpdate = vis.svgContext
         .selectAll(".variants--summary-bar")
         .data(vis.data_mutations);
 
-      // make new rects
+
+        // make new rects
       let visGeneEnter = visGeneUpdate
         .enter()
         .append("rect")
@@ -322,10 +325,10 @@ export default {
       //merge rects
       visGeneEnter
         .merge(visGeneUpdate)
-        .attr("height", (d) => vis.focusHeight - vis.yScaleContext(d.accession))
-        .attr("width", 1.5)
-        .attr("x", (d) => vis.xScaleContext(d.pos))
-        .attr("y", (d) => vis.yScaleContext(d.accession));
+        .attr('height', d => vis.focusHeight - vis.yScaleContext(d.accession))
+        .attr('width', 1.5)
+        .attr('x', (d) => vis.xScaleContext(d.pos))
+        .attr("y",(d)=> vis.focusHeight + vis.yScaleContext(d.accession))
 
       // // make new lines
       // let visGeneEnter = visGeneUpdate
@@ -354,18 +357,17 @@ export default {
         .call(vis.brush.move, [vis.start, vis.end].map(vis.xScaleContext));
 
       console.log(
-        "test brush inital values",
-        vis.start,
+        "test brush inital values", vis.start, 
         [vis.start, vis.end].map(vis.xScaleContext)[1]
       );
 
-      // update brush labels
-      updateLabelBrush("left", vis.start, vis.end);
-      updateLabelBrush("right", vis.start, vis.end);
+       // update brush labels 
+        updateLabelBrush("left",vis.start,vis.end);
+        updateLabelBrush("right",vis.start,vis.end);
 
       // update figure when brushing
       vis.brush.on("end", brushed); //change 'end' to 'brush' if want to see inbetween
-      // hier was ik gebleven! use brush for labels!!
+      // hier was ik gebleven! use brush for labels!! 
       vis.brush.on("brush", brushUpdate);
 
       updateVariantFocusChart(vis.rows_data_slice_default);
@@ -377,17 +379,18 @@ export default {
         .on("mouseleave", mouseleave);
 
       vis.svgContext
-        .selectAll(".variants--summary-bar")
-        .on("mouseover", mouseoverBar)
-        .on("mousemove", mousemoveBar)
-        .on("mouseleave", mouseleaveBar);
+          .selectAll(".variants--summary-bar")
+          .on("mouseover", mouseoverBar)
+          .on("mousemove", mousemoveBar)
+          .on("mouseleave", mouseleaveBar);
 
       // update axes
       vis.xAxisContextG.call(vis.xAxisContext);
       vis.yAxisContextG.call(vis.yAxisContext);
 
       vis.xAxisFocusG.call(
-        vis.xAxisFocus.tickValues(
+        vis.xAxisFocus
+        .tickValues(
           vis.xScaleFocus.domain().filter(function(d, i) {
             return !(i % 10); // defines tick interval
           })
@@ -413,26 +416,29 @@ export default {
         var startUpdate = Math.round(rangeSelected[0]);
         var endUpdate = Math.round(rangeSelected[1]);
 
-        updateLabelBrush("left", startUpdate, endUpdate);
-        updateLabelBrush("right", startUpdate, endUpdate);
+        updateLabelBrush("left",startUpdate,endUpdate);
+        updateLabelBrush("right",startUpdate,endUpdate)
+
+
       }
 
-      // updates labels brush
-      function updateLabelBrush(side, start, end) {
+      // updates labels brush 
+      function updateLabelBrush(side,start,end) {
+        
         if (side == "left") {
           var brushClass = ".brushLabelL";
           var style = "end";
           var data = [start];
           var xPos = 0;
-        } else {
+        } 
+        else {
           brushClass = ".brushLabelR";
-          style = "start";
+          style = "start"
           data = [end];
           xPos = 1;
         }
-        const textUpdate = vis.svgContextLabels
-          .selectAll(brushClass)
-          .data(data);
+        const textUpdate = vis.svgContextLabels.selectAll(brushClass)
+        .data(data);
 
         textUpdate.selectAll("text").remove(); //remove old label
 
@@ -440,29 +446,27 @@ export default {
 
         const textExit = textUpdate.exit().remove();
 
-        textEnter
-          .merge(textUpdate)
-          .style("text-anchor", style)
-          .attr("x", [start, end].map(vis.xScaleContext)[xPos])
-          .text((d) => d);
+        textEnter.merge(textUpdate)
+            .style("text-anchor", style)
+            .attr("x", [start, end].map(vis.xScaleContext)[xPos])
+            .text(d => d);
       }
 
       function updateVariantFocusChart(data) {
-        var row = vis.svgFocus
-          .selectAll(".row--accession")
-          .data([...new Set(data.map((d) => d.accession))])
-          .enter()
-          .append("svg:g")
-          .attr("class", ".row--accession");
+
+        var row = vis.svgFocus.selectAll(".row--accession")
+                .data([...new Set(data.map(d => d.accession))])
+            .enter().append("svg:g")
+                .attr("class", ".row--accession");
 
         //  // check new data
         //  let visCellsUpdate = row
         //   .selectAll(".snp-cell")
-        //   .data(function (d,i) {
+        //   .data(function (d,i) { 
         //     console.log(' data for cells matrix: ', d.map(function(a) { return {value: a, row: i}; } ))
         //     return d.map(function(a) { return {value: a, row: i}; } ) })
-
-        // check new data
+        
+            // check new data
         let visCellsUpdate = vis.svgFocus
           .selectAll(".snp-cell")
           .data(data, (d) => d); //key function?
@@ -514,7 +518,7 @@ export default {
 
         // console.log("brush range", d3.extent(vis.xScaleFocus.domain()));
 
-        // // update brush labels
+        // // update brush labels 
         // updateLabelBrush("left",startUpdate,endUpdate);
         // updateLabelBrush("right",startUpdate,endUpdate);
 
@@ -572,6 +576,7 @@ export default {
           .on("mouseover", mouseover)
           .on("mousemove", mousemove)
           .on("mouseleave", mouseleave);
+
       }
 
       var mouseover = function() {
@@ -810,53 +815,37 @@ export default {
       }
 
       // Hide y-axis when no VR
-      var newAcc = d3.select("#selectButtonAccessionData").node().value;
-      console.log("selected VR from component sequence: ", newAcc);
+        var newAcc = d3.select("#selectButtonAccessionData").node().value;
+        console.log("selected VR from component sequence: ", newAcc);
 
-      if (newAcc === "_full") {
-        console.log("no vr --> axis should NOT be visible");
+        if (newAcc === "_full") {
 
-        d3.select(".y-axis--context").style("opacity", "0");
-        d3.select(".y-axis-title").style("opacity", "0");
-      } else {
-        console.log("vr --> axis should be visible");
+          console.log('no vr --> axis should NOT be visible')
 
-        d3.select(".y-axis--context").style("opacity", "1");
-        d3.select(".y-axis-title").style("opacity", "1");
-      }
+          d3.select(".y-axis--context").style("opacity", "0");
+          d3.select(".y-axis-title").style("opacity", "0");
+
+
+        }
+        else {
+
+          console.log('vr --> axis should be visible')
+
+          d3.select(".y-axis--context").style("opacity", "1");
+          d3.select(".y-axis-title").style("opacity", "1");
+        }
+
     },
   },
   mounted() {
     // function initVis() {
     let vis = this;
 
-    // Define dimensions of the visualization
-    const containerWidth = d3.select("#chart").node().clientWidth;
-    const containerHeight = 600;
-
-    const margin = { top: 5, right: 5, bottom: 0, left: 5 };
-    const innerMargin = 12;
-    // const tooltipMargin = 10;
-    const legendHeight = 40;
-
-    const width = containerWidth - margin.left - margin.right;
-    const height = containerHeight - margin.top - margin.left - legendHeight;
-
-    const leftColWidth = 150;
-    const setIdWidth = 50;
-    const setSizeChartWidth = leftColWidth - setIdWidth;
-    const midColWidth = 500;
-    const rightColWidth = width - leftColWidth - midColWidth;
-    const phenoChartWidth = rightColWidth - innerMargin;
-
-    const topRowHeight = 30;
-    const bottomRowHeight = height - topRowHeight - innerMargin * 5;
-
-    // // set dimensions
-    // var margin = { top: 30, right: 20, bottom: 40, left: 80 },
-    //   width =
-    //     (d3.select("#msa_chart").node().clientWidth - margin.left - margin.right)/2,
-    //   height = 550 - margin.top - margin.bottom;
+    // set dimensions
+    var margin = { top: 30, right: 20, bottom: 40, left: 80 },
+      width =
+        d3.select("#msa_chart").node().clientWidth - margin.left - margin.right,
+      height = 550 - margin.top - margin.bottom;
     var focusHeight = 30;
     vis.focusHeight = focusHeight;
     vis.margin = margin;
@@ -906,6 +895,7 @@ export default {
       // alpha_desc: "alphabetical reversed",
       phylo: "phylogeny",
       phylo_rev: "phylogeny reversed",
+   
     };
     vis.orders = orders;
 
@@ -919,36 +909,30 @@ export default {
     vis.brushSizes = brushSizes;
 
     // initialize scales
-    var xScaleContext = d3.scaleLinear().range([0, midColWidth]);
+    var xScaleContext = d3.scaleLinear().range([0, width]);
     vis.xScaleContext = xScaleContext;
 
-    var yScaleContext = d3.scaleLinear().range([topRowHeight, 0]);
+    var yScaleContext = d3.scaleLinear().range([focusHeight, 0]);
     vis.yScaleContext = yScaleContext;
 
     var xScaleFocus = d3
       .scaleBand()
-      .range([0, midColWidth])
+      .range([0, width])
       .padding(0.2);
     vis.xScaleFocus = xScaleFocus;
 
     var yScaleFocus = d3
       .scaleBand()
-      .range([bottomRowHeight, 0])
+      .range([height, 0])
       .padding(0.05);
     vis.yScaleFocus = yScaleFocus;
 
     //initialize axes
-    var xAxisContext = d3
-      .axisBottom()
-      .scale(vis.xScaleContext)
-      .tickSizeOuter(0);
+    var xAxisContext = d3.axisBottom().scale(vis.xScaleContext).tickSizeOuter(0);
     vis.xAxisContext = xAxisContext;
 
-    var yAxisContext = d3
-      .axisLeft(vis.yScaleContext)
-      .ticks(2)
-      .tickSizeOuter(0);
-    vis.yAxisContext = yAxisContext;
+    var yAxisContext = d3.axisLeft(vis.yScaleContext).ticks(2).tickSizeOuter(0);
+    vis.yAxisContext= yAxisContext;
 
     var xAxisFocus = d3.axisTop(vis.xScaleFocus);
     vis.xAxisFocus = xAxisFocus;
@@ -959,47 +943,34 @@ export default {
     // initalize brush
     var brush = d3.brushX().extent([
       [0, 0],
-      [midColWidth, focusHeight],
+      [width, focusHeight],
     ]);
     vis.brush = brush;
 
-    const arrowLeft = d3
-    .select("#footer-col-right")
-      .attr(
-        "transform",
-        `translate(${leftColWidth}, ${0})`
-      );
-
-
-    // Prepare the overall layout
-    const svg = d3
-      .select("#chart")
+    // define svg
+    var svgContext = d3
+      .select("#gene_chart")
       .append("svg")
-      .attr("width", containerWidth)
-      .attr("height", containerHeight)
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", focusHeight + margin.bottom + 25)
       .append("g")
-      .attr("transform", `translate(${margin.left}, ${margin.top})`);
+      .attr("transform", "translate(" + margin.left + "," + 0 + ")");
 
-    vis.svg = svg;
-
-    const svgContext = svg
-      .append("g")
-      .attr("transform", `translate(${leftColWidth}, 10)`);
-
-    vis.svgContext = svgContext;
-
+    // append background
     svgContext
       .append("rect")
       .attr("class", "background-gene--context")
-      .attr("width", midColWidth)
-      .attr("height", topRowHeight);
-    // .style("fill", "lightblue");
+      .attr("width", width)
+      .attr("height", focusHeight)
+      .attr("transform", "translate(0," + margin.top + ")");
 
     // append brush
     svgContext
       .append("g")
       .attr("class", "brush")
-      .attr("transform", "translate(0," + 0 + ")");
+      .attr("transform", "translate(0," + margin.top + ")");
+
+    vis.svgContext = svgContext;
 
     const svgContextLabels = svgContext
       .append("g")
@@ -1008,63 +979,46 @@ export default {
       .style("font-family", "sans-serif")
       .style("fill", "cornflowerblue")
       .style("font-weight", 600)
-      .attr("transform", `translate(${0}, ${vis.margin.top - 10})`);
+      .attr(
+        "transform",
+        `translate(${0}, ${vis.margin.top - 5})`
+      );
 
     vis.svgContextLabels = svgContextLabels;
 
-    var labelL = vis.svgContextLabels.append("g").attr("class", "brushLabelL");
+    var labelL = vis.svgContextLabels
+    .append("g")
+    .attr("class", "brushLabelL");
 
     vis.labelL = labelL;
 
-    var labelR = vis.svgContextLabels.append("g").attr("class", "brushLabelR");
+    var labelR = vis.svgContextLabels
+    .append("g")
+    .attr("class", "brushLabelR");
 
     vis.labelR = labelR;
 
-    const varSumChart = svg
+    var svgFocus = d3
+      .select("#msa_chart")
+      .append("svg")
+      .attr("width", (width + margin.left + margin.right))
+      .attr("height", height + margin.top + margin.bottom)
       .append("g")
-      .attr("transform", `translate(0, ${topRowHeight + innerMargin * 6})`);
-
-    vis.varSumChart = varSumChart;
-
-    vis.varSumChart
-      .append("rect")
-      .attr("class", "background-summary")
-      .attr("width", setSizeChartWidth)
-      .attr("height", bottomRowHeight)
-      .style("fill", "darkgrey");
-
-    const phenoChart = svg
-      .append("g")
-      .attr(
-        "transform",
-        `translate(${leftColWidth + midColWidth + innerMargin}, ${topRowHeight +
-          innerMargin * 6})`
-      );
-
-    vis.phenoChart = phenoChart;
-
-    vis.phenoChart
-      .append("rect")
-      .attr("class", "background-summary")
-      .attr("width", phenoChartWidth)
-      .attr("height", bottomRowHeight)
-      .style("fill", "lightgrey");
-
-    const svgFocus = svg
-      .append("g")
-      .attr(
-        "transform",
-        `translate(${leftColWidth}, ${topRowHeight + innerMargin * 6})`
-      );
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     vis.svgFocus = svgFocus;
 
+    // var phenoCol = vis.svgFocus
+    //   .append("g")
+    //   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    
     // append empty axis groups
     var xAxisContextG = vis.svgContext
       .append("g")
       .attr("class", "x-axis--context")
       .style("font-size", 10)
-      .attr("transform", "translate(0," + focusHeight + ")");
+      .attr("transform", "translate(0," + (margin.top + focusHeight) + ")");
     vis.xAxisContextG = xAxisContextG;
 
     // append empty axis groups
@@ -1072,37 +1026,32 @@ export default {
       .append("g")
       .attr("class", "y-axis--context")
       .style("font-size", 10)
-      .attr("transform", "translate(0," + 0 + ")");
+      .attr("transform", "translate(0," + (margin.top) + ")");
     vis.yAxisContextG = yAxisContextG;
 
-    // Append both axis titles
-    vis.svgContext
-      .append("text")
-      .attr("class", "x-axis-title")
-      .attr("y", vis.margin.top + vis.focusHeight + innerMargin * 2)
-      .attr("x", midColWidth / 2)
-      .attr("dy", "0.5em")
-      .style("text-anchor", "middle")
-      .style("font-size", 10)
-      .style("font-family", "sans-serif")
-      // .style("font-weight", 500)
-      .text("Length Gene");
+     // Append both axis titles
+     vis.svgContext.append('text')
+        .attr('class', 'x-axis-title')
+        .attr('y', (vis.margin.top + vis.focusHeight) + 25)
+        .attr('x', width / 2)
+        .attr('dy', '0.5em')
+        .style('text-anchor', 'middle')
+        .style("font-size", 10)
+        .style("font-family", "sans-serif")
+        // .style("font-weight", 500)
+        .text('Length Gene');
 
-    vis.svgContext
-      .append("text")
-      .attr(
-        "transform",
-        `translate(${-80}, ${vis.focusHeight / 2 - 5}) rotate(-90)`
-      )
-      .attr("class", "y-axis-title")
-      .attr("y", vis.focusHeight + innerMargin)
-      .attr("x", -10)
-      .attr("dy", "0.5em")
-      // .attr("transform", "rotate(270)")
-      .style("text-anchor", "middle")
-      .style("font-size", 10)
-      .style("font-family", "sans-serif")
-      .text("# SNPs");
+      vis.svgContext.append('text')
+        .attr('transform', `translate(${-80}, ${vis.focusHeight / 2 - 5}) rotate(-90)`)
+        .attr('class', 'y-axis-title')
+        .attr('y', (vis.margin.top + vis.focusHeight/2))
+        .attr('x', -40)
+        .attr('dy', '0.5em')
+        // .attr("transform", "rotate(270)")
+        .style('text-anchor', 'middle')
+        .style("font-size", 10)
+        .style("font-family", "sans-serif")
+        .text('# SNPs');
 
     var xAxisFocusG = vis.svgFocus
       .append("g")
@@ -1125,13 +1074,7 @@ export default {
       .append("g")
       .attr("class", "legendVariants")
       .attr("transform", function(d, i) {
-        return (
-          "translate(" +
-          66 * i +
-          "," +
-          (topRowHeight + bottomRowHeight - 20) +
-          ")"
-        );
+        return "translate(" + 66 * i + "," + 490 + ")";
       });
 
     legendVariants
@@ -1222,7 +1165,7 @@ export default {
   background: #fff;
   box-shadow: 2px 2px 3px 0px rgb(92 92 92 / 0.5);
   border: 1px solid #ddd;
-  font-size: 0.8rem;
+  font-size: .8rem;
   font-weight: 600;
   padding: 2px 8px;
   text-align: left;
@@ -1234,7 +1177,7 @@ export default {
   background: #fff;
   box-shadow: 2px 2px 3px 0px rgb(92 92 92 / 0.5);
   border: 1px solid #ddd;
-  font-size: 0.8rem;
+  font-size: .8rem;
   font-weight: 600;
   padding: 2px 8px;
   text-align: left;
@@ -1248,7 +1191,7 @@ export default {
 .selectLabelVariants {
   display: inline;
   float: left;
-  margin-left: 160px;
+  margin-left: 80px;
   margin-top: 0px;
   font-weight: 700;
 }
@@ -1280,16 +1223,8 @@ export default {
 }
 
 #btn-arrow-left {
-  margin-left: 120px;
-} 
-
-#btn-arrow-right {
-  margin-right: 240px;
-} 
-
-#header-arrows {
-  padding-bottom: 5px;
-}
+  margin-left: 11%;
+} /* improve this code */
 
 
 </style>

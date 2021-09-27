@@ -333,10 +333,10 @@ export default {
   mounted() {
     let vis = this;
     //set the dimensions and margins of the graph
-    const margin = { top: 15, right: 100, bottom: 15, left: 30 }; //compute max label length for margin right
+    const margin = { top: 15, right: 45, bottom: 15, left: 30 }; //compute max label length for margin right
     const width =
         d3.select("#phylo").node().clientWidth - margin.left - margin.right,
-      height = 300 - margin.top - margin.bottom;
+      height = 250 - margin.top - margin.bottom;
     vis.margin = margin;
     vis.width = width;
     vis.height = height;
