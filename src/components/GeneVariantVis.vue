@@ -17,6 +17,17 @@
     <select class="selectButtonVariants" id="selectButtonBrush">
       <!-- <option value="2814" selected>200 positions</option> -->
     </select>
+    
+    <img
+    src="./buttons/sort-down.svg"
+    alt=""
+    width="20"
+    height="20"
+    title="Sort"
+    id="sort_group"
+  />
+  <!-- <label for="selectButtonSort"> select order </label> -->
+  <select class="selectButtonVariants" id="selectButtonSortPhenos"></select>
   </div>
   <div class="container">
     <div id="chart"></div>
@@ -164,22 +175,22 @@ export default {
       //   "1__Altai-5",
       //   "1_Col-0",
       // ];
-      var alpha = [
-        "8_Sha",
-        "7_Ler",
-        "6_Kyo",
-        "5_Eri",
-        "4_Cvi",
-        "3_C24",
-        "2_An-1",
-        "Tsu-0",
-        "Sku-30",
-        "Ler-0",
-        "Kas-1",
-        "Gro-3",
-        "Altai-5",
-        "1_Col-0",
-      ];
+      // var alpha = [
+      //   "8_Sha",
+      //   "7_Ler",
+      //   "6_Kyo",
+      //   "5_Eri",
+      //   "4_Cvi",
+      //   "3_C24",
+      //   "2_An-1",
+      //   "Tsu-0",
+      //   "Sku-30",
+      //   "Ler-0",
+      //   "Kas-1",
+      //   "Gro-3",
+      //   "Altai-5",
+      //   "1_Col-0",
+      // ];
 
       var phylo_kmer = [
         "Tsu-0",
@@ -243,6 +254,40 @@ export default {
         "1_Col-0",
       ];
 
+      var group = [
+        "1_Col-0",
+        "2_An-1",
+        "4_Cvi",
+        "Altai-5",
+        "Sku-30",
+        "Ler-0",
+        "3_C24",
+        "5_Eri",
+        "6_Kyo",
+        "7_Ler",
+        "8_Sha",
+        "Tsu-0",
+        "Kas-1",
+        "Gro-3",
+      ];
+
+      var origin = [
+        "1_Col-0",
+        "8_Sha",
+        "Sku-30",
+        "Gro-3",
+        "5_Eri",
+        "3_C24",
+        "Tsu-0",
+        "6_Kyo",
+        "Kas-1",
+        "Ler-0",
+        "7_Ler",
+        "Altai-5",
+        "4_Cvi",
+        "2_An-1",
+      ];
+
       // var ref_first = [
       //   "8__Tsu-0",
       //   "8__Altai-5",
@@ -273,6 +318,10 @@ export default {
       // ];
 
       var sortingOptions = {
+        group: group,
+        group_rev: group.slice().reverse(),
+        origin: origin,
+        origin_rev: origin.slice().reverse(),
         ref_first: ref_first,
         ref_last: ref_first.slice().reverse(),
         // alpha_asc: alpha,
@@ -282,11 +331,25 @@ export default {
       };
       vis.sortingOptions = sortingOptions;
 
+      var sortingOptionsPheno = {
+        group: group,
+        group_rev: group.slice().reverse(),
+        origin: origin,
+        origin_rev: origin.slice().reverse(),
+        ref_first: ref_first,
+        ref_last: ref_first.slice().reverse(),
+        phylo: phylo_kmer,
+        phylo_rev: phylo_kmer.slice().reverse(),
+      };
+      vis.sortingOptionsPheno = sortingOptionsPheno;
+
       // Set the scale input domains
       vis.xScaleContext.domain([0, vis.length_gene]);
       vis.yScaleContext.domain([0, vis.max_mutations]); // 11 is max vars on one pos
       vis.xScaleFocus.domain(genePositions);
       vis.yScaleFocus.domain(sortingOptions[updateSort]);
+      vis.xScalePhenos.domain(['Group','Origin','DTF1','DTF3',]);
+      vis.yScalePhenos.domain(sortingOptions[updateSort]);
 
       var length = (end - start + 1) * nr_accessions; //nr of cells to render
 
@@ -295,8 +358,76 @@ export default {
         base: flat_data_slice_default.base[i],
         accession: flat_data_slice_default.accession[i],
       }));
-      // console.log("rows_data_slice_default", rows_data_slice_default);
+      console.log("rows_data_slice_default", rows_data_slice_default);
       vis.rows_data_slice_default = rows_data_slice_default;
+
+      var data_origin = [
+        {"accession": "8_Sha", "pheno": "DTF1", "value":72},
+        {"accession": "7_Ler", "pheno": "DTF1", "value": 28.5},
+        {"accession": "6_Kyo", "pheno": "DTF1", "value": 40},
+        {"accession": "5_Eri", "pheno": "DTF1", "value": 85},
+        {"accession": "4_Cvi",  "pheno": "DTF1", "value": 61},
+        {"accession": "3_C24", "pheno": "DTF1", "value": 32.667},
+        {"accession": "2_An-1", "pheno": "DTF1", "value": 42},
+        {"accession": "Tsu-0", "pheno": "DTF1", "value": 28},
+        {"accession": "Sku-30", "pheno": "DTF1", "value": 102.33},
+        {"accession": "Ler-0",  "pheno": "DTF1", "value": 29},
+        {"accession": "Kas-1",  "pheno": "DTF1", "value":69},
+        {"accession": "Gro-3",  "pheno": "DTF1", "value":137},
+        {"accession": "Altai-5",  "pheno": "DTF1", "value":73},
+        {"accession": "1_Col-0",  "pheno": "DTF1", "value":28},
+
+        {"accession": "8_Sha", "pheno": "DTF3", "value":58.5},
+        {"accession": "7_Ler", "pheno": "DTF3", "value": 40},
+        {"accession": "6_Kyo", "pheno": "DTF3", "value": 49.75},
+        {"accession": "5_Eri", "pheno": "DTF3", "value": 42.75},
+        {"accession": "4_Cvi",  "pheno": "DTF3", "value": 56},
+        {"accession": "3_C24", "pheno": "DTF3", "value": 42.5},
+        {"accession": "2_An-1", "pheno": "DTF3", "value": 54.25},
+        {"accession": "Tsu-0", "pheno": "DTF3", "value": 28},
+        {"accession": "Sku-30", "pheno": "DTF3", "value": 115.33},
+        {"accession": "Ler-0",  "pheno": "DTF3", "value": 40},
+        {"accession": "Kas-1",  "pheno": "DTF3", "value":80},
+        {"accession": "Gro-3",  "pheno": "DTF3", "value":78},
+        {"accession": "Altai-5",  "pheno": "DTF3", "value":73},
+        {"accession": "1_Col-0",  "pheno": "DTF3", "value":38},
+
+        {"accession": "8_Sha", "pheno": "Group", "value":'X'},
+        {"accession": "7_Ler", "pheno": "Group", "value": 'X'},
+        {"accession": "6_Kyo", "pheno": "Group", "value": 'X'},
+        {"accession": "5_Eri", "pheno": "Group", "value": 'X'},
+        {"accession": "4_Cvi",  "pheno": "Group", "value": 'Y'},
+        {"accession": "3_C24", "pheno": "Group", "value": 'X'},
+        {"accession": "2_An-1", "pheno": "Group", "value": 'Y'},
+        {"accession": "Tsu-0", "pheno": "Group", "value": 'X'},
+        {"accession": "Sku-30", "pheno": "Group", "value": 'Y'},
+        {"accession": "Ler-0",  "pheno": "Group", "value": 'Y'},
+        {"accession": "Kas-1",  "pheno": "Group", "value":'X'},
+        {"accession": "Gro-3",  "pheno": "Group", "value":'X'},
+        {"accession": "Altai-5",  "pheno": "Group", "value":'Y'},
+        {"accession": "1_Col-0",  "pheno": "Group", "value":'Y'},
+
+
+        {"accession": "8_Sha", "pheno": "Origin", "value":'Tajikistan'},
+        {"accession": "7_Ler", "pheno": "Origin", "value": 'Germany'},
+        {"accession": "6_Kyo", "pheno": "Origin", "value": 'Japan'},
+        {"accession": "5_Eri", "pheno": "Origin", "value": 'Sweden'},
+        {"accession": "4_Cvi",  "pheno": "Origin", "value": 'Cape Verde'},
+        {"accession": "3_C24", "pheno": "Origin", "value": 'Portugal'},
+        {"accession": "2_An-1", "pheno": "Origin", "value": 'Belgium'},
+        {"accession": "Tsu-0", "pheno": "Origin", "value": 'Japan'},
+        {"accession": "Sku-30", "pheno": "Origin", "value": 'Sweden'},
+        {"accession": "Ler-0",  "pheno": "Origin", "value": 'Germany'},
+        {"accession": "Kas-1",  "pheno": "Origin", "value":'India'},
+        {"accession": "Gro-3",  "pheno": "Origin", "value":'Sweden'},
+        {"accession": "Altai-5",  "pheno": "Origin", "value":'China'},
+        {"accession": "1_Col-0",  "pheno": "Origin", "value":'United States'}
+      ]
+
+
+      console.log("data orgin", data_origin)
+
+      vis.data_origin = data_origin;
 
       vis.renderVis();
     },
@@ -370,6 +501,51 @@ export default {
 
       updateVariantFocusChart(vis.rows_data_slice_default);
 
+      // check new data
+      let visPhenoUpdate = vis.phenoChart
+          .selectAll(".pheno-cell")
+          .data(vis.data_origin, (d) => d); //key function?
+
+        // make new cells
+        let visPhenoEnter = visPhenoUpdate
+          .enter()
+          .append("rect")
+          .attr("class", "pheno-cell");
+
+        // remove old cells
+        visPhenoUpdate.exit().remove();
+
+
+        // merge cells with existing
+        visPhenoEnter
+          .merge(visPhenoUpdate)
+          // .transition()
+          //     .duration(300)
+          .attr("x", (d) => vis.xScalePhenos(d.pheno))
+          .attr("y", (d) => vis.yScalePhenos(d.accession))
+          .attr("rx", 2.5)
+          .attr("ry", 2.5)
+          .attr("width", vis.xScalePhenos.bandwidth())
+          .attr("height", vis.yScalePhenos.bandwidth())
+          .style("fill", function(d) {
+            if (d.pheno == "DTF1"){
+              return vis.colorScaleDTF1(d.value)
+            }
+            if (d.pheno == "DTF3"){
+              return vis.colorScaleDTF3(d.value)
+            }
+            if (d.pheno == "Group"){
+              return vis.colorScaleGroup(d.value)
+            }
+            if (d.pheno == "Origin"){
+              return vis.colorScaleOrigin(d.value)
+            }
+          
+          })
+          .style("stroke-width", 0.5)
+          .style("stroke", "black")
+          // .style("opacity", 0.9);
+
       vis.svgFocus
         .selectAll(".snp-cell")
         .on("mouseover", mouseover)
@@ -396,6 +572,13 @@ export default {
       vis.xAxisFocusG.select(".x-axis--focus .domain").remove(); // to disable rendering the axis line
       vis.yAxisFocusG.call(vis.yAxisFocus);
       vis.yAxisFocusG.select(".y-axis--focus .domain").remove(); // to disable rendering the axis line
+      
+      vis.xAxisPhenosG.call(vis.xAxisPhenos);
+      vis.xAxisPhenosG.select(".x-axis--phenos .domain").remove(); // to disable rendering the axis line
+      vis.yAxisPhenosG.call(vis.yAxisPhenos);
+      vis.yAxisPhenosG.select(".y-axis--phenos .domain").remove(); // to disable rendering the axis line
+
+
 
       function brushUpdate({ selection }) {
         console.log("selection brush", { selection });
@@ -669,6 +852,35 @@ export default {
         var selected = d3.select("#selectButtonSort").node().value;
         console.log("selected order MSA: ", selected);
         updateMSAorder(vis.sortingOptions[selected]);
+        d3.select('#selectButtonSortPhenos').property('value', selected);
+        updatePhenosOrder(vis.sortingOptionsPheno[selected])
+      });
+
+      // function to update the MSA ordering
+      function updatePhenosOrder(sortingOption) {
+        console.log("option chosen: ", sortingOption);
+
+        vis.yScalePhenos.domain(sortingOption);
+        vis.phenoChart.select(".y-axis--phenos").call(vis.yAxisPhenos);
+        vis.phenoChart.select(".y-axis--phenos .domain").remove(); // to disable rendering the axis line
+
+        vis.phenoChart
+          .selectAll(".pheno-cell")
+          .transition()
+          // .duration(800)
+          .attr("x", (d) => vis.xScalePhenos(d.pheno))
+          .attr("y", (d) => vis.yScalePhenos(d.accession))
+          
+       
+      }
+
+      // Change row ordering based on select
+      d3.select("#selectButtonSortPhenos").on("change", function() {
+        var selected = d3.select("#selectButtonSortPhenos").node().value;
+        console.log("selected order phenos: ", selected);
+        updatePhenosOrder(vis.sortingOptionsPheno[selected]);
+        d3.select('#selectButtonSort').property('value', selected);
+        updateMSAorder(vis.sortingOptions[selected])
       });
 
       // Change brush size based on select
@@ -906,8 +1118,27 @@ export default {
       // alpha_desc: "alphabetical reversed",
       phylo: "phylogeny",
       phylo_rev: "phylogeny reversed",
+      group: "Group",
+      group_rev: "Group reversed",
+      origin: "Origin",
+      origin_rev: "Origin reversed",
     };
     vis.orders = orders;
+
+    // define the accession orders
+    var ordersPheno = {
+      ref_first: "reference accessions first",
+      ref_last: "reference accessions last",
+      // alpha_asc: "alphabetical",
+      // alpha_desc: "alphabetical reversed",
+      phylo: "phylogeny",
+      phylo_rev: "phylogeny reversed",
+      group: "Group",
+      group_rev: "Group reversed",
+      origin: "Origin",
+      origin_rev: "Origin reversed",
+    };
+    vis.ordersPheno = ordersPheno;
 
     // define brush sizes
     var brushSizes = {
@@ -917,6 +1148,8 @@ export default {
       4: "400 positions",
     };
     vis.brushSizes = brushSizes;
+
+    
 
     // initialize scales
     var xScaleContext = d3.scaleLinear().range([0, midColWidth]);
@@ -937,6 +1170,42 @@ export default {
       .padding(0.05);
     vis.yScaleFocus = yScaleFocus;
 
+    var xScalePhenos = d3
+      .scaleBand()
+      .range([0, rightColWidth])
+      .padding(0.6);
+    vis.xScalePhenos = xScalePhenos;
+
+    var yScalePhenos = d3
+      .scaleBand()
+      .range([bottomRowHeight, 0])
+      .padding(0.4)
+    vis.yScalePhenos = yScalePhenos;
+
+    var colorScaleDTF1 = d3.scaleLinear()
+      .domain([28, 137])
+      .range(['#d3eecd', '#2a8d46'])
+
+    vis.colorScaleDTF1 = colorScaleDTF1;
+
+    var colorScaleDTF3 = d3.scaleLinear()
+      .domain([28, 116])
+      .range(['#deebf7', '#08519c'])
+
+    vis.colorScaleDTF3 = colorScaleDTF3;
+
+    var colorScaleGroup = d3.scaleOrdinal()
+      .domain(['X', 'Y'])
+      .range(['black', 'white'])
+
+    vis.colorScaleGroup = colorScaleGroup;
+
+    var colorScaleOrigin = d3.scaleOrdinal()
+      .domain(['United States', 'Belgium', 'Portugal', 'Cape Verde', 'Sweden', 'Japan', 'Germany', 'Tajikistan', 'India', 'China'])
+      .range(['#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd'])
+
+    vis.colorScaleOrigin = colorScaleOrigin;
+
     //initialize axes
     var xAxisContext = d3
       .axisBottom()
@@ -955,6 +1224,12 @@ export default {
 
     var yAxisFocus = d3.axisLeft(vis.yScaleFocus);
     vis.yAxisFocus = yAxisFocus;
+
+    var xAxisPhenos = d3.axisTop(vis.xScalePhenos);
+    vis.xAxisPhenos = xAxisPhenos;
+
+    var yAxisPhenos = d3.axisRight(vis.yScalePhenos).tickValues([]);
+    vis.yAxisPhenos = yAxisPhenos;
 
     // initalize brush
     var brush = d3.brushX().extent([
@@ -1031,7 +1306,8 @@ export default {
       .attr("class", "background-summary")
       .attr("width", setSizeChartWidth)
       .attr("height", bottomRowHeight)
-      .style("fill", "darkgrey");
+      .style("fill", "lightgrey")
+      .style("opacity", "0.2");
 
     const phenoChart = svg
       .append("g")
@@ -1048,7 +1324,8 @@ export default {
       .attr("class", "background-summary")
       .attr("width", phenoChartWidth)
       .attr("height", bottomRowHeight)
-      .style("fill", "lightgrey");
+      .style("fill", "lightgrey")
+      .style("opacity", "0.2");
 
     const svgFocus = svg
       .append("g")
@@ -1117,6 +1394,20 @@ export default {
       .style("font-size", 10);
     vis.yAxisFocusG = yAxisFocusG;
 
+    var xAxisPhenosG = vis.phenoChart
+      .append("g")
+      .attr("class", "x-axis--phenos")
+      .style("font-size", 10);
+    // .attr("transform", "translate(0," + this.height + ")")
+    vis.xAxisPhenosG = xAxisPhenosG;
+
+
+    var yAxisPhenosG = vis.phenoChart
+      .append("g")
+      .attr("class", "y-axis--phenos")
+      .style("font-size", 10);
+    vis.yAxisPhenosG = yAxisPhenosG;
+
     // append legend
     var legendVariants = svgFocus
       .selectAll(".legendVariants")
@@ -1180,6 +1471,20 @@ export default {
       .attr("value", function(d) {
         return d;
       }); // corresponding value returned by the button
+
+      // add the options to the button
+    d3.select("#selectButtonSortPhenos")
+      .selectAll("myOptions")
+      .data(Object.keys(ordersPheno))
+      .enter()
+      .append("option")
+      .text(function(d) {
+        return ordersPheno[d];
+      }) // text showed in the menu
+      .attr("value", function(d) {
+        return d;
+      }); // corresponding value returned by the button
+    // console.log("orders", Object.keys(orders));
 
     // // set default option
     // d3.select("#selectButtonBrush").property("value", 1);
@@ -1289,6 +1594,10 @@ export default {
 
 #header-arrows {
   padding-bottom: 5px;
+}
+
+#sort_group {
+  margin-left: 30px;
 }
 
 
