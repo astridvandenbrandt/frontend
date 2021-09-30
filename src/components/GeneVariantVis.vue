@@ -63,6 +63,7 @@
 
   <div id="tooltip"></div>
   <div id="tooltip-bars"></div>
+  <div id="tooltip-bars--pheno"></div>
 </template>
 
 <script>
@@ -384,6 +385,8 @@ export default {
       vis.yScaleFocus.domain(sortingOptions[updateSort]);
       vis.xScalePhenos.domain(['Group','Origin','DTF1','DTF3',]);
       vis.yScalePhenos.domain(sortingOptions[updateSort]);
+      vis.xScalePhenoBars.domain([0, 115.33]);
+      vis.yScalePhenoBars.domain(sortingOptions[updateSort]);
 
       var length = (end - start + 1) * nr_accessions; //nr of cells to render
 
@@ -395,7 +398,26 @@ export default {
       console.log("rows_data_slice_default", rows_data_slice_default);
       vis.rows_data_slice_default = rows_data_slice_default;
 
-      var data_origin = [
+      var data_pheno_bars = [
+      {"accession": "8_Sha", "pheno": "DTF3", "value":58.5},
+        {"accession": "7_Ler", "pheno": "DTF3", "value": 40},
+        {"accession": "6_Kyo", "pheno": "DTF3", "value": 49.75},
+        {"accession": "5_Eri", "pheno": "DTF3", "value": 42.75},
+        {"accession": "4_Cvi",  "pheno": "DTF3", "value": 56},
+        {"accession": "3_C24", "pheno": "DTF3", "value": 42.5},
+        {"accession": "2_An-1", "pheno": "DTF3", "value": 54.25},
+        {"accession": "Tsu-0", "pheno": "DTF3", "value": 28},
+        {"accession": "Sku-30", "pheno": "DTF3", "value": 115.33},
+        {"accession": "Ler-0",  "pheno": "DTF3", "value": 40},
+        {"accession": "Kas-1",  "pheno": "DTF3", "value":80},
+        {"accession": "Gro-3",  "pheno": "DTF3", "value":78},
+        {"accession": "Altai-5",  "pheno": "DTF3", "value":73},
+        {"accession": "1_Col-0",  "pheno": "DTF3", "value":38},
+      ];
+
+      vis.data_pheno_bars = data_pheno_bars;
+
+      var data_pheno = [
         {"accession": "8_Sha", "pheno": "DTF1", "value":72},
         {"accession": "7_Ler", "pheno": "DTF1", "value": 28.5},
         {"accession": "6_Kyo", "pheno": "DTF1", "value": 40},
@@ -459,15 +481,40 @@ export default {
       ]
 
 
-      console.log("data orgin", data_origin)
+      console.log("data orgin", data_pheno)
 
-      vis.data_origin = data_origin;
+      vis.data_pheno = data_pheno;
 
       vis.renderVis();
     },
     // This function contains the D3 code for binding data to visual elements.
     renderVis() {
       let vis = this;
+
+      // PHENO BARS 
+      console.log("data pheno bars:", vis.data_pheno_bars);
+      // check new data
+      let visPhenoBarUpdate = vis.phenoBars
+        .selectAll(".pheno-bar")
+        .data(vis.data_pheno_bars);
+
+      // make new rects
+      let visPhenoBarEnter = visPhenoBarUpdate
+        .enter()
+        .append("rect")
+        .attr("class", "pheno-bar");
+
+      // remove old rects
+      visPhenoBarUpdate.exit().remove();
+
+      //merge rects
+      visPhenoBarEnter
+        .merge(visPhenoBarUpdate)
+        .attr("width", (d) => vis.xScalePhenoBars(d.value))
+        .attr("height", vis.yScalePhenoBars.bandwidth())
+        .attr("x", 0)
+        .attr("y", (d) => vis.yScalePhenoBars(d.accession))
+        .attr('fill', 'steelblue');
 
 
       console.log("data mutations new:", vis.data_mutations);
@@ -520,7 +567,7 @@ export default {
       // check new data
       let visPhenoUpdate = vis.phenoChart
           .selectAll(".pheno-cell")
-          .data(vis.data_origin, (d) => d); //key function?
+          .data(vis.data_pheno, (d) => d); //key function?
 
         // make new cells
         let visPhenoEnter = visPhenoUpdate
@@ -583,7 +630,12 @@ export default {
       vis.yAxisPhenosG.call(vis.yAxisPhenos);
       vis.yAxisPhenosG.select(".y-axis--phenos .domain").remove(); // to disable rendering the axis line
 
-      // hier was ik!
+      vis.xAxisPhenoBarsG.call(vis.xAxisPhenoBars);
+      vis.yAxisPhenoBarsG.call(vis.yAxisPhenoBars);
+      vis.yAxisPhenoBarsG.select(".y-axis--phenobars .domain").remove(); // to disable rendering the axis line
+
+
+      
       function brushValues({selection}) {
         
 
@@ -819,6 +871,13 @@ export default {
           .style("top", d3.pointer(event)[1] + 150 + "px");
       };
 
+      var mouseleave = function() {
+        d3.select("#tooltip").style("display", "none");
+        d3.select(this)
+          .style("stroke", "none")
+          .style("opacity", 0.8);
+      };
+
       var mouseleaveBar = function() {
         d3.select("#tooltip-bars").style("display", "none");
         d3.select(this)
@@ -852,11 +911,33 @@ export default {
           .style("top", d3.pointer(event)[1] + 160 + "px");
       };
 
-      var mouseleave = function() {
-        d3.select("#tooltip").style("display", "none");
+      var mouseleavePhenoBar = function() {
+        d3.select("#tooltip-bars--pheno").style("display", "none");
         d3.select(this)
           .style("stroke", "none")
           .style("opacity", 0.8);
+      };
+
+      var mouseoverPhenoBar = function() {
+        d3.select("#tooltip-bars--pheno")
+          .style("display", "block")
+          .style("opacity", 0.8)
+          // .style("color", "white");
+          .style("color", "black");
+        d3.select(this)
+          .style("stroke", "black")
+          .style("stroke-width", "1px")
+          .style("opacity", 1);
+      };
+
+      var mousemovePhenoBar = function(event, d) {
+        d3.select("#tooltip-bars--pheno")
+          // .style("display", "block")
+          .html(
+              d.value
+          )
+          .style("left", d3.pointer(event)[0] + 1300 +  "px")
+          .style("top", d3.pointer(event)[1] + 130 + "px");
       };
 
       // function to update the MSA ordering
@@ -870,7 +951,7 @@ export default {
         vis.svgFocus
           .selectAll(".snp-cell")
           .transition()
-          // .duration(800)
+          .duration(500)
           .attr("x", (d) => vis.xScaleFocus(d.pos))
           .attr("y", (d) => vis.yScaleFocus(d.accession));
         vis.svgFocus
@@ -900,9 +981,30 @@ export default {
         vis.phenoChart
           .selectAll(".pheno-cell")
           .transition()
-          // .duration(800)
+          .duration(500)
           .attr("x", (d) => vis.xScalePhenos(d.pheno))
           .attr("y", (d) => vis.yScalePhenos(d.accession))
+
+
+        vis.yScalePhenoBars.domain(sortingOption);
+        vis.phenoBars.select(".y-axis--phenobars").call(vis.yAxisPhenoBars);
+        vis.phenoBars.select(".y-axis--phenobars .domain").remove(); // to disable rendering the axis line
+
+        vis.phenoBars
+          .selectAll(".pheno-bar")
+          .transition()
+          .duration(500)
+          .attr("width", (d) => vis.xScalePhenoBars(d.value))
+          .attr("height", vis.yScalePhenoBars.bandwidth())
+          .attr("x", 0)
+          .attr("y", (d) => vis.yScalePhenoBars(d.accession))
+
+
+        vis.phenoBars
+        .selectAll(".pheno-bar")
+          .on("mouseover", mouseoverPhenoBar)
+          .on("mousemove", mousemovePhenoBar)
+          .on("mouseleave", mouseleavePhenoBar);
           
        
       }
@@ -1084,6 +1186,13 @@ export default {
         .on("mousemove", mousemoveBar)
         .on("mouseleave", mouseleaveBar);
 
+        vis.phenoBars
+        .selectAll(".pheno-bar")
+        .on("mouseover", mouseoverPhenoBar)
+        .on("mousemove", mousemovePhenoBar)
+        .on("mouseleave", mouseleavePhenoBar);
+
+
     },
   },
   mounted() {
@@ -1108,12 +1217,15 @@ export default {
     const width = containerWidth - margin.left - margin.right;
     const height = containerHeight - margin.top - margin.left - legendHeight;
 
-    const leftColWidth = 150;
-    const setIdWidth = 50;
-    const setSizeChartWidth = leftColWidth - setIdWidth;
-    const midColWidth = 500;
+    const leftColWidth = (width/10)*2;
+    const variantSumWidth = 50;
+    const variantBarcodeChartWidth = leftColWidth - variantSumWidth;
+    // const midColWidth = 500;
+    const midColWidth = (width/10)*5;
     const rightColWidth = width - leftColWidth - midColWidth;
-    const phenoChartWidth = rightColWidth - innerMargin;
+    const phenoBarsWidth = 80;
+    const phenoChartWidth = rightColWidth - innerMargin - phenoBarsWidth;
+
 
     const topRowHeight = 30;
     const bottomRowHeight = height - topRowHeight - innerMargin * 5;
@@ -1204,7 +1316,6 @@ export default {
     vis.brushSizes = brushSizes;
 
     
-
     // initialize scales
     var xScaleContext = d3.scaleLinear().range([0, midColWidth]);
     vis.xScaleContext = xScaleContext;
@@ -1226,7 +1337,7 @@ export default {
 
     var xScalePhenos = d3
       .scaleBand()
-      .range([0, rightColWidth])
+      .range([0, phenoChartWidth])
       .padding(0.6);
     vis.xScalePhenos = xScalePhenos;
 
@@ -1235,6 +1346,16 @@ export default {
       .range([bottomRowHeight, 0])
       .padding(0.4)
     vis.yScalePhenos = yScalePhenos;
+
+    var yScalePhenoBars = d3
+      .scaleBand()
+      .range([bottomRowHeight, 0])
+      .padding(0.4)
+    vis.yScalePhenoBars = yScalePhenoBars;
+
+    var xScalePhenoBars = d3.scaleLinear()
+        .range([0, phenoBarsWidth]);
+    vis.xScalePhenoBars = xScalePhenoBars;
 
     var colorScaleDTF1 = d3.scaleLinear()
       .domain([28, 137])
@@ -1284,6 +1405,16 @@ export default {
 
     var yAxisPhenos = d3.axisRight(vis.yScalePhenos).tickValues([]);
     vis.yAxisPhenos = yAxisPhenos;
+
+    var yAxisPhenoBars = d3.axisRight(vis.yScalePhenoBars).tickValues([]);
+    vis.yAxisPhenoBars = yAxisPhenoBars;
+
+    var xAxisPhenoBars = d3
+      .axisTop()
+      .scale(vis.xScalePhenoBars)
+      .ticks(3)
+      .tickSizeOuter(0);
+    vis.xAxisPhenoBars = xAxisPhenoBars;
 
     // initalize brush
     var brush = d3.brushX().extent([
@@ -1349,16 +1480,16 @@ export default {
 
     vis.labelR = labelR;
 
-    const varSumChart = svg
+    const varBarcodeChart = svg
       .append("g")
       .attr("transform", `translate(0, ${topRowHeight + innerMargin * 6})`);
 
-    vis.varSumChart = varSumChart;
+    vis.varBarcodeChart = varBarcodeChart;
 
-    vis.varSumChart
+    vis.varBarcodeChart
       .append("rect")
       .attr("class", "background-summary")
-      .attr("width", setSizeChartWidth)
+      .attr("width", variantBarcodeChartWidth)
       .attr("height", bottomRowHeight)
       .style("fill", "lightgrey")
       .style("opacity", "0.2");
@@ -1380,6 +1511,27 @@ export default {
       .attr("height", bottomRowHeight)
       .style("fill", "lightgrey")
       .style("opacity", "0.2");
+
+      const phenoBars = svg
+      .append("g")
+      .attr(
+        "transform",
+        `translate(${leftColWidth + midColWidth + innerMargin + phenoChartWidth}, ${topRowHeight +
+          innerMargin * 6})`
+      );
+
+    vis.phenoBars = phenoBars;
+
+    vis.phenoBars
+      .append("rect")
+      .attr("class", "background-summary-phenobar")
+      .attr("width", phenoBarsWidth)
+      .attr("height", bottomRowHeight)
+      .style("fill", "darkgrey")
+      .style("opacity", "0.2");
+
+
+
 
     const svgFocus = svg
       .append("g")
@@ -1435,6 +1587,19 @@ export default {
       .style("font-family", "sans-serif")
       .text("# SNPs");
 
+    // Append both axis titles
+    vis.phenoBars
+      .append("text")
+      .attr("class", "x-axis-title")
+      .attr("y", -30)
+      .attr("x", phenoBarsWidth / 2)
+      .attr("dy", "0.5em")
+      .style("text-anchor", "middle")
+      .style("font-size", 10)
+      .style("font-family", "sans-serif")
+      // .style("font-weight", 500)
+      .text("DTF3");
+
     var xAxisFocusG = vis.svgFocus
       .append("g")
       .attr("class", "x-axis--focus")
@@ -1455,12 +1620,24 @@ export default {
     // .attr("transform", "translate(0," + this.height + ")")
     vis.xAxisPhenosG = xAxisPhenosG;
 
-
     var yAxisPhenosG = vis.phenoChart
       .append("g")
       .attr("class", "y-axis--phenos")
       .style("font-size", 10);
     vis.yAxisPhenosG = yAxisPhenosG;
+
+    var xAxisPhenoBarsG = vis.phenoBars
+      .append("g")
+      .attr("class", "x-axis--phenobars")
+      .style("font-size", 10);
+    // .attr("transform", "translate(0," + this.height + ")")
+    vis.xAxisPhenoBarsG = xAxisPhenoBarsG;
+
+    var yAxisPhenoBarsG = vis.phenoBars
+      .append("g")
+      .attr("class", "y-axis--phenobars")
+      .style("font-size", 10);
+    vis.yAxisPhenoBarsG = yAxisPhenoBarsG;
 
     // append legend
     var legendVariants = svgFocus
@@ -1598,6 +1775,19 @@ export default {
   padding: 2px 8px;
   text-align: left;
 }
+
+#tooltip-bars--pheno {
+  position: absolute;
+  opacity: 0;
+  background: #fff;
+  box-shadow: 2px 2px 3px 0px rgb(92 92 92 / 0.5);
+  border: 1px solid #ddd;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  text-align: left;
+}
+
 
 .selectButtonVariants {
   margin-left: 5px;
