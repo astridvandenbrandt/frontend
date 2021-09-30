@@ -372,6 +372,7 @@ export default {
       .ticks(6)
       .tickSizeOuter(0)
       .tickSizeInner(-vis.height); //change 6 for more ticks
+
     vis.xAxis = xAxis;
 
     var xAxisGroup = vis.svg
@@ -416,9 +417,9 @@ export default {
 .selectLabelTree {
   display: inline;
   float: left;
-  margin-left: 30px;
-  margin-top: 0px;
-  font-weight: 700;
+  margin-left: 0.5rem;
+  margin-top: 0.5rem;
+  /* font-weight: 700; */
 }
 
 .axis path,
@@ -457,7 +458,7 @@ export default {
   fill: none;
   stroke: black;
   stroke-width: 2px;
-  shape-rendering: crispEdges;
+  /* shape-rendering: crispEdges; */
 }
 
 .highlight circle {

@@ -74,7 +74,16 @@ export default {
   methods: {
     // This function contains all the code to prepare the data before we render it.
     updateVis(data, data_mutations) {
+    
       let vis = this;
+
+      // if (vis.globalBrushStart == undefined){
+      //   console.log(" global brush values undefined")
+      // }
+
+      console.log('global brush start value from UpdateVis', vis.globalBrushStart)
+      console.log('global brush start value from UpdateVis', vis.globalBrushEnd)
+
 
       // helper functions
       const unique = (value, index, self) => {
@@ -125,11 +134,36 @@ export default {
       vis.max_mutations = max_mutations;
       console.log("max mutations", mutations, max_mutations);
 
-      const start = 0;
+
+      // else {
+        var start = vis.globalBrushStart;
+
+        var end = vis.globalBrushEnd
+
+      // }
+      if (vis.globalBrushStart > length_gene || vis.globalBrushEnd > length_gene){
+        console.log("start exceeds length new gene!!")
+        // start = length_gene - 50
+        // end = length_gene
+        start = 0
+        end = 50
+
+      }
+
+      // if (vis.globalBrushEnd > length_gene){
+      //   console.log("end exceeds length new gene!!")
+      //   // // start = length_gene - 50
+      //   end = length_gene
+
+      // }
+
       vis.start = start;
-      const updateBrush = d3.select("#selectButtonBrush").node().value;
-      const end = updateBrush * 100; // when new data loaded keep brush size
       vis.end = end;
+ 
+      const updateBrush = d3.select("#selectButtonBrush").node().value;
+      console.log('update brush with new data', updateBrush)
+      // const end = updateBrush * 100; // when new data loaded keep brush size
+    
       const updateSort = d3.select("#selectButtonSort").node().value; // when new data loaded keep sorting order
 
       var flat_data_slice = [
@@ -435,6 +469,7 @@ export default {
     renderVis() {
       let vis = this;
 
+
       console.log("data mutations new:", vis.data_mutations);
       // check new data
       let visGeneUpdate = vis.svgContext
@@ -458,27 +493,6 @@ export default {
         .attr("x", (d) => vis.xScaleContext(d.pos))
         .attr("y", (d) => vis.yScaleContext(d.accession));
 
-      // // make new lines
-      // let visGeneEnter = visGeneUpdate
-      //   .enter()
-      //   .append("line")
-      //   .attr("class", "variants--summary");
-
-      // // remove old lines
-      // visGeneUpdate.exit().remove();
-
-      // // merge lines
-      // visGeneEnter
-      //   .merge(visGeneUpdate)
-      //   .attr("x1", function(d) {
-      //     return vis.xScaleContext(d.pos);
-      //   })
-      //   .attr("x2", function(d) {
-      //     return vis.xScaleContext(d.pos);
-      //   })
-      //   .attr("y1", 30) // 30
-      //   .attr("y2", 60); // 60 vis.margin.top + vis.focusHeight
-
       vis.svgContext
         .selectAll(".brush")
         .call(vis.brush)
@@ -490,13 +504,15 @@ export default {
         [vis.start, vis.end].map(vis.xScaleContext)[1]
       );
 
+      // console.log('test brushed labels', brushedReload)
+
       // update brush labels
       updateLabelBrush("left", vis.start, vis.end);
       updateLabelBrush("right", vis.start, vis.end);
 
       // update figure when brushing
       vis.brush.on("end", brushed); //change 'end' to 'brush' if want to see inbetween
-      // hier was ik gebleven! use brush for labels!!
+      // use brush for labels!!
       vis.brush.on("brush", brushUpdate);
 
       updateVariantFocusChart(vis.rows_data_slice_default);
@@ -546,18 +562,7 @@ export default {
           .style("stroke", "black")
           // .style("opacity", 0.9);
 
-      vis.svgFocus
-        .selectAll(".snp-cell")
-        .on("mouseover", mouseover)
-        .on("mousemove", mousemove)
-        .on("mouseleave", mouseleave);
-
-      vis.svgContext
-        .selectAll(".variants--summary-bar")
-        .on("mouseover", mouseoverBar)
-        .on("mousemove", mousemoveBar)
-        .on("mouseleave", mouseleaveBar);
-
+      
       // update axes
       vis.xAxisContextG.call(vis.xAxisContext);
       vis.yAxisContextG.call(vis.yAxisContext);
@@ -578,16 +583,39 @@ export default {
       vis.yAxisPhenosG.call(vis.yAxisPhenos);
       vis.yAxisPhenosG.select(".y-axis--phenos .domain").remove(); // to disable rendering the axis line
 
+      // hier was ik!
+      function brushValues({selection}) {
+        
 
 
-      function brushUpdate({ selection }) {
-        console.log("selection brush", { selection });
         const rangeSelected = selection.map(
           vis.xScaleContext.invert,
           vis.xScaleContext
         );
         console.log(
-          "range selected: ",
+          "range selected brush: ",
+          // rangeSelected,
+          Math.round(rangeSelected[0]),
+          Math.round(rangeSelected[1])
+        );
+
+        var startUpdate = Math.round(rangeSelected[0]);
+        var endUpdate = Math.round(rangeSelected[1]);
+
+        return [startUpdate, endUpdate]
+
+
+
+      }
+
+      function brushUpdate({ selection }) {
+        console.log("selection brush end", { selection });
+        const rangeSelected = selection.map(
+          vis.xScaleContext.invert,
+          vis.xScaleContext
+        );
+        console.log(
+          "range selected brush end: ",
           // rangeSelected,
           Math.round(rangeSelected[0]),
           Math.round(rangeSelected[1])
@@ -598,6 +626,10 @@ export default {
 
         updateLabelBrush("left", startUpdate, endUpdate);
         updateLabelBrush("right", startUpdate, endUpdate);
+
+        vis.globalBrushStart = startUpdate
+        vis.globalBrushEnd = endUpdate;
+        console.log('global brush values', vis.globalBrushStart, vis.globalBrushEnd)
       }
 
       // updates labels brush
@@ -692,6 +724,7 @@ export default {
         var startUpdate = Math.round(rangeSelected[0]);
         var endUpdate = Math.round(rangeSelected[1]);
         console.log("start and end of brush: ", startUpdate, endUpdate);
+
 
         vis.xScaleFocus.domain(d3.range(startUpdate, endUpdate + 1));
 
@@ -1026,21 +1059,42 @@ export default {
       console.log("selected VR from component sequence: ", newAcc);
 
       if (newAcc === "_full") {
-        console.log("no vr --> axis should NOT be visible");
+        // console.log("no vr --> axis should NOT be visible");
 
         d3.select(".y-axis--context").style("opacity", "0");
         d3.select(".y-axis-title").style("opacity", "0");
       } else {
-        console.log("vr --> axis should be visible");
+        // console.log("vr --> axis should be visible");
 
         d3.select(".y-axis--context").style("opacity", "1");
         d3.select(".y-axis-title").style("opacity", "1");
+
       }
+
+      //Tooltip at the end otherwise <div> not yet loaded
+      vis.svgFocus
+        .selectAll(".snp-cell")
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove)
+        .on("mouseleave", mouseleave);
+
+      vis.svgContext
+        .selectAll(".variants--summary-bar")
+        .on("mouseover", mouseoverBar)
+        .on("mousemove", mousemoveBar)
+        .on("mouseleave", mouseleaveBar);
+
     },
   },
   mounted() {
     // function initVis() {
     let vis = this;
+
+    var globalBrushEnd = 50; 
+    vis.globalBrushEnd = globalBrushEnd;
+    
+    var globalBrushStart = 0;
+    vis.globalBrushStart = globalBrushStart;
 
     // Define dimensions of the visualization
     const containerWidth = d3.select("#chart").node().clientWidth;

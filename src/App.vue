@@ -5,7 +5,7 @@
         <div class="row gx-2">
           <div class="col-md-2">
             <div class="sidebar-section">
-              <div class="sidebar-item">
+              <div class="sidebar-item" id="sidebar-menu-header">
                 <h4>Menu</h4>
               </div>
               <div class="sidebar-item">
@@ -27,6 +27,12 @@
                 <p>Select Phenotypes</p>
               </div> -->
             </div>
+            <div class="content-section" id="tree-comp">
+              <div class="content-title">
+                Phylogenetic Tree
+              </div>
+              <TreeVis ref="tree_data" />
+            </div>
           </div>
 
           <!-- <div class="col-md-2">
@@ -39,7 +45,7 @@
             <!-- </div>
           </div> -->
           
-          <div class="col-md-8">
+          <div class="col-md-10">
             <!-- <div class="content-section"> -->
               <!-- <VariantOverview ref="variant_data_overview" /> -->
               <!-- <div class="content-title">
@@ -49,30 +55,25 @@
             <div class="content-section">
               <!-- <VariantOverview ref="variant_data_overview" /> -->
               <div class="content-title">
-                <p>Gene Sequences</p>
+                Gene Sequences and Phenotypes
               </div>
               <GeneVariantVis ref="variant_data" />
             </div>
           </div>
-          <div class="col-md-2">
+          <!-- <div class="col-md-2"> -->
             <!-- <div class="content-section">
               <div class="content-title">
                 <p>Sequence Similarity</p>
               </div>
             </div> -->
-            <div class="content-section">
-              <div class="content-title">
-                <p>Phylogenetic Tree</p>
-              </div>
-              <TreeVis ref="tree_data" />
-            </div>
+           
             <!-- <div class="content-section">
               <div class="content-title">
                 <p>Matrix rows example</p>
               </div>
               <matrixDrag/>
             </div> -->
-          </div>
+          <!-- </div> -->
         </div>
       </div>
     </div>
@@ -273,14 +274,22 @@ export default {
   width: 100%;
   height: 100%;
   background: rgb(246, 247, 249);
+  text-transform: uppercase;
+  font-size: 13px;
+  text-align: left;
+  padding-left: 1%;
+  font-family: sans-serif;
+  /* font-variant: all-small-caps; */
+  font-weight: 550;
+  letter-spacing: 0.08rem;
 }
 
-.content-title p {
+/* .content-title p {
   text-transform: uppercase;
   font-weight: 600;
   text-align: left;
   margin-left: 1%;
-}
+} */
 
 .content-section {
   background: rgba(255, 255, 255, 1);
@@ -288,12 +297,30 @@ export default {
   /* border-radius: 2px; */
 }
 
+
 .sidebar-item {
   text-align: left;
 
   max-width: 100%;
   margin: 10 auto;
   padding: 10px 0 30px;
-  border-bottom: solid 1px rgba(39, 39, 39, 0.178);
+  border-top: solid 1px rgba(39, 39, 39, 0.178);
 }
+
+#sidebar-menu-header {
+  border-top: 0;
+
+}
+
+#tree-comp{
+  margin-top: 30px;
+}
+
+p {
+   -webkit-appearance: none;
+   -moz-appearance: none;
+   appearance: none;
+
+ }
+
 </style>
