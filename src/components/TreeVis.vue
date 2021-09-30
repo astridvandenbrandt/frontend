@@ -369,7 +369,7 @@ export default {
     // Initialize axes
     var xAxis = d3
       .axisTop(vis.xScale)
-      .ticks(6)
+      .ticks(3)
       .tickSizeOuter(0)
       .tickSizeInner(-vis.height); //change 6 for more ticks
 
