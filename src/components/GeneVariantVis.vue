@@ -291,6 +291,23 @@ export default {
         "1_Col-0",
       ];
 
+      var original_map = [
+        "8_Sha",
+        "7_Ler",
+        "6_Kyo",
+        "5_Eri",
+        "4_Cvi",
+        "3_C24",
+        "2_An-1",
+        "Gro-3",
+        "Ler-0",
+        "Sku-30",
+        "Altai-5",
+        "Kas-1",
+        "Tsu-0",
+        "1_Col-0",
+      ];
+
       var group = [
         "1_Col-0",
         "2_An-1",
@@ -389,6 +406,7 @@ export default {
       // ];
 
       var sortingOptions = {
+        original_map: original_map,
         dtf1: dtf1,
         dtf1_rev: dtf1.slice().reverse(),
         dtf3: dtf3,
@@ -407,6 +425,7 @@ export default {
       vis.sortingOptions = sortingOptions;
 
       var sortingOptionsPheno = {
+        original_map: original_map,
         dtf1: dtf1,
         dtf1_rev: dtf1.slice().reverse(),
         dtf3: dtf3,
@@ -1351,22 +1370,24 @@ export default {
           .on("mouseleave", mouseleave);
       }
 
-      // Hide y-axis when no VR
-      var newAcc = d3.select("#selectButtonAccessionData").node().value;
-      console.log("selected VR from component sequence: ", newAcc);
+      // !! IMPORTANT Hide y-axis when no VR (this is only when full color is loaded)
+      // var newAcc = d3.select("#selectButtonAccessionData").node().value;
+      // console.log("selected VR from component sequence: ", newAcc);
 
-      if (newAcc === "_full") {
-        // console.log("no vr --> axis should NOT be visible");
+      // // if (newAcc === "_full") {
+      // if (newAcc === "_ref") {
 
-        d3.select(".y-axis--context").style("opacity", "0");
-        d3.select(".y-axis-title").style("opacity", "0");
-      } else {
-        // console.log("vr --> axis should be visible");
+      //   // console.log("no vr --> axis should NOT be visible");
 
-        d3.select(".y-axis--context").style("opacity", "1");
-        d3.select(".y-axis-title").style("opacity", "1");
+      //   d3.select(".y-axis--context").style("opacity", "0");
+      //   d3.select(".y-axis-title").style("opacity", "0");
+      // } else {
+      //   // console.log("vr --> axis should be visible");
 
-      }
+      //   d3.select(".y-axis--context").style("opacity", "1");
+      //   d3.select(".y-axis-title").style("opacity", "1");
+
+      // }
 
       //Tooltip at the end otherwise <div> not yet loaded
       vis.svgFocus
@@ -1485,6 +1506,7 @@ export default {
 
     // define the accession orders
     var orders = {
+      original_map: "original mapping",
       dtf1: "DTF1 descending",
       dtf1_rev: "DTF1 ascending",
       dtf3: "DTF3 descending",
@@ -1495,16 +1517,17 @@ export default {
       // alpha_desc: "alphabetical reversed",
       phylo: "phylogeny",
       phylo_rev: "phylogeny reversed",
-      group: "Group",
-      group_rev: "Group reversed",
-      origin: "Origin",
-      origin_rev: "Origin reversed",
+      group: "group",
+      group_rev: "group reversed",
+      origin: "origin",
+      origin_rev: "origin reversed",
       
     };
     vis.orders = orders;
 
     // define the accession orders
     var ordersPheno = {
+      original_map: "original mapping",
       dtf1: "DTF1 descending",
       dtf1_rev: "DTF1 ascending",
       dtf3: "DTF3 descending",
@@ -1515,10 +1538,10 @@ export default {
       // alpha_desc: "alphabetical reversed",
       phylo: "phylogeny",
       phylo_rev: "phylogeny reversed",
-      group: "Group",
-      group_rev: "Group reversed",
-      origin: "Origin",
-      origin_rev: "Origin reversed",
+      group: "group",
+      group_rev: "group reversed",
+      origin: "origin",
+      origin_rev: "origin reversed",
      
     };
     vis.ordersPheno = ordersPheno;

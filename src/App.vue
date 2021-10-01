@@ -124,7 +124,8 @@ export default {
 
      // Gene Ids
      var accessionIDs = {
-      _full: "None",
+      // _full: "None",
+      _ref: "none",
       "_1_Col-0": "1_Col-0",
       "_2_An-1": "2_An-1",
       "_3_C24":  "3_C24",
@@ -281,7 +282,7 @@ export default {
   font-family: sans-serif;
   /* font-variant: all-small-caps; */
   font-weight: 550;
-  letter-spacing: 0.08rem;
+  letter-spacing: 0.08em;
 }
 
 /* .content-title p {
