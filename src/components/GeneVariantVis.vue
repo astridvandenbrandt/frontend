@@ -60,7 +60,7 @@
       </div>
     </div>
   </div>
-
+  <div id="tooltipBarcode"></div>
   <div id="tooltip"></div>
   <div id="tooltip-bars"></div>
   <div id="tooltip-bars--pheno"></div>
@@ -76,16 +76,27 @@ export default {
   name: "GeneVariantVis",
   methods: {
     // This function contains all the code to prepare the data before we render it.
-    updateVis(data, data_mutations) {
+    updateVis(data, data_mutations, data_barcode) {
+
+      
     
       let vis = this;
+
+      // console.log('data barcode', data_barcode)
+      const flat_data_barcode = {
+        pos: data_barcode.map((d) => String(d.pos)),
+        base: data_barcode.map((d) => d.base),
+        accession: data_barcode.map((d) => d.accession),
+      };
+      // console.log("flat data barcode", flat_data_barcode);
+      vis.flat_data_barcode = flat_data_barcode;
 
       // if (vis.globalBrushStart == undefined){
       //   console.log(" global brush values undefined")
       // }
 
-      console.log('global brush start value from UpdateVis', vis.globalBrushStart)
-      console.log('global brush start value from UpdateVis', vis.globalBrushEnd)
+      // console.log('global brush start value from UpdateVis', vis.globalBrushStart)
+      // console.log('global brush end value from UpdateVis', vis.globalBrushEnd)
 
 
       // helper functions
@@ -113,29 +124,29 @@ export default {
 
       // data preprocessing
       vis.data_mutations = data_mutations;
-      console.log("data context vis:", data_mutations);
-      console.log("data focus vis: ", data);
+      // console.log("data context vis:", data_mutations);
+      // console.log("data focus vis: ", data);
 
       const flat_data = {
         pos: data.map((d) => parseFloat(d.pos)),
         base: data.map((d) => d.base),
         accession: data.map((d) => d.accession),
       };
-      console.log("flat data", flat_data);
+      // console.log("flat data", flat_data);
       vis.flat_data = flat_data;
 
       const nr_accessions = [...new Set(flat_data.accession)].length;
-      console.log("nr accessions", nr_accessions);
+      // console.log("nr accessions", nr_accessions);
       vis.nr_accessions = nr_accessions;
 
       const length_gene = data.length / nr_accessions - 1;
       vis.length_gene = length_gene;
-      console.log("length gene", length_gene);
+      // console.log("length gene", length_gene);
 
       const mutations = data_mutations.map((d) => parseFloat(d.accession));
       const max_mutations = d3.max(mutations);
       vis.max_mutations = max_mutations;
-      console.log("max mutations", mutations, max_mutations);
+      // console.log("max mutations", mutations, max_mutations);
 
 
       // else {
@@ -145,7 +156,7 @@ export default {
 
       // }
       if (vis.globalBrushStart > length_gene || vis.globalBrushEnd > length_gene){
-        console.log("start exceeds length new gene!!")
+        // console.log("start exceeds length new gene!!")
         // start = length_gene - 50
         // end = length_gene
         start = 0
@@ -164,7 +175,7 @@ export default {
       vis.end = end;
  
       const updateBrush = d3.select("#selectButtonBrush").node().value;
-      console.log('update brush with new data', updateBrush)
+      // console.log('update brush with new data', updateBrush)
       // const end = updateBrush * 100; // when new data loaded keep brush size
     
       const updateSort = d3.select("#selectButtonSort").node().value; // when new data loaded keep sorting order
@@ -183,6 +194,12 @@ export default {
 
       var genePositions = flat_data_slice_default.pos.filter(unique);
       // console.log("genePositions", genePositions);
+
+      var barcodePositions = flat_data_barcode.pos.filter(unique);
+      // console.log("barcodePositions", barcodePositions);
+
+      const geneAccessions = flat_data_slice_default.accession.filter(unique);
+      // console.log("gene accessions", geneAccessions);
 
       // var alpha = [
       //   "8__Tsu-0",
@@ -444,6 +461,9 @@ export default {
       // Set the scale input domains
       vis.xScaleContext.domain([0, vis.length_gene]);
       vis.yScaleContext.domain([0, vis.max_mutations]); // 11 is max vars on one pos
+      vis.xScaleBarcode.domain(barcodePositions);
+      vis.yScaleBarcode.domain(sortingOptions[updateSort]);
+
       vis.xScaleFocus.domain(genePositions);
       vis.yScaleFocus.domain(sortingOptions[updateSort]);
       vis.xScalePhenos.domain(['Group','Origin','DTF1','DTF3',]);
@@ -460,7 +480,7 @@ export default {
         base: flat_data_slice_default.base[i],
         accession: flat_data_slice_default.accession[i],
       }));
-      console.log("rows_data_slice_default", rows_data_slice_default);
+      // console.log("rows_data_slice_default", rows_data_slice_default);
       vis.rows_data_slice_default = rows_data_slice_default;
 
       var data_pheno_bars = [
@@ -567,9 +587,10 @@ export default {
       ]
 
 
-      console.log("data phenos", data_pheno)
+      // console.log("data phenos", data_pheno)
 
       vis.data_pheno = data_pheno;
+      vis.data_barcode = data_barcode;
 
       vis.renderVis();
     },
@@ -577,8 +598,68 @@ export default {
     renderVis() {
       let vis = this;
 
+      // console.log("data barcode rendervis:", vis.data_barcode);
+      let visBarcodeUpdate = vis.varBarcodeChart
+        .selectAll(".barcode-cell")
+        .data(vis.data_barcode);
+
+      // make new rects
+      let visBarcodeEnter = visBarcodeUpdate
+        .enter()
+        .append("rect")
+        .attr("class", "barcode-cell");
+
+        // remove old rects
+        visBarcodeUpdate.exit().remove();
+
+        visBarcodeEnter
+        .merge(visBarcodeUpdate)
+        .attr("x", (d) => vis.xScaleBarcode(d.pos))
+        .attr("y", (d) => vis.yScaleBarcode(d.accession))
+        // .attr("cx", (d) => vis.xScaleBarcode(d.pos) + vis.xScaleBarcode.bandwidth()/2)
+        //   .attr("cy", (d) => vis.yScaleBarcode(d.accession) + vis.yScaleBarcode.bandwidth()/2)
+        // .attr("r",vis.xScaleBarcode.bandwidth())
+          .attr("rx", 1.5)
+          .attr("ry", 1.5)
+          
+          .attr("width", vis.xScaleBarcode.bandwidth())
+          .attr("height", vis.yScaleBarcode.bandwidth())
+          .style("fill", function(d) {
+            if (d.base == "A"){
+              return "#4daf4a"
+            }
+            if (d.base == "C"){
+              return "#ff7f00"
+            }
+            if (d.base == "T"){
+              return "#377eb8"
+            }
+            if (d.base == "G"){
+              return "#e41a1c"
+            }
+            if (d.base == "X"){
+              // return "white"
+              return "rgb(214,218,224)"
+            }
+          })
+          // .style("stroke-width", 0.5)
+          // .style("stroke", "dimgrey")
+          .style("opacity", 0.9);
+
+      //     A: "#4daf4a",
+      // a: "#4daf4a",
+      // G: "#e41a1c",
+      // g: "#e41a1c",
+      // C: "#ff7f00",
+      // c: "#ff7f00",
+      // T: "#377eb8",
+      // t: "#377eb8",
+
+
+
+
       // PHENO BARS 2
-      console.log("data pheno bars 2:", vis.data_pheno_bars_2);
+      // console.log("data pheno bars 2:", vis.data_pheno_bars_2);
       // check new data
       let visPhenoBarUpdate2 = vis.phenoBars2
         .selectAll(".pheno-bar2")
@@ -605,7 +686,7 @@ export default {
 
 
       // PHENO BARS 
-      console.log("data pheno bars:", vis.data_pheno_bars);
+      // console.log("data pheno bars:", vis.data_pheno_bars);
       // check new data
       let visPhenoBarUpdate = vis.phenoBars
         .selectAll(".pheno-bar")
@@ -631,7 +712,7 @@ export default {
         .style("opacity", 0.8);
 
 
-      console.log("data mutations new:", vis.data_mutations);
+      // console.log("data mutations new:", vis.data_mutations);
       // check new data
       let visGeneUpdate = vis.svgContext
         .selectAll(".variants--summary-bar")
@@ -659,11 +740,11 @@ export default {
         .call(vis.brush)
         .call(vis.brush.move, [vis.start, vis.end].map(vis.xScaleContext));
 
-      console.log(
-        "test brush inital values",
-        vis.start,
-        [vis.start, vis.end].map(vis.xScaleContext)[1]
-      );
+      // console.log(
+      //   "test brush inital values",
+      //   vis.start,
+      //   [vis.start, vis.end].map(vis.xScaleContext)[1]
+      // );
 
       // console.log('test brushed labels', brushedReload)
 
@@ -727,6 +808,11 @@ export default {
       // update axes
       vis.xAxisContextG.call(vis.xAxisContext);
       vis.yAxisContextG.call(vis.yAxisContext);
+     
+      vis.xAxisBarcodeG.call(vis.xAxisBarcode);
+      vis.xAxisBarcodeG.select(".x-axis--barcode .domain").remove(); // to disable rendering the axis line
+      vis.yAxisBarcodeG.call(vis.yAxisBarcode);
+      vis.yAxisBarcodeG.select(".y-axis--barcode .domain").remove(); // to disable rendering the axis line
 
       vis.xAxisFocusG.call(
         vis.xAxisFocus.tickValues(
@@ -762,12 +848,12 @@ export default {
           vis.xScaleContext.invert,
           vis.xScaleContext
         );
-        console.log(
-          "range selected brush: ",
-          // rangeSelected,
-          Math.round(rangeSelected[0]),
-          Math.round(rangeSelected[1])
-        );
+        // console.log(
+        //   "range selected brush: ",
+        //   // rangeSelected,
+        //   Math.round(rangeSelected[0]),
+        //   Math.round(rangeSelected[1])
+        // );
 
         var startUpdate = Math.round(rangeSelected[0]);
         var endUpdate = Math.round(rangeSelected[1]);
@@ -779,17 +865,17 @@ export default {
       }
 
       function brushUpdate({ selection }) {
-        console.log("selection brush end", { selection });
+        // console.log("selection brush end", { selection });
         const rangeSelected = selection.map(
           vis.xScaleContext.invert,
           vis.xScaleContext
         );
-        console.log(
-          "range selected brush end: ",
-          // rangeSelected,
-          Math.round(rangeSelected[0]),
-          Math.round(rangeSelected[1])
-        );
+        // console.log(
+        //   "range selected brush end: ",
+        //   // rangeSelected,
+        //   Math.round(rangeSelected[0]),
+        //   Math.round(rangeSelected[1])
+        // );
 
         var startUpdate = Math.round(rangeSelected[0]);
         var endUpdate = Math.round(rangeSelected[1]);
@@ -799,7 +885,7 @@ export default {
 
         vis.globalBrushStart = startUpdate
         vis.globalBrushEnd = endUpdate;
-        console.log('global brush values', vis.globalBrushStart, vis.globalBrushEnd)
+        // console.log('global brush values', vis.globalBrushStart, vis.globalBrushEnd)
       }
 
       // updates labels brush
@@ -879,21 +965,21 @@ export default {
       }
 
       function brushed({ selection }) {
-        console.log("selection brush", { selection });
+        // console.log("selection brush", { selection });
         const rangeSelected = selection.map(
           vis.xScaleContext.invert,
           vis.xScaleContext
         );
-        console.log(
-          "range selected: ",
-          // rangeSelected,
-          Math.round(rangeSelected[0]),
-          Math.round(rangeSelected[1])
-        );
+        // console.log(
+        //   "range selected: ",
+        //   // rangeSelected,
+        //   Math.round(rangeSelected[0]),
+        //   Math.round(rangeSelected[1])
+        // );
 
         var startUpdate = Math.round(rangeSelected[0]);
         var endUpdate = Math.round(rangeSelected[1]);
-        console.log("start and end of brush: ", startUpdate, endUpdate);
+        // console.log("start and end of brush: ", startUpdate, endUpdate);
 
 
         vis.xScaleFocus.domain(d3.range(startUpdate, endUpdate + 1));
@@ -927,7 +1013,7 @@ export default {
         // console.log("rows updated flat", flat_data_slice_updated_final);
 
         var length = (endUpdate - startUpdate + 1) * vis.nr_accessions;
-        console.log("nr of cells to render", length);
+        // console.log("nr of cells to render", length);
 
         var rows_data_slice_updated = Array.from({ length }, (_, i) => ({
           pos: flat_data_slice_updated_final.pos[i], // position type should be changed from string to float
@@ -959,6 +1045,42 @@ export default {
           .on("mousemove", mousemove)
           .on("mouseleave", mouseleave);
       }
+
+      var mouseoverBarcode = function() {
+        d3.select("#tooltipBarcode")
+          .style("display", "block")
+          .style("opacity", 0.8)
+          // .style("color", "white");
+          .style("color", "black");
+        d3.select(this)
+          .style("stroke", "black")
+          .style("stroke-width", "1px")
+          .style("opacity", 1);
+      };
+
+
+      var mousemoveBarcode = function(event, d) {
+        d3.select("#tooltipBarcode")
+          // .style("display", "block")
+          .html(
+            " <strong>pos:</strong> " +
+              d.pos 
+          )
+          // .style("left", d3.pointer(event)[0] + 530 + "px")
+          // .style("top", d3.pointer(event)[1] + 150 + "px");
+
+          .style("left", d3.pointer(event)[0] + (vis.leftColWidth*1) + "px")
+          .style("top", d3.pointer(event)[1]  + (vis.topRowHeight*5) + "px");
+
+     
+      };
+
+      var mouseleaveBarcode = function() {
+        d3.select("#tooltipBarcode").style("display", "none");
+        d3.select(this)
+          .style("stroke", "none")
+          .style("opacity", 0.8);
+      };
 
       var mouseover = function() {
         d3.select("#tooltip")
@@ -1032,7 +1154,7 @@ export default {
               d.pos
           )
           .style("left", d3.pointer(event)[0] + (vis.leftColWidth*2) + "px")
-          .style("top", d3.pointer(event)[1] + (vis.topRowHeight) + "px");
+          .style("top", d3.pointer(event)[1] + (vis.topRowHeight*0.6) + "px");
       };
 
       var mouseleavePheno = function() {
@@ -1136,7 +1258,18 @@ export default {
 
       // function to update the MSA ordering
       function updateMSAorder(sortingOption) {
-        console.log("option chosen: ", sortingOption);
+        // console.log("option chosen: ", sortingOption);
+
+        vis.yScaleBarcode.domain(sortingOption);
+        vis.varBarcodeChart.select(".y-axis--barcode").call(vis.yAxisBarcode);
+        vis.varBarcodeChart.select(".y-axis--barcode .domain").remove(); // to disable rendering the axis line
+
+        vis.varBarcodeChart
+          .selectAll(".barcode-cell")
+          .transition()
+          .duration(500)
+          .attr("x", (d) => vis.xScaleBarcode(d.pos))
+          .attr("y", (d) => vis.yScaleBarcode(d.accession));
 
         vis.yScaleFocus.domain(sortingOption);
         vis.svgFocus.select(".y-axis--focus").call(vis.yAxisFocus);
@@ -1153,12 +1286,18 @@ export default {
           .on("mouseover", mouseover)
           .on("mousemove", mousemove)
           .on("mouseleave", mouseleave);
+
+          vis.varBarcodeChart
+          .selectAll(".barcode-cell")
+          .on("mouseover", mouseoverBarcode)
+          .on("mousemove", mousemoveBarcode)
+          .on("mouseleave", mouseleaveBarcode);
       }
 
       // Change row ordering based on select
       d3.select("#selectButtonSort").on("change", function() {
         var selected = d3.select("#selectButtonSort").node().value;
-        console.log("selected order MSA: ", selected);
+        // console.log("selected order MSA: ", selected);
         updateMSAorder(vis.sortingOptions[selected]);
         d3.select('#selectButtonSortPhenos').property('value', selected);
         updatePhenosOrder(vis.sortingOptionsPheno[selected])
@@ -1166,7 +1305,7 @@ export default {
 
       // function to update the MSA ordering
       function updatePhenosOrder(sortingOption) {
-        console.log("option chosen: ", sortingOption);
+        // console.log("option chosen: ", sortingOption);
 
         vis.yScalePhenos.domain(sortingOption);
         vis.phenoChart.select(".y-axis--phenos").call(vis.yAxisPhenos);
@@ -1232,7 +1371,7 @@ export default {
       // Change row ordering based on select
       d3.select("#selectButtonSortPhenos").on("change", function() {
         var selected = d3.select("#selectButtonSortPhenos").node().value;
-        console.log("selected order phenos: ", selected);
+        // console.log("selected order phenos: ", selected);
         updatePhenosOrder(vis.sortingOptionsPheno[selected]);
         d3.select('#selectButtonSort').property('value', selected);
         updateMSAorder(vis.sortingOptions[selected])
@@ -1241,7 +1380,7 @@ export default {
       // Change brush size based on select
       d3.select("#selectButtonBrush").on("change", function() {
         var selectedBrush = d3.select("#selectButtonBrush").node().value;
-        console.log("selected brush size: ", selectedBrush);
+        // console.log("selected brush size: ", selectedBrush);
 
         var start_updated = 0;
         var end_updated = parseInt(selectedBrush) * 100;
@@ -1253,10 +1392,10 @@ export default {
             [start_updated, end_updated].map(vis.xScaleContext)
           );
 
-        console.log(
-          "test brush values",
-          [start_updated, end_updated].map(vis.xScaleContext)
-        );
+        // console.log(
+        //   "test brush values",
+        //   [start_updated, end_updated].map(vis.xScaleContext)
+        // );
 
         vis.svgFocus.selectAll(".x-axis--focus").call(
           vis.xAxisFocus.tickValues(
@@ -1270,20 +1409,20 @@ export default {
 
       // Change with arrow left
       d3.select("#btn-arrow-left").on("click", function() {
-        console.log("clicked left arrow");
+        // console.log("clicked left arrow");
         brushArrow("left");
       });
 
       // Change focus with arrow right
       d3.select("#btn-arrow-right").on("click", function() {
-        console.log("clicked right arrow");
+        // console.log("clicked right arrow");
         brushArrow("right");
       });
 
       function brushArrow(arrow) {
         const rangeOld = d3.extent(vis.xScaleFocus.domain());
-        console.log("old brush start", rangeOld[0]);
-        console.log("old brush end", rangeOld[1]);
+        // console.log("old brush start", rangeOld[0]);
+        // console.log("old brush end", rangeOld[1]);
 
         if (arrow === "left") {
           if (rangeOld[0] <= 0) {
@@ -1292,11 +1431,11 @@ export default {
           } else {
             startUpdate = rangeOld[0] - 1;
             endUpdate = rangeOld[1] - 1;
-            console.log(
-              "new start and end of left brush: ",
-              startUpdate,
-              endUpdate
-            );
+            // console.log(
+            //   "new start and end of left brush: ",
+            //   startUpdate,
+            //   endUpdate
+            // );
           }
         }
         if (arrow == "right") {
@@ -1306,11 +1445,11 @@ export default {
           } else {
             startUpdate = rangeOld[0] + 1;
             endUpdate = rangeOld[1] + 1;
-            console.log(
-              "new start and end of right brush: ",
-              startUpdate,
-              endUpdate
-            );
+            // console.log(
+            //   "new start and end of right brush: ",
+            //   startUpdate,
+            //   endUpdate
+            // );
           }
         }
 
@@ -1349,7 +1488,7 @@ export default {
         // console.log("rows updated flat", flat_data_slice_updated_final);
 
         var length = (endUpdate - startUpdate + 1) * vis.nr_accessions;
-        console.log("nr of cells to render", length);
+        // console.log("nr of cells to render", length);
 
         var rows_data_slice_updated = Array.from({ length }, (_, i) => ({
           pos: flat_data_slice_updated_final.pos[i], // position type should be changed from string to float
@@ -1374,28 +1513,44 @@ export default {
           .on("mouseover", mouseover)
           .on("mousemove", mousemove)
           .on("mouseleave", mouseleave);
+
+          vis.varBarcodeChart
+          .selectAll(".barcode-cell")
+          .on("mouseover", mouseoverBarcode)
+          .on("mousemove", mousemoveBarcode)
+          .on("mouseleave", mouseleaveBarcode);
       }
 
+        
+      
+
       // !! IMPORTANT Hide y-axis when no VR (this is only when full color is loaded)
-      // var newAcc = d3.select("#selectButtonAccessionData").node().value;
+      var newAcc = d3.select("#selectButtonAccessionData").node().value;
       // console.log("selected VR from component sequence: ", newAcc);
 
-      // // if (newAcc === "_full") {
-      // if (newAcc === "_ref") {
+      // if (newAcc === "_full") {
+      if (newAcc === "_ref") {
 
-      //   // console.log("no vr --> axis should NOT be visible");
+        // console.log("no vr --> axis should NOT be visible");
 
-      //   d3.select(".y-axis--context").style("opacity", "0");
-      //   d3.select(".y-axis-title").style("opacity", "0");
-      // } else {
-      //   // console.log("vr --> axis should be visible");
+        d3.select(".y-axis--context").style("opacity", "0");
+        d3.select(".y-axis-title").style("opacity", "0");
+      } else {
+        // console.log("vr --> axis should be visible");
 
-      //   d3.select(".y-axis--context").style("opacity", "1");
-      //   d3.select(".y-axis-title").style("opacity", "1");
+        d3.select(".y-axis--context").style("opacity", "1");
+        d3.select(".y-axis-title").style("opacity", "1");
 
-      // }
+      }
 
       //Tooltip at the end otherwise <div> not yet loaded
+
+      vis.varBarcodeChart
+        .selectAll(".barcode-cell")
+        .on("mouseover", mouseoverBarcode)
+        .on("mousemove", mousemoveBarcode)
+        .on("mouseleave", mouseleaveBarcode);
+
       vis.svgFocus
         .selectAll(".snp-cell")
         .on("mouseover", mouseover)
@@ -1453,8 +1608,8 @@ export default {
 
     const leftColWidth = (width/10)*2;
     vis.leftColWidth = leftColWidth;
-    const variantSumWidth = 50;
-    const variantBarcodeChartWidth = leftColWidth - variantSumWidth;
+    const variantSumWidth = 0; //50
+    const variantBarcodeChartWidth = leftColWidth - variantSumWidth - innerMargin*5;
     // const midColWidth = 500;
     const midColWidth = (width/10)*5;
     vis.midColWidth = midColWidth;
@@ -1573,6 +1728,18 @@ export default {
     var yScaleContext = d3.scaleLinear().range([topRowHeight, 0]);
     vis.yScaleContext = yScaleContext;
 
+    var xScaleBarcode = d3
+      .scaleBand()
+      .range([0, variantBarcodeChartWidth])
+      .padding(0.6);
+    vis.xScaleBarcode = xScaleBarcode;
+
+    var yScaleBarcode = d3
+      .scaleBand()
+      .range([bottomRowHeight, 0])
+      .padding(0.07);
+    vis.yScaleBarcode = yScaleBarcode;
+
     var xScaleFocus = d3
       .scaleBand()
       .range([0, midColWidth])
@@ -1656,10 +1823,16 @@ export default {
       .tickSizeOuter(0);
     vis.yAxisContext = yAxisContext;
 
+    var xAxisBarcode = d3.axisTop(vis.xScaleBarcode).tickValues([]);
+    vis.xAxisBarcode = xAxisBarcode;
+
+    var yAxisBarcode = d3.axisLeft(vis.yScaleBarcode);
+    vis.yAxisBarcode = yAxisBarcode;
+
     var xAxisFocus = d3.axisTop(vis.xScaleFocus);
     vis.xAxisFocus = xAxisFocus;
 
-    var yAxisFocus = d3.axisLeft(vis.yScaleFocus);
+    var yAxisFocus = d3.axisLeft(vis.yScaleFocus).tickValues([]);
     vis.yAxisFocus = yAxisFocus;
 
     var xAxisPhenos = d3.axisTop(vis.xScalePhenos);
@@ -1754,7 +1927,7 @@ export default {
 
     const varBarcodeChart = svg
       .append("g")
-      .attr("transform", `translate(0, ${topRowHeight + innerMargin * 6})`);
+      .attr("transform", `translate(${innerMargin*4}, ${topRowHeight + innerMargin * 6})`);
 
     vis.varBarcodeChart = varBarcodeChart;
 
@@ -1763,8 +1936,10 @@ export default {
       .attr("class", "background-summary")
       .attr("width", variantBarcodeChartWidth)
       .attr("height", bottomRowHeight)
-      .style("fill", "lightgrey")
-      .style("opacity", "0.2");
+      // .style("fill", "lightgrey")
+      // .style("opacity", "0.2");
+      .style("fill", "#e7298a")
+      .style("opacity", "0.06");
 
     const phenoChart = svg
       .append("g")
@@ -1902,6 +2077,19 @@ export default {
       .style("font-family", "sans-serif")
       // .style("font-weight", 500)
       .text("DTF1");
+
+    var xAxisBarcodeG = vis.varBarcodeChart
+      .append("g")
+      .attr("class", "x-axis--barcode")
+      .style("font-size", 10);
+    // .attr("transform", "translate(0," + this.height + ")")
+    vis.xAxisBarcodeG = xAxisBarcodeG;
+
+    var yAxisBarcodeG = vis.varBarcodeChart
+      .append("g")
+      .attr("class", "y-axis--barcode")
+      .style("font-size", 10);
+    vis.yAxisBarcodeG = yAxisBarcodeG;
 
     var xAxisFocusG = vis.svgFocus
       .append("g")
@@ -2067,6 +2255,18 @@ export default {
   padding: 5px;
   text-align: left;
 } */
+
+#tooltipBarcode {
+  position: absolute;
+  opacity: 0;
+  background: #fff;
+  box-shadow: 2px 2px 3px 0px rgb(92 92 92 / 0.5);
+  border: 1px solid #ddd;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  text-align: left;
+}
 
 #tooltip {
   position: absolute;

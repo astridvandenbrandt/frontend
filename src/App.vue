@@ -2,6 +2,12 @@
   <div id="app">
     <div class="container-fluid">
       <div class="min-vh-100">
+        <!-- <div class="row">
+          <div class="col-2">
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSdE9VeqzUMYN5ZnWicPdOLSfYOdD8OhFHiTxBt-lAMWdEEX4w/viewform?usp=sf_link" class="btn btn-warning btn-sm" role="button" aria-pressed="true"> 
+              Feedback Survey</a>
+          </div>
+          </div> -->
         <div class="row gx-2">
           <div class="col-md-2">
             <div class="sidebar-section">
@@ -105,8 +111,8 @@ export default {
 
     // Gene Ids
     var geneIDs = {
-      AT1G01060: "AT1G01060",
       AT1G02820: "AT1G02820",
+      AT1G01060: "AT1G01060",
     };
 
     // add the options to the button
@@ -124,7 +130,7 @@ export default {
 
      // Gene Ids
      var accessionIDs = {
-      // _full: "None",
+      // _full: "none",
       _ref: "none",
       "_1_Col-0": "1_Col-0",
       "_2_An-1": "2_An-1",
@@ -144,17 +150,21 @@ export default {
     };
 
     // add the options to the button
-    d3.select("#selectButtonAccessionData")
+    var accessionButton = d3.select("#selectButtonAccessionData")
       .selectAll("myOptionsAccessionData")
+      // .data(Object.keys(accessionIDs))
       .data(Object.keys(accessionIDs))
       .enter()
       .append("option")
       .text(function(d) {
+        // return accessionIDs[d];
         return accessionIDs[d];
       }) // text showed in the menu
       .attr("value", function(d) {
         return d;
       }); // corresponding value returned by the button
+
+    this.accessionButton = accessionButton;
 
     // Trees
     var treeTypes = {
@@ -178,8 +188,12 @@ export default {
         return d;
       }); // corresponding value
 
+    this.selectedGeneId = d3.select("#selectButtonData").node().value;
+    // console.log('selected gene ID', this.selectedGeneId)
+
     this.fetchData(Object.keys(geneIDs)[0], Object.keys(accessionIDs)[0]); // inital data display
     this.fetchDataTree(Object.keys(treeTypes)[0]);
+    this.fetchDataAccession(this.selectedGeneId)
     this.updateData();
   },
   methods: {
@@ -188,10 +202,15 @@ export default {
       // Change data based on select
       d3.select("#selectButtonData").on("change", () => {
         var selectedGene = d3.select("#selectButtonData").node().value;
-        console.log("selected gene ID: ", selectedGene);
+        // console.log("selected gene ID: ", selectedGene);
+
+        // console.log('selected gene ID this in funct', this.selectedGeneId)
+        // this.selectedGeneId = d3.select("#selectButtonData").node().value;
+        // console.log('selected gene ID this in funct changed', this.selectedGeneId);
+
 
         var selectedAccession = d3.select("#selectButtonAccessionData").node().value;
-        console.log("selected Accession: ", selectedAccession);
+        // console.log("selected Accession: ", selectedAccession);
 
         this.fetchData(selectedGene, selectedAccession);
       });
@@ -199,24 +218,24 @@ export default {
       // Change data based on select
       d3.select("#selectButtonTreeData").on("change", () => {
         var selectedTree = d3.select("#selectButtonTreeData").node().value;
-        console.log("selected Tree Type: ", selectedTree);
+        // console.log("selected Tree Type: ", selectedTree);
 
         this.fetchDataTree(selectedTree);
       });
       // Change data based on select
       d3.select("#selectButtonAccessionData").on("change", () => {
         var selectedGene = d3.select("#selectButtonData").node().value;
-        console.log("selected gene ID: ", selectedGene);
+        // console.log("selected gene ID: ", selectedGene);
 
         var selectedAccession = d3.select("#selectButtonAccessionData").node().value;
-        console.log("selected Accession: ", selectedAccession);
+        // console.log("selected Accession: ", selectedAccession);
 
         this.fetchData(selectedGene, selectedAccession);
       });
     },
     async fetchDataTree(treeType) {
       //change later to type of tree
-      console.log("initial Tree =", treeType);
+      // console.log("initial Tree =", treeType);
 
       const response = await fetch("./trees/tree_" + treeType + ".txt");
       const data_tree = await response.text();
@@ -227,10 +246,19 @@ export default {
 
       componentTree.updateVis(data_tree);
     },
+    async fetchDataAccession(geneID) {
+      // console.log("this.geneID =", geneID);
+      // console.log("initial Accession =", accession);    
+
+      let data_accession = await d3.csv("./gene_variants/accessions_" + geneID + ".csv");
+      this.loadDataAccession = data_accession;
+
+      // console.log('data accessions in App', data_accession)
+
+    },
     async fetchData(geneID, accession) {
       // console.log("initial Gene =", geneID);
-      // console.log("initial Accession =", accession);
-    
+      // console.log("initial Accession =", accession);    
 
       let data_msa = await d3.csv("./gene_variants/matrix_" + geneID + accession + ".csv");
       this.loadDataMSA = data_msa;
@@ -240,9 +268,14 @@ export default {
       ); //  msa_AT1G01060_mutations.csv
       this.loadDataMut = data_msa_mutations;
 
+      let data_barcode = await d3.csv(
+        "./gene_variants/barcode_" + geneID + accession + ".csv"
+      ); //  msa_AT1G01060_mutations.csv
+      this.loadDataBarcode = data_barcode;
+
       let componentVariantDetails = this.$refs["variant_data"];
 
-      componentVariantDetails.updateVis(data_msa, data_msa_mutations);
+      componentVariantDetails.updateVis(data_msa, data_msa_mutations, data_barcode);
     },
   },
 };

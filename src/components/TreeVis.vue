@@ -52,7 +52,7 @@ export default {
       }
 
       const data = parseNewick(data_tree);
-      console.log("data tree parsed", data);
+      // console.log("data tree parsed", data);
 
       // Create data hierarchy and sort nodes by ascending length
       var root = d3
@@ -84,7 +84,7 @@ export default {
       }
 
       var maxLen = d3.max(lnghts);
-      console.log("maxLength branches", maxLen);
+      // console.log("maxLength branches", maxLen);
 
       // Set the scale input domains
       vis.xScale.domain([0, maxLen]);
@@ -270,13 +270,13 @@ export default {
       // Show branch length option
       d3.select("#showBranchLength").on("change", function() {
         if (d3.select("#showBranchLength").property("checked")) {
-          console.log("selected branch length option: ", "checked");
+          // console.log("selected branch length option: ", "checked");
           updateTreeChart(vis.cluster(vis.root).links(), vis.root.descendants());
           d3.select("#x-axis--tree").style("opacity", "1");
 
   
         } else {
-          console.log("selected branch length option: ", "unchecked");
+          // console.log("selected branch length option: ", "unchecked");
           updateDendrogramChart(vis.cluster(vis.root).links(), vis.root.descendants());
           // vis.xAxisGroup.select(".axis x-axis").remove(); // to disable rendering the axis line
           d3.select("#x-axis--tree").style("opacity", "0");
