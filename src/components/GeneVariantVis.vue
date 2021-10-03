@@ -972,6 +972,7 @@ export default {
           .style("opacity", 1);
       };
 
+
       var mousemove = function(event, d) {
         d3.select("#tooltip")
           // .style("display", "block")
@@ -985,8 +986,13 @@ export default {
               "<strong>accession:</strong> " +
               d.accession
           )
-          .style("left", d3.pointer(event)[0] + 530 + "px")
-          .style("top", d3.pointer(event)[1] + 150 + "px");
+          // .style("left", d3.pointer(event)[0] + 530 + "px")
+          // .style("top", d3.pointer(event)[1] + 150 + "px");
+
+          .style("left", d3.pointer(event)[0] + (vis.leftColWidth*2) + "px")
+          .style("top", d3.pointer(event)[1]  + (vis.topRowHeight*2) + "px");
+
+     
       };
 
       var mouseleave = function() {
@@ -1025,8 +1031,8 @@ export default {
               "<strong>Position:</strong> " +
               d.pos
           )
-          .style("left", d3.pointer(event)[0] + 630 + "px")
-          .style("top", d3.pointer(event)[1] + 160 + "px");
+          .style("left", d3.pointer(event)[0] + (vis.leftColWidth*2) + "px")
+          .style("top", d3.pointer(event)[1] + (vis.topRowHeight) + "px");
       };
 
       var mouseleavePheno = function() {
@@ -1057,8 +1063,8 @@ export default {
               "<br/>" +
               d.value
           )
-          .style("left", d3.pointer(event)[0] + 1100 +  "px")
-          .style("top", d3.pointer(event)[1] + 130 + "px");
+          .style("left", d3.pointer(event)[0] + (vis.leftColWidth*2.2 + vis.midColWidth) + "px")
+          .style("top", d3.pointer(event)[1] + (vis.topRowHeight*7) + "px");
       };
 
       var mouseleavePhenoBar = function() {
@@ -1091,8 +1097,8 @@ export default {
               d.value
 
           )
-          .style("left", d3.pointer(event)[0] + 1250 +  "px")
-          .style("top", d3.pointer(event)[1] + 130 + "px");
+          .style("left", d3.pointer(event)[0] + (vis.leftColWidth*2 + vis.midColWidth + vis.phenoChartWidth) + "px")
+          .style("top", d3.pointer(event)[1] + (vis.topRowHeight*7) + "px");
       };
 
       var mouseleavePhenoBar2 = function() {
@@ -1124,8 +1130,8 @@ export default {
               + "<br/>" +
               d.value
           )
-          .style("left", d3.pointer(event)[0] + 1200 +  "px")
-          .style("top", d3.pointer(event)[1] + 130 + "px");
+          .style("left", d3.pointer(event)[0] + (vis.leftColWidth*2 + vis.midColWidth + vis.phenoChartWidth*0.6) + "px")
+          .style("top", d3.pointer(event)[1] + (vis.topRowHeight*7) + "px");
       };
 
       // function to update the MSA ordering
@@ -1446,16 +1452,20 @@ export default {
     const height = containerHeight - margin.top - margin.left - legendHeight;
 
     const leftColWidth = (width/10)*2;
+    vis.leftColWidth = leftColWidth;
     const variantSumWidth = 50;
     const variantBarcodeChartWidth = leftColWidth - variantSumWidth;
     // const midColWidth = 500;
     const midColWidth = (width/10)*5;
+    vis.midColWidth = midColWidth;
     const rightColWidth = width - leftColWidth - midColWidth;
     const phenoBarsWidth = 130;
     const phenoChartWidth = rightColWidth - phenoBarsWidth;
+    vis.phenoChartWidth = phenoChartWidth;
 
 
     const topRowHeight = 30;
+    vis.topRowHeight = topRowHeight;
     const bottomRowHeight = height - topRowHeight - innerMargin * 5;
 
     // // set dimensions
