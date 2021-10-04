@@ -2,12 +2,12 @@
   <div id="app">
     <div class="container-fluid">
       <div class="min-vh-100">
-        <!-- <div class="row">
+        <div class="row">
           <div class="col-2">
             <a href="https://docs.google.com/forms/d/e/1FAIpQLSdE9VeqzUMYN5ZnWicPdOLSfYOdD8OhFHiTxBt-lAMWdEEX4w/viewform?usp=sf_link" class="btn btn-warning btn-sm" role="button" aria-pressed="true"> 
               Feedback Survey</a>
           </div>
-          </div> -->
+          </div>
         <div class="row gx-2">
           <div class="col-md-2">
             <div class="sidebar-section">
