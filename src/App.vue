@@ -114,7 +114,8 @@ export default {
     var geneIDs = {
       AT1G02820_1: "AT1G02820",
       AT1G01060_1: "AT1G01060",
-      AT1G11460_1: "AT1G11460"
+      AT1G11460_1: "AT1G11460",
+      AT5G47700_1: "AT5G47700"
     };
 
     // add the options to the button
