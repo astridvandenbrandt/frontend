@@ -78,12 +78,22 @@ export default {
     // This function contains all the code to prepare the data before we render it.
     updateVis(data, data_mutations, data_barcode, data_phenos) {
 
-      console.log('data', data)
-      console.log('data mutations', data_mutations)
-      console.log('data phenos', data_phenos)
+      // console.log('data', data)
+      // console.log('data mutations', data_mutations)
+      // console.log('data phenos', data_phenos)
 
-    
+   
       let vis = this;
+
+      const data_pheno_dtf3 = data_phenos.filter(item => (item.pheno == 'DTF3')); 
+      const data_pheno_dtf1 = data_phenos.filter(item => (item.pheno == 'DTF1')); 
+      const data_pheno_origin = data_phenos.filter(item => (item.pheno == 'Origin')); 
+      const data_pheno_group = data_phenos.filter(item => (item.pheno == 'Group')); 
+
+
+      vis.data_pheno_dtf3 = data_pheno_dtf3;
+      vis.data_pheno_dtf1 = data_pheno_dtf1;
+
 
       // console.log('data barcode', data_barcode)
       const flat_data_barcode = {
@@ -254,22 +264,22 @@ export default {
       //   "1_Col-0",
       // ];
 
-      var phylo_kmer = [
-        "Tsu-0",
-        "Sku-30",
-        "Ler-0",
-        "Kas-1",
-        "Gro-3",
-        "Altai-5",
-        "2_An-1",
-        "1_Col-0",
-        "4_Cvi",
-        "3_C24",
-        "8_Sha",
-        "7_Ler",
-        "5_Eri",
-        "6_Kyo",
-      ];
+      // var phylo_kmer = [
+      //   "Tsu-0",
+      //   "Sku-30",
+      //   "Ler-0",
+      //   "Kas-1",
+      //   "Gro-3",
+      //   "Altai-5",
+      //   "2_An-1",
+      //   "1_Col-0",
+      //   "4_Cvi",
+      //   "3_C24",
+      //   "8_Sha",
+      //   "7_Ler",
+      //   "5_Eri",
+      //   "6_Kyo",
+      // ];
       // var phylo_kmer = [
       //   "2_An-1",
       //   "1__Tsu-0",
@@ -299,22 +309,22 @@ export default {
       //   "6_Kyo",
       // ];
 
-      var ref_first = [
-        "Gro-3",
-        "Ler-0",
-        "Sku-30",
-        "Altai-5",
-        "Kas-1",
-        "Tsu-0",
-        "8_Sha",
-        "7_Ler",
-        "6_Kyo",
-        "5_Eri",
-        "4_Cvi",
-        "3_C24",
-        "2_An-1",
-        "1_Col-0",
-      ];
+      // var ref_first = [
+      //   "Gro-3",
+      //   "Ler-0",
+      //   "Sku-30",
+      //   "Altai-5",
+      //   "Kas-1",
+      //   "Tsu-0",
+      //   "8_Sha",
+      //   "7_Ler",
+      //   "6_Kyo",
+      //   "5_Eri",
+      //   "4_Cvi",
+      //   "3_C24",
+      //   "2_An-1",
+      //   "1_Col-0",
+      // ];
 
       // var original_map = [
       //   "Tsu-0",
@@ -333,90 +343,97 @@ export default {
       //   "1_Col-0",
       // ];
 
-      var original_map = [
-        "8__Kas-1",
-        "8__Altai-5",
-        "8_Sha",
-        "7_Ler",
-        "6__Tsu-0",
-        "6_Kyo",
-        "5__Sku-30",
-        "5__Ler-0",
-        "5__Gro-3",
-        "5_Eri",
-        "4_Cvi",
-        "3_C24",
-        "2_An-1",
-        "1_Col-0",
-      ];
+      // var original_map = [
+      //   "8__Kas-1",
+      //   "8__Altai-5",
+      //   "8_Sha",
+      //   "7_Ler",
+      //   "6__Tsu-0",
+      //   "6_Kyo",
+      //   "5__Sku-30",
+      //   "5__Ler-0",
+      //   "5__Gro-3",
+      //   "5_Eri",
+      //   "4_Cvi",
+      //   "3_C24",
+      //   "2_An-1",
+      //   "1_Col-0",
+      // ];
 
-      var group = [
-        "1_Col-0",
-        "2_An-1",
-        "4_Cvi",
-        "Altai-5",
-        "Sku-30",
-        "Ler-0",
-        "3_C24",
-        "5_Eri",
-        "6_Kyo",
-        "7_Ler",
-        "8_Sha",
-        "Tsu-0",
-        "Kas-1",
-        "Gro-3",
-      ];
+      // var group = [
+      //   "1_Col-0",
+      //   "2_An-1",
+      //   "4_Cvi",
+      //   "Altai-5",
+      //   "Sku-30",
+      //   "Ler-0",
+      //   "3_C24",
+      //   "5_Eri",
+      //   "6_Kyo",
+      //   "7_Ler",
+      //   "8_Sha",
+      //   "Tsu-0",
+      //   "Kas-1",
+      //   "Gro-3",
+      // ];
 
-      var origin = [
-        "1_Col-0",
-        "8_Sha",
-        "Sku-30",
-        "Gro-3",
-        "5_Eri",
-        "3_C24",
-        "Tsu-0",
-        "6_Kyo",
-        "Kas-1",
-        "Ler-0",
-        "7_Ler",
-        "Altai-5",
-        "4_Cvi",
-        "2_An-1",
-      ];
+      // var origin = [
+      //   "1_Col-0",
+      //   "8_Sha",
+      //   "Sku-30",
+      //   "Gro-3",
+      //   "5_Eri",
+      //   "3_C24",
+      //   "Tsu-0",
+      //   "6_Kyo",
+      //   "Kas-1",
+      //   "Ler-0",
+      //   "7_Ler",
+      //   "Altai-5",
+      //   "4_Cvi",
+      //   "2_An-1",
+      // ];
 
-      var dtf3 = [
-        "Tsu-0",
-        "1_Col-0",
-        "Ler-0",
-        "7_Ler", 
-        "3_C24",
-        "5_Eri",
-        "6_Kyo",
-        "2_An-1",
-        "4_Cvi",
-        "8_Sha",
-        "Altai-5",
-        "Gro-3",
-        "Kas-1",
-        "Sku-30",
-      ];
+      var original_map = data_pheno_group.sort((b, a) => a.accession.localeCompare(b.accession)).map(value => value.accession);
+      var group = data_pheno_group.sort((b, a) => a.value.localeCompare(b.value)).map(value => value.accession);
+      var origin = data_pheno_origin.sort((b, a) => a.value.localeCompare(b.value)).map(value => value.accession);
+      var dtf3 = data_pheno_dtf3.sort((a,b) =>  a.value - b.value).map(value => value.accession);
+      var dtf1 = data_pheno_dtf1.sort((a,b) =>  a.value - b.value).map(value => value.accession);
 
-      var dtf1 = [
-        "Tsu-0",
-        "1_Col-0",
-        "7_Ler", 
-        "Ler-0",
-        "3_C24",
-        "6_Kyo",
-        "2_An-1",
-        "4_Cvi",
-        "Kas-1",
-        "8_Sha",
-        "Altai-5",
-        "5_Eri",
-        "Sku-30",
-        "Gro-3",
-      ];
+      // var dtf3 = [
+      //   "Tsu-0",
+      //   "1_Col-0",
+      //   "Ler-0",
+      //   "7_Ler", 
+      //   "3_C24",
+      //   "5_Eri",
+      //   "6_Kyo",
+      //   "2_An-1",
+      //   "4_Cvi",
+      //   "8_Sha",
+      //   "Altai-5",
+      //   "Gro-3",
+      //   "Kas-1",
+      //   "Sku-30",
+      // ];
+
+      // var dtf1 = [
+      //   "Tsu-0",
+      //   "1_Col-0",
+      //   "7_Ler", 
+      //   "Ler-0",
+      //   "3_C24",
+      //   "6_Kyo",
+      //   "2_An-1",
+      //   "4_Cvi",
+      //   "Kas-1",
+      //   "8_Sha",
+      //   "Altai-5",
+      //   "5_Eri",
+      //   "Sku-30",
+      //   "Gro-3",
+      // ];
+
 
       // var ref_first = [
       //   "8__Tsu-0",
@@ -457,12 +474,12 @@ export default {
         group_rev: group.slice().reverse(),
         origin: origin,
         origin_rev: origin.slice().reverse(),
-        ref_first: ref_first,
-        ref_last: ref_first.slice().reverse(),
-        // alpha_asc: alpha,
-        // alpha_desc: alpha.slice().reverse(),
-        phylo: phylo_kmer,
-        phylo_rev: phylo_kmer.slice().reverse(),
+        // ref_first: ref_first,
+        // ref_last: ref_first.slice().reverse(),
+        // // alpha_asc: alpha,
+        // // alpha_desc: alpha.slice().reverse(),
+        // phylo: phylo_kmer,
+        // phylo_rev: phylo_kmer.slice().reverse(),
       };
       vis.sortingOptions = sortingOptions;
 
@@ -476,10 +493,10 @@ export default {
         group_rev: group.slice().reverse(),
         origin: origin,
         origin_rev: origin.slice().reverse(),
-        ref_first: ref_first,
-        ref_last: ref_first.slice().reverse(),
-        phylo: phylo_kmer,
-        phylo_rev: phylo_kmer.slice().reverse(),
+        // ref_first: ref_first,
+        // ref_last: ref_first.slice().reverse(),
+        // phylo: phylo_kmer,
+        // phylo_rev: phylo_kmer.slice().reverse(),
       };
       vis.sortingOptionsPheno = sortingOptionsPheno;
 
@@ -546,15 +563,7 @@ export default {
 
       // ];
 
-      const data_pheno_bars = data_phenos.filter(activity => (activity.pheno == 'DTF3')); 
-      const data_pheno_bars_2 = data_phenos.filter(activity => (activity.pheno == 'DTF1')); 
 
-
-      vis.data_pheno_bars = data_pheno_bars;
-      vis.data_pheno_bars_2 = data_pheno_bars_2;
-
-    
-  
       // var data_pheno = [
       //   {"accession": "8_Sha", "pheno": "DTF1", "value":72},
       //   {"accession": "7_Ler", "pheno": "DTF1", "value": 28.5},
@@ -696,7 +705,7 @@ export default {
       // check new data
       let visPhenoBarUpdate2 = vis.phenoBars2
         .selectAll(".pheno-bar2")
-        .data(vis.data_pheno_bars_2);
+        .data(vis.data_pheno_dtf1);
 
       // make new rects
       let visPhenoBarEnter2 = visPhenoBarUpdate2
@@ -723,7 +732,7 @@ export default {
       // check new data
       let visPhenoBarUpdate = vis.phenoBars
         .selectAll(".pheno-bar")
-        .data(vis.data_pheno_bars);
+        .data(vis.data_pheno_dtf3);
 
       // make new rects
       let visPhenoBarEnter = visPhenoBarUpdate
@@ -1716,12 +1725,12 @@ export default {
       dtf1_rev: "DTF1 ascending",
       dtf3: "DTF3 descending",
       dtf3_rev: "DTF3 ascending",
-      ref_first: "reference accessions first",
-      ref_last: "reference accessions last",
+      // ref_first: "reference accessions first",
+      // ref_last: "reference accessions last",
       // alpha_asc: "alphabetical",
       // alpha_desc: "alphabetical reversed",
-      phylo: "phylogeny",
-      phylo_rev: "phylogeny reversed",
+      // phylo: "phylogeny",
+      // phylo_rev: "phylogeny reversed",
       group: "group",
       group_rev: "group reversed",
       origin: "origin",
@@ -1737,12 +1746,12 @@ export default {
       dtf1_rev: "DTF1 ascending",
       dtf3: "DTF3 descending",
       dtf3_rev: "DTF3 ascending",
-      ref_first: "reference accessions first",
-      ref_last: "reference accessions last",
+      // ref_first: "reference accessions first",
+      // ref_last: "reference accessions last",
       // alpha_asc: "alphabetical",
       // alpha_desc: "alphabetical reversed",
-      phylo: "phylogeny",
-      phylo_rev: "phylogeny reversed",
+      // phylo: "phylogeny",
+      // phylo_rev: "phylogeny reversed",
       group: "group",
       group_rev: "group reversed",
       origin: "origin",
@@ -1789,7 +1798,7 @@ export default {
     var yScaleFocus = d3
       .scaleBand()
       .range([bottomRowHeight, 0])
-      .padding(0.1);
+      .padding(0.008);
     vis.yScaleFocus = yScaleFocus;
 
     var xScalePhenos = d3
