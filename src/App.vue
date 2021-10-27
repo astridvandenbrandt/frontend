@@ -2,12 +2,12 @@
   <div id="app">
     <div class="container-fluid">
       <div class="min-vh-100">
-        <div class="row">
+        <!-- <div class="row">
           <div class="col-2">
             <a href="https://docs.google.com/forms/d/e/1FAIpQLSdE9VeqzUMYN5ZnWicPdOLSfYOdD8OhFHiTxBt-lAMWdEEX4w/viewform?usp=sf_link" class="btn btn-warning btn-sm" role="button" aria-pressed="true"> 
               Feedback Survey</a>
           </div>
-          </div>
+          </div> -->
         <div class="row gx-2">
           <div class="col-md-2">
             <div class="sidebar-section">
@@ -104,6 +104,7 @@ export default {
       loadDataMSA: {},
       loadDataMut: {},
       loadDataTree: {},
+      loadDataPheno: {}
     };
   },
   mounted() {
@@ -111,8 +112,8 @@ export default {
 
     // Gene Ids
     var geneIDs = {
-      AT1G02820: "AT1G02820",
-      AT1G01060: "AT1G01060",
+      AT1G02820_1: "AT1G02820",
+      AT1G01060_1: "AT1G01060",
     };
 
     // add the options to the button
@@ -130,7 +131,7 @@ export default {
 
      // Gene Ids
      var accessionIDs = {
-      // _full: "none",
+      // _full_closest: "none",
       _ref: "none",
       "_1_Col-0": "1_Col-0",
       "_2_An-1": "2_An-1",
@@ -140,20 +141,21 @@ export default {
       "_6_Kyo": "6_Kyo",
       "_7_Ler": "7_Ler",
       "_8_Sha": "8_Sha",
-      "_Altai-5": "Altai-5",
-      "_Gro-3": "Gro-3",
-      "_Kas-1": "Kas-1",
-      "_Ler-0": "Ler-0",
-      "_Sku-30": "Sku-30",
-      "_Tsu-0": "Tsu-0"
+      // "_Altai-5": "Altai-5",
+      // "_Gro-3": "Gro-3",
+      // "_Kas-1": "Kas-1",
+      // "_Ler-0": "Ler-0",
+      // "_Sku-30": "Sku-30",
+      // "_Tsu-0": "Tsu-0"
 
     };
+
 
     // add the options to the button
     var accessionButton = d3.select("#selectButtonAccessionData")
       .selectAll("myOptionsAccessionData")
       // .data(Object.keys(accessionIDs))
-      .data(Object.keys(accessionIDs))
+      .data(Object.keys(accessionIDs)) //Object.keys(accessionIDs)
       .enter()
       .append("option")
       .text(function(d) {
@@ -193,8 +195,11 @@ export default {
 
     this.fetchData(Object.keys(geneIDs)[0], Object.keys(accessionIDs)[0]); // inital data display
     this.fetchDataTree(Object.keys(treeTypes)[0]);
-    this.fetchDataAccession(this.selectedGeneId)
+    
     this.updateData();
+
+    var accessionTest = this.loadDataAccession;
+    console.log('accession test', accessionTest)
   },
   methods: {
     updateData() {
@@ -233,6 +238,7 @@ export default {
         this.fetchData(selectedGene, selectedAccession);
       });
     },
+
     async fetchDataTree(treeType) {
       //change later to type of tree
       // console.log("initial Tree =", treeType);
@@ -246,36 +252,43 @@ export default {
 
       componentTree.updateVis(data_tree);
     },
-    async fetchDataAccession(geneID) {
-      // console.log("this.geneID =", geneID);
-      // console.log("initial Accession =", accession);    
 
-      let data_accession = await d3.csv("./gene_variants/accessions_" + geneID + ".csv");
-      this.loadDataAccession = data_accession;
+    // async fetchDataAccession(geneID) {
+    //   // console.log("this.geneID =", geneID);
+    //   // console.log("initial Accession =", accession);    
 
-      // console.log('data accessions in App', data_accession)
+    //   let data_accession = await d3.csv("./gene_variants/accessions_" + geneID + ".csv");
+    //   this.loadDataAccession = data_accession;
 
-    },
+    //   // console.log('data accessions in App', data_accession)
+
+    // },
+
     async fetchData(geneID, accession) {
-      // console.log("initial Gene =", geneID);
-      // console.log("initial Accession =", accession);    
+      console.log("initial Gene =", geneID);
+      console.log("initial Accession =", accession);    
 
-      let data_msa = await d3.csv("./gene_variants/matrix_" + geneID + accession + ".csv");
+      let data_msa = await d3.csv("./gene_variants_newest/matrix_" + geneID + accession + ".csv");
       this.loadDataMSA = data_msa;
 
       let data_msa_mutations = await d3.csv(
-        "./gene_variants/var_count_" + geneID + accession +".csv"
+        "./gene_variants_newest/var_count_matrix_" + geneID + accession +".csv"
       ); //  msa_AT1G01060_mutations.csv
       this.loadDataMut = data_msa_mutations;
 
       let data_barcode = await d3.csv(
-        "./gene_variants/barcode_" + geneID + accession + ".csv"
+        "./gene_variants_newest/barcode_" + geneID + accession + ".csv"
       ); //  msa_AT1G01060_mutations.csv
       this.loadDataBarcode = data_barcode;
 
+      let data_phenos = await d3.csv(
+        "./gene_variants_newest/pheno_" + geneID +  ".csv"
+      ); 
+      this.loadDataPheno = data_phenos;
+
       let componentVariantDetails = this.$refs["variant_data"];
 
-      componentVariantDetails.updateVis(data_msa, data_msa_mutations, data_barcode);
+      componentVariantDetails.updateVis(data_msa, data_msa_mutations, data_barcode, data_phenos);
     },
   },
 };

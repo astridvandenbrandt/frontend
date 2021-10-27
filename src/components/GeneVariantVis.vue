@@ -76,9 +76,12 @@ export default {
   name: "GeneVariantVis",
   methods: {
     // This function contains all the code to prepare the data before we render it.
-    updateVis(data, data_mutations, data_barcode) {
+    updateVis(data, data_mutations, data_barcode, data_phenos) {
 
-      
+      console.log('data', data)
+      console.log('data mutations', data_mutations)
+      console.log('data phenos', data_phenos)
+
     
       let vis = this;
 
@@ -130,6 +133,7 @@ export default {
       const flat_data = {
         pos: data.map((d) => parseFloat(d.pos)),
         base: data.map((d) => d.base),
+        base_hover: data.map((d) => d.base_hover),
         accession: data.map((d) => d.accession),
       };
       // console.log("flat data", flat_data);
@@ -144,7 +148,7 @@ export default {
       // console.log("length gene", length_gene);
 
       const mutations = data_mutations.map((d) => parseFloat(d.accession));
-      const max_mutations = d3.max(mutations);
+      const max_mutations = d3.max(mutations) + 5;
       vis.max_mutations = max_mutations;
       // console.log("max mutations", mutations, max_mutations);
 
@@ -183,14 +187,18 @@ export default {
       var flat_data_slice = [
         flat_data.pos,
         flat_data.base,
+        flat_data.base_hover,
         flat_data.accession,
       ].map(taker(filter(flat_data.pos, (d) => d >= start && d <= end)));
 
       var flat_data_slice_default = {
         pos: flat_data_slice[0],
         base: flat_data_slice[1],
-        accession: flat_data_slice[2],
+        base_hover: flat_data_slice[2],
+        accession: flat_data_slice[3],
       };
+      console.log("flat data slice", flat_data_slice_default);
+
 
       var genePositions = flat_data_slice_default.pos.filter(unique);
       // console.log("genePositions", genePositions);
@@ -308,20 +316,37 @@ export default {
         "1_Col-0",
       ];
 
+      // var original_map = [
+      //   "Tsu-0",
+      //   "Kas-1",
+      //   "Altai-5",
+      //   "8_Sha",
+      //   "7_Ler",
+      //   "6_Kyo",
+      //   "Sku-30",
+      //   "Ler-0",
+      //   "Gro-3",
+      //   "5_Eri",
+      //   "4_Cvi",
+      //   "3_C24",
+      //   "2_An-1",
+      //   "1_Col-0",
+      // ];
+
       var original_map = [
+        "8__Kas-1",
+        "8__Altai-5",
         "8_Sha",
         "7_Ler",
+        "6__Tsu-0",
         "6_Kyo",
+        "5__Sku-30",
+        "5__Ler-0",
+        "5__Gro-3",
         "5_Eri",
         "4_Cvi",
         "3_C24",
         "2_An-1",
-        "Gro-3",
-        "Ler-0",
-        "Sku-30",
-        "Altai-5",
-        "Kas-1",
-        "Tsu-0",
         "1_Col-0",
       ];
 
@@ -478,118 +503,126 @@ export default {
       var rows_data_slice_default = Array.from({ length }, (_, i) => ({
         pos: flat_data_slice_default.pos[i],
         base: flat_data_slice_default.base[i],
+        base_hover: flat_data_slice_default.base_hover[i],
         accession: flat_data_slice_default.accession[i],
       }));
       // console.log("rows_data_slice_default", rows_data_slice_default);
       vis.rows_data_slice_default = rows_data_slice_default;
 
-      var data_pheno_bars = [
-      {"accession": "8_Sha", "pheno": "DTF3", "value":58.5},
-        {"accession": "7_Ler", "pheno": "DTF3", "value": 40},
-        {"accession": "6_Kyo", "pheno": "DTF3", "value": 49.75},
-        {"accession": "5_Eri", "pheno": "DTF3", "value": 42.75},
-        {"accession": "4_Cvi",  "pheno": "DTF3", "value": 56},
-        {"accession": "3_C24", "pheno": "DTF3", "value": 42.5},
-        {"accession": "2_An-1", "pheno": "DTF3", "value": 54.25},
-        {"accession": "Tsu-0", "pheno": "DTF3", "value": 28},
-        {"accession": "Sku-30", "pheno": "DTF3", "value": 115.33},
-        {"accession": "Ler-0",  "pheno": "DTF3", "value": 40},
-        {"accession": "Kas-1",  "pheno": "DTF3", "value":80},
-        {"accession": "Gro-3",  "pheno": "DTF3", "value":78},
-        {"accession": "Altai-5",  "pheno": "DTF3", "value":73},
-        {"accession": "1_Col-0",  "pheno": "DTF3", "value":38},
-      ];
+      // var data_pheno_bars = [
+      // {"accession": "8_Sha", "pheno": "DTF3", "value":58.5},
+      //   {"accession": "7_Ler", "pheno": "DTF3", "value": 40},
+      //   {"accession": "6_Kyo", "pheno": "DTF3", "value": 49.75},
+      //   {"accession": "5_Eri", "pheno": "DTF3", "value": 42.75},
+      //   {"accession": "4_Cvi",  "pheno": "DTF3", "value": 56},
+      //   {"accession": "3_C24", "pheno": "DTF3", "value": 42.5},
+      //   {"accession": "2_An-1", "pheno": "DTF3", "value": 54.25},
+      //   {"accession": "Tsu-0", "pheno": "DTF3", "value": 28},
+      //   {"accession": "Sku-30", "pheno": "DTF3", "value": 115.33},
+      //   {"accession": "Ler-0",  "pheno": "DTF3", "value": 40},
+      //   {"accession": "Kas-1",  "pheno": "DTF3", "value":80},
+      //   {"accession": "Gro-3",  "pheno": "DTF3", "value":78},
+      //   {"accession": "Altai-5",  "pheno": "DTF3", "value":73},
+      //   {"accession": "1_Col-0",  "pheno": "DTF3", "value":38},
+      // ];
+
+
+       // var data_pheno_bars_2 = [
+
+      //   {"accession": "8_Sha", "pheno": "DTF1", "value":72},
+      //   {"accession": "7_Ler", "pheno": "DTF1", "value": 28.5},
+      //   {"accession": "6_Kyo", "pheno": "DTF1", "value": 40},
+      //   {"accession": "5_Eri", "pheno": "DTF1", "value": 85},
+      //   {"accession": "4_Cvi",  "pheno": "DTF1", "value": 61},
+      //   {"accession": "3_C24", "pheno": "DTF1", "value": 32.667},
+      //   {"accession": "2_An-1", "pheno": "DTF1", "value": 42},
+      //   {"accession": "Tsu-0", "pheno": "DTF1", "value": 28},
+      //   {"accession": "Sku-30", "pheno": "DTF1", "value": 102.33},
+      //   {"accession": "Ler-0",  "pheno": "DTF1", "value": 29},
+      //   {"accession": "Kas-1",  "pheno": "DTF1", "value":69},
+      //   {"accession": "Gro-3",  "pheno": "DTF1", "value":137},
+      //   {"accession": "Altai-5",  "pheno": "DTF1", "value":73},
+      //   {"accession": "1_Col-0",  "pheno": "DTF1", "value":28},
+
+      // ];
+
+      const data_pheno_bars = data_phenos.filter(activity => (activity.pheno == 'DTF3')); 
+      const data_pheno_bars_2 = data_phenos.filter(activity => (activity.pheno == 'DTF1')); 
+
 
       vis.data_pheno_bars = data_pheno_bars;
-
-
-      var data_pheno_bars_2 = [
-
-        {"accession": "8_Sha", "pheno": "DTF1", "value":72},
-        {"accession": "7_Ler", "pheno": "DTF1", "value": 28.5},
-        {"accession": "6_Kyo", "pheno": "DTF1", "value": 40},
-        {"accession": "5_Eri", "pheno": "DTF1", "value": 85},
-        {"accession": "4_Cvi",  "pheno": "DTF1", "value": 61},
-        {"accession": "3_C24", "pheno": "DTF1", "value": 32.667},
-        {"accession": "2_An-1", "pheno": "DTF1", "value": 42},
-        {"accession": "Tsu-0", "pheno": "DTF1", "value": 28},
-        {"accession": "Sku-30", "pheno": "DTF1", "value": 102.33},
-        {"accession": "Ler-0",  "pheno": "DTF1", "value": 29},
-        {"accession": "Kas-1",  "pheno": "DTF1", "value":69},
-        {"accession": "Gro-3",  "pheno": "DTF1", "value":137},
-        {"accession": "Altai-5",  "pheno": "DTF1", "value":73},
-        {"accession": "1_Col-0",  "pheno": "DTF1", "value":28},
-
-      ]
       vis.data_pheno_bars_2 = data_pheno_bars_2;
 
-      var data_pheno = [
-        {"accession": "8_Sha", "pheno": "DTF1", "value":72},
-        {"accession": "7_Ler", "pheno": "DTF1", "value": 28.5},
-        {"accession": "6_Kyo", "pheno": "DTF1", "value": 40},
-        {"accession": "5_Eri", "pheno": "DTF1", "value": 85},
-        {"accession": "4_Cvi",  "pheno": "DTF1", "value": 61},
-        {"accession": "3_C24", "pheno": "DTF1", "value": 32.667},
-        {"accession": "2_An-1", "pheno": "DTF1", "value": 42},
-        {"accession": "Tsu-0", "pheno": "DTF1", "value": 28},
-        {"accession": "Sku-30", "pheno": "DTF1", "value": 102.33},
-        {"accession": "Ler-0",  "pheno": "DTF1", "value": 29},
-        {"accession": "Kas-1",  "pheno": "DTF1", "value":69},
-        {"accession": "Gro-3",  "pheno": "DTF1", "value":137},
-        {"accession": "Altai-5",  "pheno": "DTF1", "value":73},
-        {"accession": "1_Col-0",  "pheno": "DTF1", "value":28},
+    
+  
+      // var data_pheno = [
+      //   {"accession": "8_Sha", "pheno": "DTF1", "value":72},
+      //   {"accession": "7_Ler", "pheno": "DTF1", "value": 28.5},
+      //   {"accession": "6_Kyo", "pheno": "DTF1", "value": 40},
+      //   {"accession": "5_Eri", "pheno": "DTF1", "value": 85},
+      //   {"accession": "4_Cvi",  "pheno": "DTF1", "value": 61},
+      //   {"accession": "3_C24", "pheno": "DTF1", "value": 32.667},
+      //   {"accession": "2_An-1", "pheno": "DTF1", "value": 42},
+      //   {"accession": "Tsu-0", "pheno": "DTF1", "value": 28},
+      //   {"accession": "Sku-30", "pheno": "DTF1", "value": 102.33},
+      //   {"accession": "Ler-0",  "pheno": "DTF1", "value": 29},
+      //   {"accession": "Kas-1",  "pheno": "DTF1", "value":69},
+      //   {"accession": "Gro-3",  "pheno": "DTF1", "value":137},
+      //   {"accession": "Altai-5",  "pheno": "DTF1", "value":73},
+      //   {"accession": "1_Col-0",  "pheno": "DTF1", "value":28},
 
-        {"accession": "8_Sha", "pheno": "DTF3", "value":58.5},
-        {"accession": "7_Ler", "pheno": "DTF3", "value": 40},
-        {"accession": "6_Kyo", "pheno": "DTF3", "value": 49.75},
-        {"accession": "5_Eri", "pheno": "DTF3", "value": 42.75},
-        {"accession": "4_Cvi",  "pheno": "DTF3", "value": 56},
-        {"accession": "3_C24", "pheno": "DTF3", "value": 42.5},
-        {"accession": "2_An-1", "pheno": "DTF3", "value": 54.25},
-        {"accession": "Tsu-0", "pheno": "DTF3", "value": 28},
-        {"accession": "Sku-30", "pheno": "DTF3", "value": 115.33},
-        {"accession": "Ler-0",  "pheno": "DTF3", "value": 40},
-        {"accession": "Kas-1",  "pheno": "DTF3", "value":80},
-        {"accession": "Gro-3",  "pheno": "DTF3", "value":78},
-        {"accession": "Altai-5",  "pheno": "DTF3", "value":73},
-        {"accession": "1_Col-0",  "pheno": "DTF3", "value":38},
+      //   {"accession": "8_Sha", "pheno": "DTF3", "value":58.5},
+      //   {"accession": "7_Ler", "pheno": "DTF3", "value": 40},
+      //   {"accession": "6_Kyo", "pheno": "DTF3", "value": 49.75},
+      //   {"accession": "5_Eri", "pheno": "DTF3", "value": 42.75},
+      //   {"accession": "4_Cvi",  "pheno": "DTF3", "value": 56},
+      //   {"accession": "3_C24", "pheno": "DTF3", "value": 42.5},
+      //   {"accession": "2_An-1", "pheno": "DTF3", "value": 54.25},
+      //   {"accession": "Tsu-0", "pheno": "DTF3", "value": 28},
+      //   {"accession": "Sku-30", "pheno": "DTF3", "value": 115.33},
+      //   {"accession": "Ler-0",  "pheno": "DTF3", "value": 40},
+      //   {"accession": "Kas-1",  "pheno": "DTF3", "value":80},
+      //   {"accession": "Gro-3",  "pheno": "DTF3", "value":78},
+      //   {"accession": "Altai-5",  "pheno": "DTF3", "value":73},
+      //   {"accession": "1_Col-0",  "pheno": "DTF3", "value":38},
 
-        {"accession": "8_Sha", "pheno": "Group", "value":'X'},
-        {"accession": "7_Ler", "pheno": "Group", "value": 'X'},
-        {"accession": "6_Kyo", "pheno": "Group", "value": 'X'},
-        {"accession": "5_Eri", "pheno": "Group", "value": 'X'},
-        {"accession": "4_Cvi",  "pheno": "Group", "value": 'Y'},
-        {"accession": "3_C24", "pheno": "Group", "value": 'X'},
-        {"accession": "2_An-1", "pheno": "Group", "value": 'Y'},
-        {"accession": "Tsu-0", "pheno": "Group", "value": 'X'},
-        {"accession": "Sku-30", "pheno": "Group", "value": 'Y'},
-        {"accession": "Ler-0",  "pheno": "Group", "value": 'Y'},
-        {"accession": "Kas-1",  "pheno": "Group", "value":'X'},
-        {"accession": "Gro-3",  "pheno": "Group", "value":'X'},
-        {"accession": "Altai-5",  "pheno": "Group", "value":'Y'},
-        {"accession": "1_Col-0",  "pheno": "Group", "value":'Y'},
-
-
-        {"accession": "8_Sha", "pheno": "Origin", "value":'Tajikistan'},
-        {"accession": "7_Ler", "pheno": "Origin", "value": 'Germany'},
-        {"accession": "6_Kyo", "pheno": "Origin", "value": 'Japan'},
-        {"accession": "5_Eri", "pheno": "Origin", "value": 'Sweden'},
-        {"accession": "4_Cvi",  "pheno": "Origin", "value": 'Cape Verde'},
-        {"accession": "3_C24", "pheno": "Origin", "value": 'Portugal'},
-        {"accession": "2_An-1", "pheno": "Origin", "value": 'Belgium'},
-        {"accession": "Tsu-0", "pheno": "Origin", "value": 'Japan'},
-        {"accession": "Sku-30", "pheno": "Origin", "value": 'Sweden'},
-        {"accession": "Ler-0",  "pheno": "Origin", "value": 'Germany'},
-        {"accession": "Kas-1",  "pheno": "Origin", "value":'India'},
-        {"accession": "Gro-3",  "pheno": "Origin", "value":'Sweden'},
-        {"accession": "Altai-5",  "pheno": "Origin", "value":'China'},
-        {"accession": "1_Col-0",  "pheno": "Origin", "value":'United States'}
-      ]
+      //   {"accession": "8_Sha", "pheno": "Group", "value":'X'},
+      //   {"accession": "7_Ler", "pheno": "Group", "value": 'X'},
+      //   {"accession": "6_Kyo", "pheno": "Group", "value": 'X'},
+      //   {"accession": "5_Eri", "pheno": "Group", "value": 'X'},
+      //   {"accession": "4_Cvi",  "pheno": "Group", "value": 'Y'},
+      //   {"accession": "3_C24", "pheno": "Group", "value": 'X'},
+      //   {"accession": "2_An-1", "pheno": "Group", "value": 'Y'},
+      //   {"accession": "Tsu-0", "pheno": "Group", "value": 'X'},
+      //   {"accession": "Sku-30", "pheno": "Group", "value": 'Y'},
+      //   {"accession": "Ler-0",  "pheno": "Group", "value": 'Y'},
+      //   {"accession": "Kas-1",  "pheno": "Group", "value":'X'},
+      //   {"accession": "Gro-3",  "pheno": "Group", "value":'X'},
+      //   {"accession": "Altai-5",  "pheno": "Group", "value":'Y'},
+      //   {"accession": "1_Col-0",  "pheno": "Group", "value":'Y'},
 
 
-      // console.log("data phenos", data_pheno)
+      //   {"accession": "8_Sha", "pheno": "Origin", "value":'Tajikistan'},
+      //   {"accession": "7_Ler", "pheno": "Origin", "value": 'Germany'},
+      //   {"accession": "6_Kyo", "pheno": "Origin", "value": 'Japan'},
+      //   {"accession": "5_Eri", "pheno": "Origin", "value": 'Sweden'},
+      //   {"accession": "4_Cvi",  "pheno": "Origin", "value": 'Cape Verde'},
+      //   {"accession": "3_C24", "pheno": "Origin", "value": 'Portugal'},
+      //   {"accession": "2_An-1", "pheno": "Origin", "value": 'Belgium'},
+      //   {"accession": "Tsu-0", "pheno": "Origin", "value": 'Japan'},
+      //   {"accession": "Sku-30", "pheno": "Origin", "value": 'Sweden'},
+      //   {"accession": "Ler-0",  "pheno": "Origin", "value": 'Germany'},
+      //   {"accession": "Kas-1",  "pheno": "Origin", "value":'India'},
+      //   {"accession": "Gro-3",  "pheno": "Origin", "value":'Sweden'},
+      //   {"accession": "Altai-5",  "pheno": "Origin", "value":'China'},
+      //   {"accession": "1_Col-0",  "pheno": "Origin", "value":'United States'}
+      // ]
 
-      vis.data_pheno = data_pheno;
+
+      // console.log("data pheno", data_pheno)
+      // vis.data_pheno = data_pheno;
+
+      vis.data_phenos = data_phenos;
       vis.data_barcode = data_barcode;
 
       vis.renderVis();
@@ -762,7 +795,7 @@ export default {
       // check new data
       let visPhenoUpdate = vis.phenoChart
           .selectAll(".pheno-cell")
-          .data(vis.data_pheno, (d) => d); //key function?
+          .data(vis.data_phenos, (d) => d); //key function?
 
         // make new cells
         let visPhenoEnter = visPhenoUpdate
@@ -994,6 +1027,7 @@ export default {
         var flat_data_slice_updated = [
           vis.flat_data.pos,
           vis.flat_data.base,
+          vis.flat_data.base_hover,
           vis.flat_data.accession,
         ].map(
           vis.taker(
@@ -1008,7 +1042,8 @@ export default {
         var flat_data_slice_updated_final = {
           pos: flat_data_slice_updated[0],
           base: flat_data_slice_updated[1],
-          accession: flat_data_slice_updated[2],
+          base_hover: flat_data_slice_updated[2],
+          accession: flat_data_slice_updated[3],
         };
         // console.log("rows updated flat", flat_data_slice_updated_final);
 
@@ -1018,6 +1053,7 @@ export default {
         var rows_data_slice_updated = Array.from({ length }, (_, i) => ({
           pos: flat_data_slice_updated_final.pos[i], // position type should be changed from string to float
           base: flat_data_slice_updated_final.base[i],
+          base_hover: flat_data_slice_updated_final.base_hover[i],
           accession: flat_data_slice_updated_final.accession[i],
         }));
         // console.log("rows updated !", rows_data_slice_updated);
@@ -1100,7 +1136,7 @@ export default {
           // .style("display", "block")
           .html(
             "<strong>base:</strong> " +
-              d.base +
+              d.base_hover +
               "<br/>" +
               "<strong>position:</strong> " +
               d.pos +
@@ -1469,6 +1505,7 @@ export default {
         var flat_data_slice_updated = [
           vis.flat_data.pos,
           vis.flat_data.base,
+          vis.flat_data.base_hover,
           vis.flat_data.accession,
         ].map(
           vis.taker(
@@ -1483,7 +1520,8 @@ export default {
         var flat_data_slice_updated_final = {
           pos: flat_data_slice_updated[0],
           base: flat_data_slice_updated[1],
-          accession: flat_data_slice_updated[2],
+          base_hover: flat_data_slice_updated[2],
+          accession: flat_data_slice_updated[3],
         };
         // console.log("rows updated flat", flat_data_slice_updated_final);
 
@@ -1493,6 +1531,7 @@ export default {
         var rows_data_slice_updated = Array.from({ length }, (_, i) => ({
           pos: flat_data_slice_updated_final.pos[i], // position type should be changed from string to float
           base: flat_data_slice_updated_final.base[i],
+          base_hover: flat_data_slice_updated_final.base_hover[i],
           accession: flat_data_slice_updated_final.accession[i],
         }));
         // console.log("rows updated !", rows_data_slice_updated);
@@ -1637,37 +1676,38 @@ export default {
     // set color scale
     var colors = {
       A: "#4daf4a",
-      a: "#4daf4a",
+      a: "#4daf4a80", // 99 is 60% transparency
       G: "#e41a1c",
-      g: "#e41a1c",
+      g: "#e41a1c80",
       C: "#ff7f00",
-      c: "#ff7f00",
+      c: "#ff7f0080",
       T: "#377eb8",
-      t: "#377eb8",
+      t: "#377eb880",
       // "-": "#E6E6E6",
       "-": "rgb(214,218,224)",
       // "*": "rgb(240,240,244)",
       "*": "rgb(39,43,50)",
       // "*": "#686868",
-      // "*": "white",
+      "=": "#FAFAFA",
     };
     vis.colors = colors;
 
     // legendVariants labels
-    var dataLabels = [1, 2, 3, 4, 5, 6];
+    var dataLabels = [1, 2, 3, 4, 5, 6, 7];
     var cols = [
       "#4daf4a",
       "#ff7f00",
       "#e41a1c",
       "#377eb8",
       // "#E6E6E6",
-      "rgb(214,218,224)",
+   
       // "rgb(240,240,244)",
       "rgb(39,43,50)",
+      "rgb(214,218,224)",
       //  "#686868",
-      // "white"
+      "#FAFAFA",
     ];
-    var bases = ["A", "C", "G", "T", "same", "unknown or gap"];
+    var bases = ["A", "C", "G", "T", "gap", "no call", "same"];
 
     // define the accession orders
     var orders = {
@@ -1743,13 +1783,13 @@ export default {
     var xScaleFocus = d3
       .scaleBand()
       .range([0, midColWidth])
-      .padding(0.14);
+      .padding(0.01);
     vis.xScaleFocus = xScaleFocus;
 
     var yScaleFocus = d3
       .scaleBand()
       .range([bottomRowHeight, 0])
-      .padding(0.07);
+      .padding(0.1);
     vis.yScaleFocus = yScaleFocus;
 
     var xScalePhenos = d3
@@ -2153,7 +2193,7 @@ export default {
       .attr("transform", function(d, i) {
         return (
           "translate(" +
-          66 * i +
+          80 * i +
           "," +
           (topRowHeight + bottomRowHeight - 20) +
           ")"
@@ -2169,7 +2209,9 @@ export default {
       .style("fill", function(d, i) {
         return cols[i];
       })
-      .style("opacity", 0.8);
+      .style("opacity", 0.8)
+       .style("stroke-width", 0.5)
+        .style("stroke", "dimgrey")
 
     legendVariants
       .append("text")
