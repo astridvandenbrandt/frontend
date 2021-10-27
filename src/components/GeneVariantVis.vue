@@ -211,13 +211,13 @@ export default {
 
 
       var genePositions = flat_data_slice_default.pos.filter(unique);
-      // console.log("genePositions", genePositions);
+      console.log("genePositions", genePositions);
 
       var barcodePositions = flat_data_barcode.pos.filter(unique);
-      // console.log("barcodePositions", barcodePositions);
+      console.log("barcodePositions", barcodePositions);
 
       const geneAccessions = flat_data_slice_default.accession.filter(unique);
-      // console.log("gene accessions", geneAccessions);
+      console.log("gene accessions", geneAccessions);
 
       // var alpha = [
       //   "8__Tsu-0",
