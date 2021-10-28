@@ -1716,7 +1716,7 @@ export default {
       //  "#686868",
       "#FAFAFA",
     ];
-    var bases = ["A", "C", "G", "T", "gap", "no call", "same"];
+    var bases = ["A", "C", "G", "T", "gap", "no call", "similar"];
 
     // define the accession orders
     var orders = {
