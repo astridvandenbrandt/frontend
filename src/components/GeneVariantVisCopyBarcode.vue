@@ -78,7 +78,7 @@ export default {
     // This function contains all the code to prepare the data before we render it.
     updateVis(data, data_mutations, data_barcode, data_phenos) {
 
-      console.log('data', data)
+      // console.log('data', data)
       // console.log('data mutations', data_mutations)
       // console.log('data phenos', data_phenos)
 
@@ -634,7 +634,6 @@ export default {
 
       vis.data_phenos = data_phenos;
       vis.data_barcode = data_barcode;
-      vis.geneAccessions = geneAccessions;
 
       vis.renderVis();
     },
@@ -642,100 +641,53 @@ export default {
     renderVis() {
       let vis = this;
 
-      // // Add the circle for the nodes
-      // let visBarcodeUpdate = vis.varBarcodeChart
-      //   .selectAll(".myAccessions")
-      //   .data(vis.geneAccessions);
-
-      //   // make new rects
-      //   let visBarcodeEnter = visBarcodeUpdate
-      //   .enter()
-      //   .append("circle")
-      //   .attr("class", "myAccessions");
-
-      //   //  remove old rects
-      //   visBarcodeUpdate.exit().remove();
-
-      //   visBarcodeEnter
-      //     .merge(visBarcodeUpdate)
-      //     .attr("cy", function(d){ return(vis.yScaleBarcode(d)) +vis.yScaleBarcode.bandwidth()/2})
-      //     .attr("cx", function(d){vis.xScaleBarcode(d)})
-      //     .attr("r", 5)
-      //     .style("fill", "lightgrey");
-
-
-      // // Add the circle for the nodes
-      // let visBarcodeUpdateLabels = vis.varBarcodeChart
-      //   .selectAll(".myLabels")
-      //   .data(vis.geneAccessions);
-
-      //   // make new rects
-      //   let visBarcodeEnterLabels = visBarcodeUpdateLabels
-      //   .enter()
-      //   .append("text")
-      //   .attr("class", "myLabels");
-
-      //   //  remove old rects
-      //   visBarcodeUpdateLabels.exit().remove();
-
-      //   visBarcodeEnterLabels
-      //     .merge(visBarcodeUpdateLabels)
-      //     .attr("y", (d) => vis.yScaleBarcode(d)+ vis.yScaleBarcode.bandwidth()/1.5)
-      //     .attr("x", 10)
-      //     .text(function(d){ return(d)})
-      //     .style("text-anchor", "start");
-
-
-
-
-      ////OLD BARCODE 
       // console.log("data barcode rendervis:", vis.data_barcode);
-      // let visBarcodeUpdate = vis.varBarcodeChart
-      //   .selectAll(".barcode-cell")
-      //   .data(vis.data_barcode);
+      let visBarcodeUpdate = vis.varBarcodeChart
+        .selectAll(".barcode-cell")
+        .data(vis.data_barcode);
 
-      // // make new rects
-      // let visBarcodeEnter = visBarcodeUpdate
-      //   .enter()
-      //   .append("rect")
-      //   .attr("class", "barcode-cell");
+      // make new rects
+      let visBarcodeEnter = visBarcodeUpdate
+        .enter()
+        .append("rect")
+        .attr("class", "barcode-cell");
 
-      //   // remove old rects
-      //   visBarcodeUpdate.exit().remove();
+        // remove old rects
+        visBarcodeUpdate.exit().remove();
 
-      //   visBarcodeEnter
-      //   .merge(visBarcodeUpdate)
-      //   .attr("x", (d) => vis.xScaleBarcode(d.pos))
-      //   .attr("y", (d) => vis.yScaleBarcode(d.accession))
-      //   // .attr("cx", (d) => vis.xScaleBarcode(d.pos) + vis.xScaleBarcode.bandwidth()/2)
-      //   //   .attr("cy", (d) => vis.yScaleBarcode(d.accession) + vis.yScaleBarcode.bandwidth()/2)
-      //   // .attr("r",vis.xScaleBarcode.bandwidth())
-      //     .attr("rx", 1.5)
-      //     .attr("ry", 1.5)
+        visBarcodeEnter
+        .merge(visBarcodeUpdate)
+        .attr("x", (d) => vis.xScaleBarcode(d.pos))
+        .attr("y", (d) => vis.yScaleBarcode(d.accession))
+        // .attr("cx", (d) => vis.xScaleBarcode(d.pos) + vis.xScaleBarcode.bandwidth()/2)
+        //   .attr("cy", (d) => vis.yScaleBarcode(d.accession) + vis.yScaleBarcode.bandwidth()/2)
+        // .attr("r",vis.xScaleBarcode.bandwidth())
+          .attr("rx", 1.5)
+          .attr("ry", 1.5)
           
-      //     .attr("width", vis.xScaleBarcode.bandwidth())
-      //     .attr("height", vis.yScaleBarcode.bandwidth())
-      //     .style("fill", function(d) {
-      //       if (d.base == "A"){
-      //         return "#4daf4a"
-      //       }
-      //       if (d.base == "C"){
-      //         return "#ff7f00"
-      //       }
-      //       if (d.base == "T"){
-      //         return "#377eb8"
-      //       }
-      //       if (d.base == "G"){
-      //         return "#e41a1c"
-      //       }
-      //       if (d.base == "X"){
-      //         // return "white"
-      //         return "rgb(214,218,224)"
-      //       }
-      //     })
-      //     // .style("stroke-width", 0.5)
-      //     // .style("stroke", "dimgrey")
-      //     .style("opacity", 0.9);
+          .attr("width", vis.xScaleBarcode.bandwidth())
+          .attr("height", vis.yScaleBarcode.bandwidth())
+          .style("fill", function(d) {
+            if (d.base == "A"){
+              return "#4daf4a"
+            }
+            if (d.base == "C"){
+              return "#ff7f00"
+            }
+            if (d.base == "T"){
+              return "#377eb8"
+            }
+            if (d.base == "G"){
+              return "#e41a1c"
+            }
+            if (d.base == "X"){
+              // return "white"
+              return "rgb(214,218,224)"
+            }
+          })
+          // .style("stroke-width", 0.5)
+          // .style("stroke", "dimgrey")
+          .style("opacity", 0.9);
 
       //     A: "#4daf4a",
       // a: "#4daf4a",
@@ -916,12 +868,7 @@ export default {
       vis.yAxisFocusG.call(vis.yAxisFocus);
       vis.yAxisFocusG.select(".y-axis--focus .domain").remove(); // to disable rendering the axis line
       
-      vis.xAxisPhenosG.call(vis.xAxisPhenos)
-      .selectAll("text")
-        .attr("y", -10)
-        .attr("x", 5)
-        .attr("transform", "rotate(-45)")
-        .style("text-anchor", "start");
+      vis.xAxisPhenosG.call(vis.xAxisPhenos);
       vis.xAxisPhenosG.select(".x-axis--phenos .domain").remove(); // to disable rendering the axis line
       vis.yAxisPhenosG.call(vis.yAxisPhenos);
       vis.yAxisPhenosG.select(".y-axis--phenos .domain").remove(); // to disable rendering the axis line
@@ -1363,28 +1310,12 @@ export default {
         vis.varBarcodeChart.select(".y-axis--barcode").call(vis.yAxisBarcode);
         vis.varBarcodeChart.select(".y-axis--barcode .domain").remove(); // to disable rendering the axis line
 
-        // vis.varBarcodeChart
-        //   .selectAll(".barcode-cell")
-        //   .transition()
-        //   .duration(500)
-        //   .attr("x", (d) => vis.xScaleBarcode(d.pos))
-        //   .attr("y", (d) => vis.yScaleBarcode(d.accession));
-
         vis.varBarcodeChart
-          .selectAll(".myAccessions")
+          .selectAll(".barcode-cell")
           .transition()
-          .duration(400)
-          .attr("cy", function(d){ return(vis.yScaleBarcode(d)) +vis.yScaleBarcode.bandwidth()/2})
-          .attr("cx", function(d){vis.xScaleBarcode(d)})
- 
-
-        vis.varBarcodeChart
-        .selectAll(".myLabels")
-          .transition()
-          .duration(400)
-          .attr("y", (d) => vis.yScaleBarcode(d)+ vis.yScaleBarcode.bandwidth()/1.5)
-          .attr("x", 120);
-
+          .duration(500)
+          .attr("x", (d) => vis.xScaleBarcode(d.pos))
+          .attr("y", (d) => vis.yScaleBarcode(d.accession));
 
         vis.yScaleFocus.domain(sortingOption);
         vis.svgFocus.select(".y-axis--focus").call(vis.yAxisFocus);
@@ -1412,7 +1343,7 @@ export default {
       // Change row ordering based on select
       d3.select("#selectButtonSort").on("change", function() {
         var selected = d3.select("#selectButtonSort").node().value;
-        console.log("selected order MSA: ", selected);
+        // console.log("selected order MSA: ", selected);
         updateMSAorder(vis.sortingOptions[selected]);
         d3.select('#selectButtonSortPhenos').property('value', selected);
         updatePhenosOrder(vis.sortingOptionsPheno[selected])
@@ -1644,78 +1575,7 @@ export default {
 
       // !! IMPORTANT Hide y-axis when no VR (this is only when full color is loaded)
       var newAcc = d3.select("#selectButtonAccessionData").node().value;
-      console.log("selected VR from component sequence: ", newAcc);
-
-      const selVR = newAcc.split("_")
-      const selectedVisRef = selVR[1]+"_"+selVR[2]
-      console.log("selected VisRef from component sequence: ", selectedVisRef);
-
-
-      // Add the circle for the nodes
-      let visBarcodeUpdate = vis.varBarcodeChart
-        .selectAll(".myAccessions")
-        .data(vis.geneAccessions);
-
-        // make new rects
-        let visBarcodeEnter = visBarcodeUpdate
-        .enter()
-        .append("circle")
-        .attr("class", "myAccessions");
-
-        //  remove old rects
-        visBarcodeUpdate.exit().remove();
-
-        visBarcodeEnter
-          .merge(visBarcodeUpdate)
-          .attr("cy", function(d){ return(vis.yScaleBarcode(d)) +vis.yScaleBarcode.bandwidth()/2})
-          .attr("cx", function(d){vis.xScaleBarcode(d)})
-          .attr("r", 5)
-          .style("fill", function(d){
-            if (d == selectedVisRef){
-              return "cornflowerblue"
-            }
-            else{
-              return "lightgrey"
-            }
-          });
-
-
-      // Add the circle for the nodes
-      let visBarcodeUpdateLabels = vis.varBarcodeChart
-        .selectAll(".myLabels")
-        .data(vis.geneAccessions);
-
-        // make new rects
-        let visBarcodeEnterLabels = visBarcodeUpdateLabels
-        .enter()
-        .append("text")
-        .attr("class", "myLabels");
-
-        //  remove old rects
-        visBarcodeUpdateLabels.exit().remove();
-
-        visBarcodeEnterLabels
-          .merge(visBarcodeUpdateLabels)
-          .attr("y", (d) => vis.yScaleBarcode(d)+ vis.yScaleBarcode.bandwidth()/1.5)
-          .attr("x", vis.leftColWidth - 20)
-          .text(function(d){ return(d)})
-          .style("text-anchor", "end")
-          .style("font-weight", function(d){
-            if (d == selectedVisRef){
-              return 750
-            }
-            else{
-              return 350
-            }
-          })
-          // .style("fill", function(d){
-          //   if (d == selectedVisRef){
-          //     return "cornflowerblue"
-          //   }
-          //   // else{
-          //   //   return "lightgrey"
-          //   // }
-          // });
+      // console.log("selected VR from component sequence: ", newAcc);
 
       // if (newAcc === "_full") {
       if (newAcc === "_ref") {
@@ -1795,12 +1655,12 @@ export default {
     const width = containerWidth - margin.left - margin.right;
     const height = containerHeight - margin.top - margin.left - legendHeight;
 
-    const leftColWidth = (width/10)*1.8;
+    const leftColWidth = (width/10)*2;
     vis.leftColWidth = leftColWidth;
     const variantSumWidth = 0; //50
-    const variantBarcodeChartWidth = leftColWidth - variantSumWidth - innerMargin;
+    const variantBarcodeChartWidth = leftColWidth - variantSumWidth - innerMargin*5;
     // const midColWidth = 500;
-    const midColWidth = (width/10)*6;
+    const midColWidth = (width/10)*5;
     vis.midColWidth = midColWidth;
     const rightColWidth = width - leftColWidth - midColWidth;
     const phenoBarsWidth = 130;
@@ -1857,7 +1717,7 @@ export default {
       //  "#686868",
       "#FAFAFA",
     ];
-    var bases = ["A", "C", "G", "T", "gap*", "no call", "identical"];
+    var bases = ["A", "C", "G", "T", "gap", "no call", "similar"];
 
     // define the accession orders
     var orders = {
@@ -2016,7 +1876,7 @@ export default {
     var xAxisBarcode = d3.axisTop(vis.xScaleBarcode).tickValues([]);
     vis.xAxisBarcode = xAxisBarcode;
 
-    var yAxisBarcode = d3.axisLeft(vis.yScaleBarcode).tickValues([]);
+    var yAxisBarcode = d3.axisLeft(vis.yScaleBarcode);
     vis.yAxisBarcode = yAxisBarcode;
 
     var xAxisFocus = d3.axisTop(vis.xScaleFocus);
@@ -2117,14 +1977,14 @@ export default {
 
     const varBarcodeChart = svg
       .append("g")
-      .attr("transform", `translate(${innerMargin*1}, ${topRowHeight + innerMargin * 6})`);
+      .attr("transform", `translate(${innerMargin*6}, ${topRowHeight + innerMargin * 6})`);
 
     vis.varBarcodeChart = varBarcodeChart;
 
     vis.varBarcodeChart
       .append("rect")
       .attr("class", "background-summary")
-      .attr("width", variantBarcodeChartWidth - 1*innerMargin)
+      .attr("width", variantBarcodeChartWidth - 2*innerMargin)
       .attr("height", bottomRowHeight)
       // .style("fill", "lightgrey")
       // .style("opacity", "0.2");
@@ -2578,7 +2438,7 @@ export default {
 }
 
 #sort_group {
-  margin-left: 180px;
+  margin-left: 110px;
 }
 
 

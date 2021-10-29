@@ -35,7 +35,7 @@
             </div>
             <div class="content-section" id="tree-comp">
               <div class="content-title">
-                Phylogenetic Tree
+                Species Tree
               </div>
               <TreeVis ref="tree_data" />
             </div>
@@ -111,7 +111,7 @@ export default {
     console.log("App loaded");
 
     // Gene Ids
-    var geneIDs = {
+    const geneIDs = {
       AT1G01010_1: "AT1G01010",
       AT1G01020_1: "AT1G01020",
       AT1G01030_1: "AT1G01030",
@@ -120,8 +120,113 @@ export default {
       AT1G01060_1: "AT1G01060",
       AT1G11460_1: "AT1G11460",
       AT1G02820_1: "AT1G02820",
-      AT5G47700_1: "AT5G47700"
+      AT5G47700_1: "AT5G47700",
+
     };
+
+    const accessionNames = {
+      AT1G01010_1: [
+        {ref : "_ref", name: "none"},
+        {ref: "_1_Col-0", name:"1_Col-0"},
+        {ref:"_2_An-1", name: "2_An-1"},
+        {ref:"_3_C24", name:  "3_C24"},
+        {ref:"_4_Cvi", name: "4_Cvi"},
+        {ref:"_5_Eri", name: "5_Eri"},
+        {ref:"_6_Kyo", name: "6_Kyo"},
+        {ref:"_7_Ler", name: "7_Ler"},
+        {ref:"_8_Sha", name: "8_Sha"},
+      ],
+      AT1G01020_1: [
+        {ref : "_ref", name: "none"},
+        {ref: "_1_Col-0", name:"1_Col-0"},
+        {ref:"_2_An-1", name: "2_An-1"},
+        {ref:"_3_C24", name:  "3_C24"},
+        {ref:"_4_Cvi", name: "4_Cvi"},
+        {ref:"_5_Eri", name: "5_Eri"},
+        {ref:"_6_Kyo", name: "6_Kyo"},
+        {ref:"_7_Ler", name: "7_Ler"},
+        {ref:"_8_Sha", name: "8_Sha"},
+      ],
+      AT1G01030_1: [
+        {ref : "_ref", name: "none"},
+        {ref: "_1_Col-0", name:"1_Col-0"},
+        {ref:"_2_An-1", name: "2_An-1"},
+        {ref:"_3_C24", name:  "3_C24"},
+        {ref:"_4_Cvi", name: "4_Cvi"},
+        {ref:"_5_Eri", name: "5_Eri"},
+        {ref:"_6_Kyo", name: "6_Kyo"},
+        {ref:"_7_Ler", name: "7_Ler"},
+        {ref:"_8_Sha", name: "8_Sha"},
+      ],
+      AT1G01040_1: [
+        {ref : "_ref", name: "none"},
+        {ref: "_1_Col-0", name:"1_Col-0"},
+        {ref:"_2_An-1", name: "2_An-1"},
+        {ref:"_3_C24", name:  "3_C24"},
+        {ref:"_4_Cvi", name: "4_Cvi"},
+        {ref:"_5_Eri", name: "5_Eri"},
+        {ref:"_6_Kyo", name: "6_Kyo"},
+        {ref:"_7_Ler", name: "7_Ler"},
+        {ref:"_8_Sha", name: "8_Sha"},
+      ],
+      AT1G01050_1: [
+        {ref : "_ref", name: "none"},
+        {ref: "_1_Col-0", name:"1_Col-0"},
+        {ref:"_2_An-1", name: "2_An-1"},
+        {ref:"_3_C24", name:  "3_C24"},
+        {ref:"_4_Cvi", name: "4_Cvi"},
+        {ref:"_5_Eri", name: "5_Eri"},
+        {ref:"_6_Kyo", name: "6_Kyo"},
+        {ref:"_7_Ler", name: "7_Ler"},
+        {ref:"_8_Sha", name: "8_Sha"},
+      ],
+      AT1G01060_1: [
+        {ref : "_ref", name: "none"},
+        {ref: "_1_Col-0", name:"1_Col-0"},
+        {ref:"_2_An-1", name: "2_An-1"},
+        {ref:"_3_C24", name:  "3_C24"},
+        {ref:"_4_Cvi", name: "4_Cvi"},
+        {ref:"_5_Eri", name: "5_Eri"},
+        {ref:"_6_Kyo", name: "6_Kyo"},
+        {ref:"_7_Ler", name: "7_Ler"},
+        {ref:"_8_Sha", name: "8_Sha"},
+      ],
+      AT1G11460_1: [
+        {ref : "_ref", name: "none"},
+        {ref: "_1_Col-0", name:"1_Col-0"},
+        {ref:"_2_An-1", name: "2_An-1"},
+        {ref:"_3_C24", name:  "3_C24"},
+        {ref:"_5_Eri", name: "5_Eri"},
+        {ref:"_7_Ler", name: "7_Ler"},
+      ],
+      AT1G02820_1: [
+        {ref : "_ref", name: "none"},
+        {ref: "_1_Col-0", name:"1_Col-0"},
+        {ref:"_2_An-1", name: "2_An-1"},
+        {ref:"_3_C24", name:  "3_C24"},
+        {ref:"_4_Cvi", name: "4_Cvi"},
+        {ref:"_5_Eri", name: "5_Eri"},
+        {ref:"_6_Kyo", name: "6_Kyo"},
+        {ref:"_7_Ler", name: "7_Ler"},
+        {ref:"_8_Sha", name: "8_Sha"},
+      ],
+      AT5G47700_1: [
+        {ref : "_ref", name: "none"},
+        {ref: "_1_Col-0", name:"1_Col-0"},
+        {ref:"_2_An-1", name: "2_An-1"},
+        {ref:"_3_C24", name:  "3_C24"},
+        {ref:"_4_Cvi(1)", name: "4_Cvi(1)"},
+        {ref:"_4_Cvi(2)", name: "4_Cvi(2)"},
+        {ref:"_5_Eri(1)", name: "5_Eri(1)"},
+        {ref:"_5_Eri(2)", name: "5_Eri(2)"},
+        {ref:"_6_Kyo", name: "6_Kyo"},
+        {ref:"_7_Ler", name: "7_Ler"},
+        {ref:"_8_Sha(1)", name: "8_Sha(1)"},
+        {ref:"_8_Sha(2)", name: "8_Sha(2)"},
+      ],
+    };
+    console.log('accession list per gene', accessionNames)
+    this.accessionNames = accessionNames;
 
     // add the options to the button
     d3.select("#selectButtonData")
@@ -136,8 +241,8 @@ export default {
         return d;
       }); // corresponding value returned by the button
 
-     // Gene Ids
-     var accessionIDs = {
+     
+     const accessionIDs = {
       // _full_closest: "none",
       _ref: "none",
       "_1_Col-0": "1_Col-0",
@@ -156,23 +261,18 @@ export default {
       // "_Tsu-0": "Tsu-0"
 
     };
+    // console.log('accession ids original', accessionIDs)
 
+  
 
-    // add the options to the button
-    var accessionButton = d3.select("#selectButtonAccessionData")
-      .selectAll("myOptionsAccessionData")
-      // .data(Object.keys(accessionIDs))
-      .data(Object.keys(accessionIDs)) //Object.keys(accessionIDs)
-      .enter()
-      .append("option")
-      .text(function(d) {
-        // return accessionIDs[d];
-        return accessionIDs[d];
-      }) // text showed in the menu
-      .attr("value", function(d) {
-        return d;
-      }); // corresponding value returned by the button
+    this.selectedGeneId = d3.select("#selectButtonData").node().value;
+    console.log('selected gene ID', this.selectedGeneId)
 
+    var accessionsGene = accessionNames[this.selectedGeneId];
+    console.log('selected gene accessions', accessionsGene)
+    this.accessionsGene = accessionsGene;
+
+    let accessionButton = d3.select("#selectButtonAccessionData");
     this.accessionButton = accessionButton;
 
     // Trees
@@ -197,28 +297,112 @@ export default {
         return d;
       }); // corresponding value
 
-    this.selectedGeneId = d3.select("#selectButtonData").node().value;
-    // console.log('selected gene ID', this.selectedGeneId)
+    
 
     this.fetchData(Object.keys(geneIDs)[0], Object.keys(accessionIDs)[0]); // inital data display
     this.fetchDataTree(Object.keys(treeTypes)[0]);
     
     this.updateData();
 
-    var accessionTest = this.loadDataAccession;
-    console.log('accession test', accessionTest)
+    // var accessionTest = this.loadDataAccession;
+    // console.log('accession test', accessionTest)
   },
   methods: {
     updateData() {
 
+      let vis = this;
+
+      //add the options to the button
+      // var accessionButton = d3.select("#selectButtonAccessionData")
+      vis.accessionButton
+        .selectAll("myOptionsAccessionData")
+        .data(vis.accessionsGene) //Object.keys(accessionIDs)
+        .enter()
+        .append("option")
+        .attr('class', 'myOptionsAccessionData')
+        .text(d => d.name)
+        .attr("value", d => d.ref);
+        // .text(function(d) {
+        //   // return accessionIDs[d];
+        //   console.log('d in list name', d.name) //accessionsGene[d]
+        //   return d.name; //accessionsGene[d]
+        // }) // text showed in the menu
+        // .attr("value", function(d) {
+        //   console.log('d in list ref', d.ref) //accessionsGene[d]
+        //   return d.ref;
+        // }); // corresponding value returned by the button
+
+      // vis.accessionButton = accessionButton;
+      // console.log("vis accession button inital", this.accessionButton)
+    
       // Change data based on select
       d3.select("#selectButtonData").on("change", () => {
         var selectedGene = d3.select("#selectButtonData").node().value;
-        // console.log("selected gene ID: ", selectedGene);
 
-        // console.log('selected gene ID this in funct', this.selectedGeneId)
-        // this.selectedGeneId = d3.select("#selectButtonData").node().value;
-        // console.log('selected gene ID this in funct changed', this.selectedGeneId);
+        console.log("TEST!!");
+
+        var selectedAcc = vis.accessionNames[selectedGene];
+        console.log("selected gene ID accessions in update: ", selectedAcc);
+
+        // check new data
+        let accessionButtonValueUpdate = vis.accessionButton
+            // .select("#selectButtonAccessionData")
+            .selectAll(".myOptionsAccessionData")
+            // .selectAll(".accessionOption")
+            .data(selectedAcc); //key function?
+
+          console.log("vis accession button update", accessionButtonValueUpdate)
+
+        
+          // make new cells
+          let accessionButtonValueEnter = accessionButtonValueUpdate
+            .enter()
+            .append("option")
+            .attr('class', 'myOptionsAccessionData')
+
+          // remove old cells
+          accessionButtonValueUpdate.exit().remove();
+
+          console.log("vis accession button enter", accessionButtonValueEnter)
+
+          // merge cells with existing
+          accessionButtonValueEnter
+            .merge(accessionButtonValueUpdate)
+            .text(d => d.name)
+            .attr("value", d => d.ref); // corresponding value returned by the button
+          console.log("vis accession button enter final", accessionButtonValueEnter)
+
+
+        // // check new data
+        // let accessionButtonTextUpdate = vis.accessionButton
+        //     // .select("#selectButtonAccessionData")
+        //     .selectAll(".myOptionsAccessionData")
+        //     // .selectAll(".accessionOption")
+        //     .data(selectedAcc); //key function?
+
+        //   console.log("vis accession button update", accessionButtonTextUpdate)
+
+        
+        //   // make new cells
+        //   let accessionButtonTextEnter = accessionButtonValueUpdate
+        //     .enter()
+        //     .append("option")
+        //     .attr('class', 'myOptionsAccessionData')
+
+        //   // remove old cells
+        //   accessionButtonValueUpdate.exit().remove();
+
+        //   console.log("vis accession button enter", accessionButtonValueEnter)
+
+        //   // merge cells with existing
+        //   accessionButtonValueEnter
+        //     .merge(accessionButtonValueUpdate)
+        //     // .text(d => d.name)
+        //     .attr("value", d => d.ref); // corresponding value returned by the button
+        //   console.log("vis accession button enter final", accessionButtonValueEnter)
+        
+
+
 
 
         var selectedAccession = d3.select("#selectButtonAccessionData").node().value;
