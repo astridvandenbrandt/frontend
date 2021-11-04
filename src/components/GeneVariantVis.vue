@@ -76,7 +76,7 @@ export default {
   name: "GeneVariantVis",
   methods: {
     // This function contains all the code to prepare the data before we render it.
-    updateVis(data, data_mutations, data_barcode, data_phenos) {
+    updateVis(data, data_mutations, data_phenos) {
 
       console.log('data', data)
       // console.log('data mutations', data_mutations)
@@ -95,14 +95,14 @@ export default {
       vis.data_pheno_dtf1 = data_pheno_dtf1;
 
 
-      // console.log('data barcode', data_barcode)
-      const flat_data_barcode = {
-        pos: data_barcode.map((d) => String(d.pos)),
-        base: data_barcode.map((d) => d.base),
-        accession: data_barcode.map((d) => d.accession),
-      };
-      // console.log("flat data barcode", flat_data_barcode);
-      vis.flat_data_barcode = flat_data_barcode;
+      // // console.log('data barcode', data_barcode)
+      // const flat_data_barcode = {
+      //   pos: data_barcode.map((d) => String(d.pos)),
+      //   base: data_barcode.map((d) => d.base),
+      //   accession: data_barcode.map((d) => d.accession),
+      // };
+      // // console.log("flat data barcode", flat_data_barcode);
+      // vis.flat_data_barcode = flat_data_barcode;
 
       // if (vis.globalBrushStart == undefined){
       //   console.log(" global brush values undefined")
@@ -213,8 +213,8 @@ export default {
       var genePositions = flat_data_slice_default.pos.filter(unique);
       console.log("genePositions", genePositions);
 
-      var barcodePositions = flat_data_barcode.pos.filter(unique);
-      console.log("barcodePositions", barcodePositions);
+      // var barcodePositions = flat_data_barcode.pos.filter(unique);
+      // console.log("barcodePositions", barcodePositions);
 
       const geneAccessions = flat_data_slice_default.accession.filter(unique);
       console.log("gene accessions", geneAccessions);
@@ -504,8 +504,8 @@ export default {
       // Set the scale input domains
       vis.xScaleContext.domain([0, vis.length_gene]);
       vis.yScaleContext.domain([0, vis.max_mutations]); // 11 is max vars on one pos
-      vis.xScaleBarcode.domain(barcodePositions);
-      vis.yScaleBarcode.domain(sortingOptions[updateSort]);
+      // vis.xScaleBarcode.domain(barcodePositions);
+      // vis.yScaleBarcode.domain(sortingOptions[updateSort]);
 
       vis.xScaleFocus.domain(genePositions);
       vis.yScaleFocus.domain(sortingOptions[updateSort]);
@@ -633,7 +633,7 @@ export default {
       // vis.data_pheno = data_pheno;
 
       vis.data_phenos = data_phenos;
-      vis.data_barcode = data_barcode;
+      // vis.data_barcode = data_barcode;
       vis.geneAccessions = geneAccessions;
 
       vis.renderVis();

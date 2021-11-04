@@ -467,10 +467,10 @@ export default {
       ); //  msa_AT1G01060_mutations.csv
       this.loadDataMut = data_msa_mutations;
 
-      let data_barcode = await d3.csv(
-        "./gene_variants_newest/barcode_" + geneID + accession + ".csv"
-      ); //  msa_AT1G01060_mutations.csv
-      this.loadDataBarcode = data_barcode;
+      // let data_barcode = await d3.csv(
+      //   "./gene_variants_newest/barcode_" + geneID + accession + ".csv"
+      // ); //  msa_AT1G01060_mutations.csv
+      // this.loadDataBarcode = data_barcode;
 
       let data_phenos = await d3.csv(
         "./gene_variants_newest/pheno_" + geneID +  ".csv"
@@ -479,7 +479,7 @@ export default {
 
       let componentVariantDetails = this.$refs["variant_data"];
 
-      componentVariantDetails.updateVis(data_msa, data_msa_mutations, data_barcode, data_phenos);
+      componentVariantDetails.updateVis(data_msa, data_msa_mutations, data_phenos);
     },
   },
 };
