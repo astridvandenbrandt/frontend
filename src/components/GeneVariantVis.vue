@@ -505,7 +505,7 @@ export default {
       vis.xScaleContext.domain([0, vis.length_gene]);
       vis.yScaleContext.domain([0, vis.max_mutations]); // 11 is max vars on one pos
       // vis.xScaleBarcode.domain(barcodePositions);
-      // vis.yScaleBarcode.domain(sortingOptions[updateSort]);
+      vis.yScaleBarcode.domain(sortingOptions[updateSort]);
 
       vis.xScaleFocus.domain(genePositions);
       vis.yScaleFocus.domain(sortingOptions[updateSort]);
