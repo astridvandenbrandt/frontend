@@ -78,7 +78,7 @@ export default {
     // This function contains all the code to prepare the data before we render it.
     updateVis(data, data_mutations, data_phenos) {
 
-      console.log('data', data)
+      // console.log('data', data)
       // console.log('data mutations', data_mutations)
       // console.log('data phenos', data_phenos)
 
@@ -207,17 +207,17 @@ export default {
         base_hover: flat_data_slice[2],
         accession: flat_data_slice[3],
       };
-      console.log("flat data slice", flat_data_slice_default);
+      // console.log("flat data slice", flat_data_slice_default);
 
 
       var genePositions = flat_data_slice_default.pos.filter(unique);
-      console.log("genePositions", genePositions);
+      // console.log("genePositions", genePositions);
 
       // var barcodePositions = flat_data_barcode.pos.filter(unique);
       // console.log("barcodePositions", barcodePositions);
 
       const geneAccessions = flat_data_slice_default.accession.filter(unique);
-      console.log("gene accessions", geneAccessions);
+      // console.log("gene accessions", geneAccessions);
       vis.geneAccessions = geneAccessions;
 
       // var alpha = [
@@ -1383,7 +1383,9 @@ export default {
           .transition()
           .duration(400)
           .attr("y", (d) => vis.yScaleBarcode(d)+ vis.yScaleBarcode.bandwidth()/1.5)
-          .attr("x", 120);
+          // .attr("x", 120);
+          .attr("x", vis.leftColWidth - 20)
+
 
 
         vis.yScaleFocus.domain(sortingOption);
@@ -1412,7 +1414,7 @@ export default {
       // Change row ordering based on select
       d3.select("#selectButtonSort").on("change", function() {
         var selected = d3.select("#selectButtonSort").node().value;
-        console.log("selected order MSA: ", selected);
+        // console.log("selected order MSA: ", selected);
         updateMSAorder(vis.sortingOptions[selected]);
         d3.select('#selectButtonSortPhenos').property('value', selected);
         updatePhenosOrder(vis.sortingOptionsPheno[selected])
@@ -1644,11 +1646,11 @@ export default {
 
       // !! IMPORTANT Hide y-axis when no VR (this is only when full color is loaded)
       var newAcc = d3.select("#selectButtonAccessionData").node().value;
-      console.log("selected VR from component sequence: ", newAcc);
+      // console.log("selected VR from component sequence: ", newAcc);
 
       const selVR = newAcc.split("_")
       const selectedVisRef = selVR[1]+"_"+selVR[2]
-      console.log("selected VisRef from component sequence: ", selectedVisRef);
+      // console.log("selected VisRef from component sequence: ", selectedVisRef);
 
 
       // Add the circle for the nodes
@@ -1698,6 +1700,7 @@ export default {
           .merge(visBarcodeUpdateLabels)
           .attr("y", (d) => vis.yScaleBarcode(d)+ vis.yScaleBarcode.bandwidth()/1.5)
           .attr("x", vis.leftColWidth - 20)
+          // .attr("x", 120)
           .text(function(d){ return(d)})
           .style("text-anchor", "end")
           .style("font-weight", function(d){

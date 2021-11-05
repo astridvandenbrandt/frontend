@@ -225,7 +225,7 @@ export default {
         {ref:"_8_Sha(2)", name: "8_Sha(2)"},
       ],
     };
-    console.log('accession list per gene', accessionNames)
+    // console.log('accession list per gene', accessionNames)
     this.accessionNames = accessionNames;
 
     // add the options to the button
@@ -266,10 +266,10 @@ export default {
   
 
     this.selectedGeneId = d3.select("#selectButtonData").node().value;
-    console.log('selected gene ID', this.selectedGeneId)
+    // console.log('selected gene ID', this.selectedGeneId)
 
     var accessionsGene = accessionNames[this.selectedGeneId];
-    console.log('selected gene accessions', accessionsGene)
+    // console.log('selected gene accessions', accessionsGene)
     this.accessionsGene = accessionsGene;
 
     let accessionButton = d3.select("#selectButtonAccessionData");
@@ -339,10 +339,10 @@ export default {
       d3.select("#selectButtonData").on("change", () => {
         var selectedGene = d3.select("#selectButtonData").node().value;
 
-        console.log("TEST!!");
+        // console.log("TEST!!");
 
         var selectedAcc = vis.accessionNames[selectedGene];
-        console.log("selected gene ID accessions in update: ", selectedAcc);
+        // console.log("selected gene ID accessions in update: ", selectedAcc);
 
         // check new data
         let accessionButtonValueUpdate = vis.accessionButton
@@ -351,7 +351,7 @@ export default {
             // .selectAll(".accessionOption")
             .data(selectedAcc); //key function?
 
-          console.log("vis accession button update", accessionButtonValueUpdate)
+          // console.log("vis accession button update", accessionButtonValueUpdate)
 
         
           // make new cells
@@ -363,14 +363,14 @@ export default {
           // remove old cells
           accessionButtonValueUpdate.exit().remove();
 
-          console.log("vis accession button enter", accessionButtonValueEnter)
+          // console.log("vis accession button enter", accessionButtonValueEnter)
 
           // merge cells with existing
           accessionButtonValueEnter
             .merge(accessionButtonValueUpdate)
             .text(d => d.name)
             .attr("value", d => d.ref); // corresponding value returned by the button
-          console.log("vis accession button enter final", accessionButtonValueEnter)
+          // console.log("vis accession button enter final", accessionButtonValueEnter)
 
 
         // // check new data
@@ -456,8 +456,8 @@ export default {
     // },
 
     async fetchData(geneID, accession) {
-      console.log("initial Gene =", geneID);
-      console.log("initial Accession =", accession);    
+      // console.log("initial Gene =", geneID);
+      // console.log("initial Accession =", accession);    
 
       let data_msa = await d3.csv("./gene_variants_newest/matrix_" + geneID + accession + ".csv");
       this.loadDataMSA = data_msa;
